@@ -6,11 +6,11 @@ import org.bukkit.ChatColor;
 
 import com.minesworn.core.SPlugin;
 
-public class CmdHelp extends SCommand<SPlugin> {
+public class CmdHelp<S extends SPlugin> extends SCommand<S> {
 
 	public CmdHelp() {
 		this.name = "help";
-		this.description = "Shows " + s.getName() + " help.";
+		this.description = "Shows autocraft help.";
 	}
 	
 	@Override
@@ -22,7 +22,7 @@ public class CmdHelp extends SCommand<SPlugin> {
 
 	public ArrayList<String> getPageLines() {
 		ArrayList<String> pageLines = new ArrayList<String>();
-		pageLines.add(ChatColor.GOLD + s.getName() + " Help:");
+		pageLines.add(ChatColor.GOLD + "AutoCraft Help:");
 		
 		for (SCommand<?> command : s.commandRoot.commands) {
 			if (command.hasPermission())

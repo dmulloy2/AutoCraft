@@ -5,8 +5,11 @@ import com.minesworn.core.commands.SCommandRoot;
 
 public class ACCommandRoot extends SCommandRoot<Autocraft> {
 
-	public ACCommandRoot(Autocraft p) {
-		super(p);
+	public CmdPilot CMD_PILOT = new CmdPilot();
+	
+	public ACCommandRoot(Autocraft s) {
+		super(s);
+		addCommand(CMD_PILOT);
 	}
 	
 }

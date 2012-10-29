@@ -1,6 +1,5 @@
 package com.minesworn.autocraft.ships;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,8 +8,14 @@ import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.entity.Entity;
+import org.bukkit.block.BlockFace;
+import org.bukkit.block.BlockState;
+import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.InventoryHolder;
+import org.bukkit.material.Directional;
+import org.bukkit.material.MaterialData;
+import org.bukkit.util.Vector;
 
 import com.minesworn.autocraft.Autocraft;
 
@@ -20,75 +25,83 @@ public class ACBaseShip {
 	// Changes to true if the ship has a problem creating.
 	boolean stopped;
 	Player player;
-
-	public int maxBlocks;
-	public int minBlocks;
-
-	public boolean allowflight;
-
-	public int cannonlength;
-	public int maxcannon;
-	public Material maintype;
-	public int torpedoTNT = 16;
-	public int cannontTNT = 4;
-	public int dropTNT = 2;
-	public int cannonmaterial = 42;
-	public int torpedomaterial = 41;
-	public int cooldowntime = 6;
-	public int cooldowntimeDROP = 6;
-	public int cooldowntimeTORPEDO = 6;
-	public int cooldowntimeNAPALM = 6;
-	public int cooldowntimeARROW = 6;
-	public boolean canmove = true;
-	public List<Integer> torpedoAdditional;
-	public List<Integer> napalmAdditional;
-	public int movespeed;
-	public int numMainBlocks = 0;
-	long lastmove = System.currentTimeMillis();
+	
+	// Used for checking if weapon cooldown is over.
+	long lastFired;
+	
+	// Total number of the main block on the ship.
+	int numMainBlocks = 0;
+	
+	// Used for checking if move cooldown is over.
+	long lastmove;
+	
+	// Hold all blocks part of this ship.
 	Block[] blocks;
+	// Place holder for the block the player is standing on. Probably unnecessary but haven't removed it in this update TODO: remove this.
 	Block mainblock;
 	
-	public ACBaseShip() {
+	public ACBaseShip(Player player, ACProperties properties) {
+		this.player = player;
+		this.properties = properties;
+		System.out.println("PLAYER " + player.getName() + " HAS STARTED FLYING " + 
+					this.properties.SHIP_TYPE + " AT (" + 
+					player.getLocation().getBlockX() + "," + 
+					player.getLocation().getBlockY() + "," + 
+					player.getLocation().getBlockZ() + ")");
 		
+		startship();
 	}
 	
 	public void startship() {
 		updateMainBlock();
-		boolean can = beginRecursion(this.mainblock);
-		if (areBlocksValid()) {
-			for (ACBaseShip othership : Autocraft.shipmanager.ships.values()) {
-				if ()
+		if (beginRecursion(this.mainblock)) {
+			if (areBlocksValid()) {
+				if (isShipAlreadyPiloted()) {
+					player.sendMessage(ChatColor.RED + "This ship is already being piloted");
+				} else {
+					Autocraft.shipmanager.ships.put(player.getName(), this);
+					player.sendMessage(ChatColor.GRAY + "You are in control of this ship");
+					player.sendMessage(ChatColor.GRAY + "\tUse the right mouse to guide the ship");
+				}
 			}
 		}
 	}
 	
-	public void move(int x, int y, int z) {
+	// This method doesn't actually move the ship, only prepares to before it calls domove().
+	public void move(int dx, int dy, int dz) {
 		// If the airship has been stopped then remove it from the mapping.
 		if (this.stopped)
 			Autocraft.shipmanager.ships.remove(player.getName());
-		else if (this.canmove && this.allowflight) {
+		else {
 			// Check that the ship hasn't already moved within the last second.
 			if (System.currentTimeMillis() - this.lastmove > 1000L) {
+				System.out.println(dx + "," + dy + "," + dz);
 				// Reduce the matrix given to identities only.
-				if (Math.abs(x) > 1)
-					x /= Math.abs(x);
-				if (Math.abs(y) > 1)
-					y /= Math.abs(y);
-				if (Math.abs(z) > 1)
-					z /= Math.abs(z);
+				if (Math.abs(dx) > 1)
+					dx /= Math.abs(dx);
+				if (Math.abs(dy) > 1)
+					dy /= Math.abs(dy);
+				if (Math.abs(dz) > 1)
+					dz /= Math.abs(dz);
+				
+				dx *= this.properties.MOVE_SPEED;
+				dy *= this.properties.MOVE_SPEED;
+				dz *= this.properties.MOVE_SPEED;
+				
+				System.out.println(dx + "," + dy + "," + dz);
 				
 				// Set last move to current time.
 				this.lastmove = System.currentTimeMillis();
 				boolean obstruction = false;
 				
-				Block[] newBlocksPosition = blocks.clone();
+				Block[] blocks = this.blocks.clone();
 				
 				// Check each block's new position for obstructions
-				for (int i = 0; i < newBlocksPosition.length; i++) {
-					Block block = newBlocksPosition[i].getRelative(x, y, z);
-					if (block.getLocation().getBlockY() + y > this.maxaltitude)
+				for (int i = 0; i < blocks.length; i++) {
+					Block block = blocks[i].getRelative(dx, dy, dz);
+					if (block.getLocation().getBlockY() + dy > ACProperties.MAX_ALTITUDE)
 						obstruction = true;
-					if (block.getType().equals(Material.AIR)|| blockBelongsToShip(block, newBlocksPosition))
+					if (block.getType().equals(Material.AIR) || blockBelongsToShip(block, blocks))
 						continue;
 					obstruction = true;
 				}
@@ -97,54 +110,157 @@ public class ACBaseShip {
 				if (obstruction)
 					this.player.sendMessage(ChatColor.YELLOW + "Obstruction" + ChatColor.RED + " - Cannot move any further in this direction.");
 				// Lets move this thing :D
-				else if (areBlocksValid()) {
-					Location loc = this.player.getLocation().clone().add(0, -1, 0);
-					Block blockon = this.player.getWorld().getBlockAt(player.getLocation());
-					if (!blockon.getType().equals(Material.AIR))
-						if (blockBelongsToShip(blockon, this.blocks)) {
-							newBlocksPosition = null;
-							domove("move", x, y, z);
-						} else
-							this.player.sendMessage(ChatColor.GRAY + "You are not on a ship");
-				}
+				else
+					domove(dx, dy, dz);
 			}
 		}
 	}
 	
-	public void rotate(TurnDirection dir) {
-		Block[] newBlocksPosition;
-		int count = 0;
-		try {
-			if (areBlocksValid())
-				try {
-					this.blocks = null;
-					this.numMainBlocks = 0;
-					updateMainBlock();
-					recurse(0, this.mainblock);
-					
-					int t = x;
-					if (dir = TurnDirection.LEFT) {
-						x = -z;
-						z = x;
-					} else {
-						x = z;
-						z = -t;
-					}
-					
-					if (id == 23) {
-						byte dat = 
-					}
+	public void rotate(TurnDirection dir) {	
+		if (this.stopped)
+			Autocraft.shipmanager.ships.remove(player.getName());
+		else {
+			// Check that the ship hasn't moved within the last second.
+			if (System.currentTimeMillis() - this.lastmove > 1000L) {
+				this.lastmove = System.currentTimeMillis();
+				boolean obstruction = false;
+				
+				Block[] blocks = this.blocks.clone();
+				
+				Vector center = getCenter();
+				
+				// Check each block's new position for obstructions
+				for (int i = 0; i < blocks.length; i++) {
+					Block block = blocks[i].getWorld().getBlockAt(
+									getRotatedVector(	blocks[i].getLocation().toVector(), 
+														center, 
+														dir)
+										.toLocation(blocks[i].getWorld()));
+					if (block.getType().equals(Material.AIR) || blockBelongsToShip(block, blocks))
+						continue;
+					obstruction = true;
 				}
+				
+				// Can't move :/
+				if (obstruction)
+					this.player.sendMessage(ChatColor.YELLOW + "Obstruction" + ChatColor.RED + " - Cannot rotate in this direction.");
+				else
+					dorotate(dir);
+			}
+		}
+	
+	}
+	
+	// Rotate the ship and all passengers in the specified direction
+	public void dorotate(TurnDirection dir) {
+		List<Player> passengers = getPassengers();
+		BlockState[] temp = new BlockState[blocks.length];
+		
+		// First remove all blocks from the scene
+		for (int i = 0; i < blocks.length; i++) {
+			temp[i] = blocks[i].getState();
+			blocks[i].setType(Material.AIR);
+		}
+		
+		Vector center = getCenter();
+		
+		// Make new blocks in their new respective positions
+		for (int i = 0; i < blocks.length; i++) {			
+			blocks[i] = blocks[i].getWorld().getBlockAt(
+							getRotatedVector(	blocks[i].getLocation().toVector(), 
+												center, 
+												dir)
+								.toLocation(blocks[i].getWorld()));
+			setBlock(blocks[i], temp[i], dir);			
+		}
+		
+		for (Player p : passengers) {
+			Location l = getRotatedVector(p.getLocation().toVector(), center, dir).toLocation(p.getWorld());
+			l.setYaw(l.getYaw() + ((dir == TurnDirection.LEFT) ? -90 : 90)); 
+			p.teleport(l);
 		}
 	}
 	
-	public void domove(String movetype, int x, int y, int z) {
+	// Returns the coordinates of the position rotated around the center in the specified direction
+	public Vector getRotatedVector(Vector v, Vector center, TurnDirection dir) {
+		int dz = v.getBlockX() - center.getBlockX();
+		int dx = v.getBlockZ() - center.getBlockZ();
+		
+		if (dir == TurnDirection.LEFT)
+			dx *= -1;
+		else
+			dz *= -1;
+		
+		return new Vector(center.getBlockX() + dx, v.getBlockY(), center.getBlockZ() + dz);
+	}
+	
+	// Move the ship and all passengers the specified distance
+	public void domove(int dx, int dy, int dz) {
 		List<Player> passengers = getPassengers();
+		BlockState[] temp = new BlockState[blocks.length];
 		
-		this.canmove = false;
+		// First remove all blocks from the scene
+		for (int i = 0; i < blocks.length; i++) {
+			temp[i] = blocks[i].getState();
+			blocks[i].setType(Material.AIR);
+		}
 		
-		boolean recurse = false;
+		// Make new blocks in their new respective positions
+		for (int i = 0; i < blocks.length; i++) {
+			blocks[i] = blocks[i].getRelative(dx, dy, dz);
+			setBlock(blocks[i], temp[i], (byte) -1);
+		}
 		
+		// Teleport players back on to the ship
+		for (Player p : passengers) {
+			p.teleport(p.getLocation().clone().add(dx, dy, dz));
+		}
+	}
+	
+	@SuppressWarnings("incomplete-switch")
+	public void setBlock(Block to, BlockState from, TurnDirection dir) {
+		MaterialData data = from.getData();
+		if (data instanceof Directional) {
+			switch (((Directional) data).getFacing()) {
+			case NORTH:
+				if (dir.equals(TurnDirection.LEFT))
+					((Directional) data).setFacingDirection(BlockFace.WEST);
+				else
+					((Directional) data).setFacingDirection(BlockFace.EAST);
+				break;
+			case EAST:
+				if (dir.equals(TurnDirection.LEFT))
+					((Directional) data).setFacingDirection(BlockFace.SOUTH);
+				else
+					((Directional) data).setFacingDirection(BlockFace.NORTH);
+				break;
+			case SOUTH:
+				if (dir.equals(TurnDirection.LEFT))
+					((Directional) data).setFacingDirection(BlockFace.EAST);
+				else
+					((Directional) data).setFacingDirection(BlockFace.WEST);
+				break;
+			case WEST:
+				if (dir.equals(TurnDirection.LEFT))
+					((Directional) data).setFacingDirection(BlockFace.NORTH);
+				else
+					((Directional) data).setFacingDirection(BlockFace.SOUTH);
+				break;
+			}
+		}
+		setBlock(to, from, data.getData());
+	}
+	
+	public void setBlock(Block to, BlockState from, byte data) {
+		to.setTypeIdAndData(from.getTypeId(), (data == (byte) -1) ? from.getData().getData() : data, false);
+		// Check if have to update block states.
+		if (from instanceof InventoryHolder) {
+			((InventoryHolder) to.getState()).getInventory().setContents(((InventoryHolder) from).getInventory().getContents());
+		} else if (from instanceof Sign) {
+			for (int j = 0; j < 4; j++) {
+				((Sign) to.getState()).setLine(j, ((Sign) from).getLine(j));
+			}
+		}
 	}
 	
 	// Update main block with which block the player is standing on.
@@ -175,6 +291,17 @@ public class ACBaseShip {
 	// Returns a string name for the main material of this ship.
 	public String getMainType() {
 		return Material.getMaterial(this.properties.MAIN_TYPE).toString().replace("_", " ").toLowerCase();
+	}
+	
+	// Checks if ship is already being piloted
+	public boolean isShipAlreadyPiloted() {		
+		for (ACBaseShip othership : Autocraft.shipmanager.ships.values()) {
+			for (int i = 0; i < othership.blocks.length; i++) {
+				if (blockBelongsToShip(othership.blocks[i], blocks))
+					return true;
+			}
+		}
+		return false;
 	}
 	
 	// Checks that the block being queried belongs to the block list for this ship.
@@ -213,8 +340,25 @@ public class ACBaseShip {
 		return false;
 	}
 	
+	public Vector getCenter() {
+		List<Integer> c = new ArrayList<Integer>(3);
+		for (Direction dir : Direction.values()) {
+			double min = mainblock.getLocation().toVector().dot(dir.v);
+			double max = min;
+			for (Block b : blocks) {
+				double bLoc = b.getLocation().toVector().dot(dir.v);
+				if (bLoc < min)
+					min = bLoc;
+				if (bLoc > max)
+					max = bLoc;
+			}
+			c.add((int) (min + (max - min) / 2));	
+		}
+		return new Vector(c.get(0), c.get(1), c.get(2));
+	}
+	
 	public boolean beginRecursion(Block block) {
-		ArrayList<Block> blockList = new ArrayList<Block>();
+		ArrayList<Block> blockList = new ArrayList<Block>(ACProperties.MAX_SHIP_SIZE);
 		blockList = recurse(block, blockList);
 		
 		if (blockList != null) {
@@ -226,7 +370,7 @@ public class ACBaseShip {
 	
 	// Recursively call this method for every block relative to the starting block.
 	public ArrayList<Block> recurse(Block block, ArrayList<Block> blockList) {
-		boolean original = (blockList.isEmpty());
+		boolean original = ((blockList != null) ? blockList.isEmpty() : false);
 		
 		if (!this.stopped) {
 			if (blockList.size() <= ACProperties.MAX_SHIP_SIZE) {

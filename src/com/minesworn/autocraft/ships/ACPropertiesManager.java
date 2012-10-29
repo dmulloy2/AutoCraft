@@ -12,6 +12,8 @@ public class ACPropertiesManager extends SCache<ACProperties, Autocraft> {
 	}
 	
 	public ACProperties getACProperties(String name) {
+		if (getEntity(name) != null)
+			getEntity(name).SHIP_TYPE = name;
 		return getEntity(name);
 	}
 	

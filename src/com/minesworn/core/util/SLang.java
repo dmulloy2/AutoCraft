@@ -10,17 +10,15 @@ public class SLang {
 	
 	final SPlugin s;
 	
-	public static List<String> errorMessages = new ArrayList<String>();
-	public static List<String> messages = new ArrayList<String>();
-	
-	static {
+	public List<String> errorMessages = new ArrayList<String>();
+	public List<String> messages = new ArrayList<String>();
+
+	public SLang(SPlugin p) {
+		this.s = p;
+		
 		errorMessages.add("mustbeplayer: You must be a player to do this");
 		errorMessages.add("argcount: Incorrect argument count: ");
 		errorMessages.add("permission: You do not have sufficient permissions to use this");
-	}
-	
-	public SLang(SPlugin p) {
-		this.s = p;
 	}
 	
 	public void load() {

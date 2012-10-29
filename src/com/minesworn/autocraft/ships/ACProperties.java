@@ -8,6 +8,7 @@ import com.minesworn.core.io.Entity;
 public class ACProperties extends Entity {
 	public static final transient int MAX_ALTITUDE = 254;
 	public static final transient int MAX_SHIP_SIZE = 4000;
+	public transient String SHIP_TYPE;
 	public int MAX_BLOCKS;
 	public int MIN_BLOCKS;
 	public int MAX_SHIP_DIMENSIONS;

@@ -7,17 +7,17 @@ import com.minesworn.core.SPlugin;
 
 public class SCommandRoot<S extends SPlugin> {
 
-	SPlugin s;
-	public Set<SCommand<?>> commands = new HashSet<SCommand<?>>();
+	public S s;
+	public Set<SCommand<S>> commands = new HashSet<SCommand<S>>();
 	
-	private CmdHelp CMD_HELP = new CmdHelp();
+	private CmdHelp<S> CMD_HELP = new CmdHelp<S>();
 	
-	public SCommandRoot(SPlugin p) {
-		this.s = p;
+	public SCommandRoot(S s) {
+		this.s = s;
 		addCommand(CMD_HELP);
 	}
 	
-	public void addCommand(SCommand<?> command) {
+	public void addCommand(SCommand<S> command) {
 		command.s = s;
 		commands.add(command);
 	}

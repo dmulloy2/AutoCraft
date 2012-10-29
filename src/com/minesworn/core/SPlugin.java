@@ -10,7 +10,6 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import com.minesworn.core.commands.CmdHelp;
 import com.minesworn.core.commands.SCommand;
 import com.minesworn.core.commands.SCommandRoot;
 import com.minesworn.core.util.SLang;
@@ -21,13 +20,11 @@ public abstract class SPlugin extends JavaPlugin implements ISPlugin {
 	private ArrayList<String> COMMAND_PREFIXES = new ArrayList<String>();
 	private ArrayList<String> enabledSoftDependPlugins = new ArrayList<String>();
 	
-	public SPlugin p;
 	public SLang lang;
 	public SCommandRoot<?> commandRoot;
 	public volatile boolean enabled;
 		
-	public boolean preEnable(SPlugin p) {		
-		p = this;
+	public boolean preEnable() {		
 		PLUGIN_NAME = this.getName();
 
 		if (this.getDescription().getDepend() != null)
@@ -60,10 +57,10 @@ public abstract class SPlugin extends JavaPlugin implements ISPlugin {
 	
 	@Override
 	public void onEnable() {
-		preEnable(this);
-		lang = new SLang(p);
+		preEnable();
+		lang = new SLang(this);
 		lang.load();
-		commandRoot = new SCommandRoot<SPlugin>(p);
+		commandRoot = new SCommandRoot<SPlugin>(this);
 	}
 	
 	public void preDisable() {
@@ -76,7 +73,7 @@ public abstract class SPlugin extends JavaPlugin implements ISPlugin {
 	}
 	
 	public void reload() {
-		new ReloadThread(p);
+		new ReloadThread(this);
 	}
 	
 	public void afterReload() {
@@ -84,19 +81,22 @@ public abstract class SPlugin extends JavaPlugin implements ISPlugin {
 	}
 	
 	public boolean onCommand(CommandSender sender, Command cmd, String lbl, String[] args) {		
-		String cmdlbl;
-		if (getCommandPrefix() == null)
+		String cmdlbl = "";
+		ArrayList<String> argList = new ArrayList<String>();
+		if (getCommandPrefix() == null) {
 			cmdlbl = cmd.getName();
-		else
+			for (int i = 0; i < args.length; i++) {
+				argList.add(args[i]);
+			}
+		} else if (args.length > 0) {
 			cmdlbl = args[0];
+			for (int i = 1; i < args.length; i++) {
+				argList.add(args[i]);
+			}
+		}
 		
 		for (SCommand<?> command : commandRoot.commands) {	
-			if (cmdlbl.equalsIgnoreCase(command.getName()) || command.getAliases().contains(cmdlbl.toLowerCase())) {
-				ArrayList<String> argList = new ArrayList<String>();
-				for (int i = 0; i < args.length; i++) {
-					argList.add(args[i]);
-				}
-				
+			if (cmdlbl.equalsIgnoreCase(command.getName()) || command.getAliases().contains(cmdlbl.toLowerCase())) {				
 				args = argList.toArray(new String[0]);				
 				
 				command.execute(sender, args);
@@ -104,8 +104,12 @@ public abstract class SPlugin extends JavaPlugin implements ISPlugin {
 			}
 		}
 		
-		new CmdHelp().execute(sender, args);
+		newHelpCommand(sender, args);
 		return true;
+	}
+	
+	public void newHelpCommand(CommandSender sender, String[] args) {
+		
 	}
 	
 	public String getCommandPrefix() {return (!COMMAND_PREFIXES.isEmpty()) ? COMMAND_PREFIXES.get(0) : null;}	

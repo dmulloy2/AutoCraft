@@ -12,7 +12,7 @@ import com.minesworn.core.util.Util;
 
 public abstract class SCommand<S extends SPlugin> implements ISCommand {
 
-	SPlugin s;
+	S s;
 	
 	public CommandSender sender;
 	public Player player;
