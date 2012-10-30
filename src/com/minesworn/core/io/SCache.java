@@ -30,6 +30,19 @@ public class SCache<E extends Entity, S extends SPlugin> {
 			this.FOLDER.mkdir();
 	}
 	
+	// Load all entities in the cache's serialization directory
+	protected void loadAllEntities() {
+		long start = System.currentTimeMillis();
+		Map<String, E> loadMap = new HashMap<String, E>();
+		for (File file : FOLDER.listFiles()) {
+			String name = file.getName();
+			loadMap.put(name, loadEntity(name));
+		}
+		
+		entities = Collections.unmodifiableMap(loadMap);
+		s.log(name + " loaded! [" + (System.currentTimeMillis() - start) + "ms]");
+	}
+	
 	// Loads entity from file or creates a new file for them if none exists.
 	protected E loadEntity(final String name) {
 		E e = this.factory.newEntity();

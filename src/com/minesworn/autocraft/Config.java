@@ -14,6 +14,8 @@ public class Config {
 	public static int NUM_TNT_TO_DROP_NAPALM = 4;
 	public static List<Integer> MATERIALS_NEEDED_FOR_TORPEDO = new ArrayList<Integer>();
 	public static List<Integer> MATERIALS_NEEDED_FOR_NAPALM = new ArrayList<Integer>();
+		
+	public static int NAPALM_BURN_RADIUS = 6;
 	
 	public static boolean SHIPS_CAN_FLY = true;
 	

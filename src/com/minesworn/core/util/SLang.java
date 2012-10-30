@@ -8,7 +8,7 @@ import com.minesworn.core.io.SPersist;
 
 public class SLang {
 	
-	final SPlugin s;
+	final transient SPlugin s;
 	
 	public List<String> errorMessages = new ArrayList<String>();
 	public List<String> messages = new ArrayList<String>();

@@ -9,15 +9,21 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
-import org.bukkit.block.BlockState;
+import org.bukkit.block.Dispenser;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.TNTPrimed;
 import org.bukkit.inventory.InventoryHolder;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.Directional;
+import org.bukkit.material.DirectionalContainer;
 import org.bukkit.material.MaterialData;
 import org.bukkit.util.Vector;
 
 import com.minesworn.autocraft.Autocraft;
+import com.minesworn.autocraft.Config;
+import com.minesworn.autocraft.ships.weapons.Napalm;
+import com.minesworn.autocraft.ships.weapons.Torpedo;
 
 public class ACBaseShip {
 	public ACProperties properties;
@@ -52,6 +58,232 @@ public class ACBaseShip {
 		startship();
 	}
 	
+	// Drop tnt bombs :D
+	public void drop() {
+		// Has player waited cooldown before trying to fire again?
+		if (System.currentTimeMillis() - this.lastFired > Config.WEAPON_COOLDOWN_TIME * 1000) {
+			
+			// Can this airship drop bombs?
+			if (this.properties.DROPS_BOMB) {
+				Block[] cannons = getCannons();
+				int numfiredcannons = 0;
+				for (int i = 0; i < cannons.length; i++) {
+					if (cannons[i] != null && cannons[i].getRelative(0, -1, 0).getType().equals(Material.AIR) && cannonHasTnt(cannons[i], Config.NUM_TNT_TO_DROP_BOMB)) {
+						if (numfiredcannons < this.properties.MAX_NUMBER_OF_CANNONS ) {
+							numfiredcannons++;
+							lastFired = System.currentTimeMillis();
+							withdrawTnt(cannons[i], Config.NUM_TNT_TO_DROP_BOMB);
+							
+							// Spawn primed tnt firing downwards TODO: maybe add sound effects for tnt firing? :P
+							TNTPrimed tnt = cannons[i].getWorld().spawn(cannons[i].getLocation().clone().add(0, -1, 0), TNTPrimed.class);
+							tnt.setVelocity(new Vector(0, -0.5, 0));
+						} else {
+							// More cannons on ship than allowed. Not all fired - can break out of loop now.
+							player.sendMessage(ChatColor.AQUA + "Some cannons did not fire. Max cannon limit is " + ChatColor.GOLD + this.properties.MAX_NUMBER_OF_CANNONS);
+							break;
+						}
+					}
+				}
+			} else
+				player.sendMessage(ChatColor.GOLD + this.properties.SHIP_TYPE + " CANNOT DROP BOMBS");
+		} else
+			player.sendMessage(ChatColor.GOLD + "COOLING DOWN FOR " + ChatColor.AQUA + (int)(Math.round(6 - (System.currentTimeMillis() - this.lastFired) / 1000)) + ChatColor.GOLD + " MORE SECONDS");
+	}
+	
+	// Fire tnt like a cannon :3
+	public void fire() {
+		// Has player waited cooldown before trying to fire again?
+		if (System.currentTimeMillis() - this.lastFired > Config.WEAPON_COOLDOWN_TIME * 1000) {
+			
+			// Can this airship drop bombs?
+			if (this.properties.FIRES_TNT) {
+				Block[] cannons = getCannons();
+				int numfiredcannons = 0;
+				for (int i = 0; i < cannons.length; i++) {
+					if (cannons[i] != null && cannonHasTnt(cannons[i], Config.NUM_TNT_TO_FIRE_NORMAL)) {
+						double dist = 0.4;
+						BlockFace face = ((Directional) cannons[i].getState().getData()).getFacing();
+						int x = face.getModX();
+						int z = face.getModZ();
+						dist *= getCannonLength(cannons[i], x, z);
+						
+						if (cannons[i].getRelative(x, 0, z).getType().equals(Material.AIR)) {
+							if (numfiredcannons < this.properties.MAX_NUMBER_OF_CANNONS) {
+								numfiredcannons++;
+								lastFired = System.currentTimeMillis();
+								withdrawTnt(cannons[i], Config.NUM_TNT_TO_FIRE_NORMAL);
+								
+								// Spawn primed tnt firing in the direction of the dispenser TODO: maybe add sound effects for tnt firing? :P
+								TNTPrimed tnt = cannons[i].getWorld().spawn(cannons[i].getLocation().clone().add(0, -1, 0), TNTPrimed.class);
+								tnt.setVelocity(new Vector(x * dist, 0.5, z * dist));
+							} else {
+								// More cannons on ship than allowed. Not all fired - can break out of loop now.
+								player.sendMessage(ChatColor.AQUA + "Some cannons did not fire. Max cannon limit is " + ChatColor.GOLD + this.properties.MAX_NUMBER_OF_CANNONS);
+								break;
+							}
+						}
+					}
+					
+					
+					if (cannons[i] != null && cannons[i].getRelative(0, -1, 0).equals(Material.AIR) && cannonHasTnt(cannons[i], Config.NUM_TNT_TO_DROP_BOMB)) {
+						
+					}
+				}
+			} else
+				player.sendMessage(ChatColor.GOLD + this.properties.SHIP_TYPE + " CANNOT FIRE TNT");
+		} else
+			player.sendMessage(ChatColor.GOLD + "COOLING DOWN FOR " + ChatColor.AQUA + (int)(Math.round(6 - (System.currentTimeMillis() - this.lastFired) / 1000)) + ChatColor.GOLD + " MORE SECONDS");
+	}
+	
+	// Drop some napalms ;o
+	public void dropNapalm() {
+		// Has player waited cooldown before trying to fire again?
+		if (System.currentTimeMillis() - this.lastFired > Config.WEAPON_COOLDOWN_TIME * 1000) {
+			System.out.println(player.getDisplayName() + " is attempting to launch napalm");
+			// Can this airship drop napalm?
+			if (this.properties.DROPS_NAPALM) {
+				Block[] cannons = getCannons();
+				int numfiredcannons = 0;
+				for (int i = 0; i < cannons.length; i++) {
+					if (cannons[i] != null && cannons[i].getRelative(0, -1, 0).getType().equals(Material.AIR) && cannonHasTnt(cannons[i], Config.NUM_TNT_TO_DROP_NAPALM)) {
+						boolean missingMaterial = false;
+						for (int id : Config.MATERIALS_NEEDED_FOR_NAPALM) {
+							if (!cannonHasItem(cannons[i], id, 1))
+								missingMaterial = true;
+						}
+						
+						if (!missingMaterial && numfiredcannons < this.properties.MAX_NUMBER_OF_CANNONS) {
+							numfiredcannons++;
+							lastFired = System.currentTimeMillis();
+							withdrawTnt(cannons[i], Config.NUM_TNT_TO_DROP_NAPALM);
+							for (int id : Config.MATERIALS_NEEDED_FOR_NAPALM) {
+								withdrawItem(cannons[i], id, 1);
+							}
+							
+							// Fire some napalms TODO: maybe add sound effects for napalm dropping? :P
+							new Napalm(cannons[i]);
+						} else {
+							// More cannons on ship than allowed. Not all fired - can break out of loop now.
+							player.sendMessage(ChatColor.AQUA + "Some napalm-cannons did not fire. Max cannon limit is " + ChatColor.GOLD + this.properties.MAX_NUMBER_OF_CANNONS);
+							break;
+						}
+					}
+				}
+			} else
+				player.sendMessage(ChatColor.GOLD + this.properties.SHIP_TYPE + " CANNOT DROP NAPALM");
+		} else
+			player.sendMessage(ChatColor.GOLD + "COOLING DOWN FOR " + ChatColor.AQUA + (int)(Math.round(6 - (System.currentTimeMillis() - this.lastFired) / 1000)) + ChatColor.GOLD + " MORE SECONDS");
+	}
+	
+	// Fire some torpedoes c: TODO: fix torpedoes not working...
+	public void fireTorpedo() {
+		// Has player waited cooldown before trying to fire again?
+		if (System.currentTimeMillis() - this.lastFired > Config.WEAPON_COOLDOWN_TIME * 1000) {
+			System.out.println(player.getDisplayName() + " is attempting to fire a torpedo");
+			// Can this airship fire torpedoes?
+			if (this.properties.FIRES_TORPEDO) {
+				Block[] cannons = getCannons();
+				int numfiredcannons = 0;
+				for (int i = 0; i < cannons.length; i++) {
+					if (cannons[i] != null && cannonHasTnt(cannons[i], Config.NUM_TNT_TO_FIRE_TORPEDO)) {
+						BlockFace face = ((Directional) cannons[i].getState().getData()).getFacing();
+						boolean missingMaterial = false;
+						
+						for (int id : Config.MATERIALS_NEEDED_FOR_TORPEDO) {
+							if (!cannonHasItem(cannons[i], id, 1))
+								missingMaterial = true;
+						}
+						
+						if (!cannons[i].getRelative(face.getModX(), 0, face.getModZ()).getType().equals(Material.AIR) || missingMaterial)
+							return;
+						
+						if (numfiredcannons < this.properties.MAX_NUMBER_OF_CANNONS) {
+							numfiredcannons++;
+							lastFired = System.currentTimeMillis();
+							withdrawTnt(cannons[i], Config.NUM_TNT_TO_FIRE_TORPEDO);
+							for (int id : Config.MATERIALS_NEEDED_FOR_TORPEDO) {
+								withdrawItem(cannons[i], id, 1);
+							}
+							
+							// Fire some torpedoes TODO: maybe add sound effects for tnt firing? :P
+							new Torpedo(cannons[i], face);
+						} else {
+							// More cannons on ship than allowed. Not all fired - can break out of loop now.
+							player.sendMessage(ChatColor.AQUA + "Some cannons did not fire. Max cannon limit is " + ChatColor.GOLD + this.properties.MAX_NUMBER_OF_CANNONS);
+							break;
+						}
+					}
+				}
+			} else
+				player.sendMessage(ChatColor.GOLD + this.properties.SHIP_TYPE + " CANNOT FIRE TORPEDO");
+		} else
+			player.sendMessage(ChatColor.GOLD + "COOLING DOWN FOR " + ChatColor.AQUA + (int)(Math.round(6 - (System.currentTimeMillis() - this.lastFired) / 1000)) + ChatColor.GOLD + " MORE SECONDS");
+	}
+	
+	// Returns the length of cannon material behind the dispenser or MAX_CANNON_LENGTH;
+	public double getCannonLength(Block b, int x, int z) {
+		double ret = 1.0;
+		for (int i = 0; i < this.properties.MAX_CANNON_LENGTH; i++) {
+			Block bnext = b.getRelative(x, 0, z);
+			if (bnext.getType().equals(Material.getMaterial(this.properties.CANNON_MATERIAL)))
+				ret++;
+			else
+				break;
+		}
+		return ret;
+	}
+	
+	public boolean cannonHasTnt(Block b, int numtnt) {
+		return cannonHasItem(b, 46, numtnt);
+	}
+	
+	// Check if dispenser has any number of item. Only send dispenser block types here.
+	public boolean cannonHasItem(Block b, int id, int num) {
+		Dispenser dispenser = (Dispenser) b.getState();
+		int ret = 0;
+		if (dispenser.getInventory() != null) {
+			for (ItemStack item : dispenser.getInventory().getContents()) {
+				if (item != null && item.getTypeId() == id)
+					ret += item.getAmount();
+			}
+		}
+		return (ret >= num);
+	}
+	
+	public void withdrawTnt(Block b, int numtnt) {
+		withdrawItem(b, 46, numtnt);
+	}
+	
+	// Withdraw any item out of a dispenser. Check if dispenser has enough of item first and only send Dispenser blocks here.
+	public void withdrawItem(Block b, int id, int num) {
+		Dispenser dispenser = (Dispenser) b.getState();
+		if (dispenser.getInventory() != null) {
+			for (ItemStack item : dispenser.getInventory().getContents()) {
+				if (item != null && item.getTypeId() == id) {
+					if (item.getAmount() >= num) {
+						item.setAmount(item.getAmount() - num);
+						num = 0;
+					} else {
+						num = num - item.getAmount();
+						item.setAmount(0);
+					}
+				}
+				if (num <= 0)
+					return;
+			}
+		}
+	}
+	
+	// Returns all dispensers on the ship.
+	public Block[] getCannons() {
+		ArrayList<Block> cannons = new ArrayList<Block>();
+		for (int i = 0; i < this.blocks.length; i++) {
+			if (blocks[i].getState() instanceof Dispenser)
+				cannons.add(blocks[i]);
+		}
+		return cannons.toArray(new Block[0]);
+	}
+	
 	public void startship() {
 		updateMainBlock();
 		if (beginRecursion(this.mainblock)) {
@@ -75,7 +307,6 @@ public class ACBaseShip {
 		else {
 			// Check that the ship hasn't already moved within the last second.
 			if (System.currentTimeMillis() - this.lastmove > 1000L) {
-				System.out.println(dx + "," + dy + "," + dz);
 				// Reduce the matrix given to identities only.
 				if (Math.abs(dx) > 1)
 					dx /= Math.abs(dx);
@@ -87,9 +318,7 @@ public class ACBaseShip {
 				dx *= this.properties.MOVE_SPEED;
 				dy *= this.properties.MOVE_SPEED;
 				dz *= this.properties.MOVE_SPEED;
-				
-				System.out.println(dx + "," + dy + "," + dz);
-				
+								
 				// Set last move to current time.
 				this.lastmove = System.currentTimeMillis();
 				boolean obstruction = false;
@@ -151,14 +380,16 @@ public class ACBaseShip {
 	
 	}
 	
-	// Rotate the ship and all passengers in the specified direction
+	// Rotate the ship and all passengers in the specified direction TODO: Fix occasional bugs with rotation
 	public void dorotate(TurnDirection dir) {
 		List<Player> passengers = getPassengers();
-		BlockState[] temp = new BlockState[blocks.length];
+		ACBlockState[] temp = new ACBlockState[blocks.length];
 		
 		// First remove all blocks from the scene
 		for (int i = 0; i < blocks.length; i++) {
-			temp[i] = blocks[i].getState();
+			temp[i] = new ACBlockState(blocks[i].getState());
+			if (blocks[i].getState() instanceof InventoryHolder)
+				((InventoryHolder) blocks[i].getState()).getInventory().clear();
 			blocks[i].setType(Material.AIR);
 		}
 		
@@ -186,7 +417,7 @@ public class ACBaseShip {
 		int dz = v.getBlockX() - center.getBlockX();
 		int dx = v.getBlockZ() - center.getBlockZ();
 		
-		if (dir == TurnDirection.LEFT)
+		if (dir == TurnDirection.RIGHT)
 			dx *= -1;
 		else
 			dz *= -1;
@@ -197,18 +428,20 @@ public class ACBaseShip {
 	// Move the ship and all passengers the specified distance
 	public void domove(int dx, int dy, int dz) {
 		List<Player> passengers = getPassengers();
-		BlockState[] temp = new BlockState[blocks.length];
+		ACBlockState[] temp = new ACBlockState[blocks.length];
 		
 		// First remove all blocks from the scene
 		for (int i = 0; i < blocks.length; i++) {
-			temp[i] = blocks[i].getState();
+			temp[i] = new ACBlockState(blocks[i].getState());
+			if (blocks[i].getState() instanceof InventoryHolder)
+				((InventoryHolder) blocks[i].getState()).getInventory().clear();
 			blocks[i].setType(Material.AIR);
 		}
 		
 		// Make new blocks in their new respective positions
 		for (int i = 0; i < blocks.length; i++) {
 			blocks[i] = blocks[i].getRelative(dx, dy, dz);
-			setBlock(blocks[i], temp[i], (byte) -1);
+			setBlock(blocks[i], temp[i], temp[i].data.getData());
 		}
 		
 		// Teleport players back on to the ship
@@ -217,49 +450,39 @@ public class ACBaseShip {
 		}
 	}
 	
-	@SuppressWarnings("incomplete-switch")
-	public void setBlock(Block to, BlockState from, TurnDirection dir) {
-		MaterialData data = from.getData();
-		if (data instanceof Directional) {
-			switch (((Directional) data).getFacing()) {
-			case NORTH:
-				if (dir.equals(TurnDirection.LEFT))
-					((Directional) data).setFacingDirection(BlockFace.WEST);
-				else
-					((Directional) data).setFacingDirection(BlockFace.EAST);
-				break;
-			case EAST:
-				if (dir.equals(TurnDirection.LEFT))
-					((Directional) data).setFacingDirection(BlockFace.SOUTH);
-				else
-					((Directional) data).setFacingDirection(BlockFace.NORTH);
-				break;
-			case SOUTH:
-				if (dir.equals(TurnDirection.LEFT))
-					((Directional) data).setFacingDirection(BlockFace.EAST);
-				else
-					((Directional) data).setFacingDirection(BlockFace.WEST);
-				break;
-			case WEST:
-				if (dir.equals(TurnDirection.LEFT))
-					((Directional) data).setFacingDirection(BlockFace.NORTH);
-				else
-					((Directional) data).setFacingDirection(BlockFace.SOUTH);
-				break;
-			}
+	public void setBlock(Block to, ACBlockState from, TurnDirection dir) {
+		MaterialData data = from.data;
+		if (data instanceof DirectionalContainer) {			
+			BlockFace face = (dir.equals(TurnDirection.LEFT)) ? ((DirectionalContainer) data).getFacing() : ((DirectionalContainer)data).getFacing().getOppositeFace();		
+			
+			int x = face.getModX();
+			int z = face.getModZ();
+			
+			if (x == 1)
+				data.setData((byte) 2);
+			else if (x == -1)
+				data.setData((byte) 4);
+			else if (z == 1)
+				data.setData((byte) 5);
+			else
+				data.setData((byte) 3);
 		}
 		setBlock(to, from, data.getData());
 	}
 	
-	public void setBlock(Block to, BlockState from, byte data) {
-		to.setTypeIdAndData(from.getTypeId(), (data == (byte) -1) ? from.getData().getData() : data, false);
+	public void setBlock(Block to, ACBlockState from, byte data) {
+		to.setType(from.data.getItemType());
+		to.setData(data);
 		// Check if have to update block states.
-		if (from instanceof InventoryHolder) {
-			((InventoryHolder) to.getState()).getInventory().setContents(((InventoryHolder) from).getInventory().getContents());
+		if (from.inv != null) {
+			for (ItemStack item : from.inv)
+				if (item != null)
+					((InventoryHolder) to.getState()).getInventory().addItem(item);
+			to.getState().update(true);
 		} else if (from instanceof Sign) {
-			for (int j = 0; j < 4; j++) {
+			for (int j = 0; j < 4; j++)
 				((Sign) to.getState()).setLine(j, ((Sign) from).getLine(j));
-			}
+			to.getState().update(true);
 		}
 	}
 	
@@ -314,6 +537,11 @@ public class ACBaseShip {
 		return false;
 	}
 	
+	// Get blocks array - useful for other classes trying to access blocks.
+	public Block[] getBlocks() {
+		return blocks;
+	}
+	
 	// Checks all online players to find which are passengers on this ship.
 	public List<Player> getPassengers() {
 		List<Player> ret = new ArrayList<Player>();
@@ -341,7 +569,7 @@ public class ACBaseShip {
 	}
 	
 	public Vector getCenter() {
-		List<Integer> c = new ArrayList<Integer>(3);
+		List<Double> c = new ArrayList<Double>(3);
 		for (Direction dir : Direction.values()) {
 			double min = mainblock.getLocation().toVector().dot(dir.v);
 			double max = min;
@@ -352,7 +580,7 @@ public class ACBaseShip {
 				if (bLoc > max)
 					max = bLoc;
 			}
-			c.add((int) (min + (max - min) / 2));	
+			c.add((min + (max - min) / 2));	
 		}
 		return new Vector(c.get(0), c.get(1), c.get(2));
 	}
@@ -413,7 +641,7 @@ public class ACBaseShip {
 			}
 		}
 		
-		if (original) {
+		if (original && blockList != null) {
 			// Check each direction for if the ship is larger than specified ship dimensions.
 			for (Direction dir : Direction.values()) {
 				double min = block.getLocation().toVector().dot(dir.v);

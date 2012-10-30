@@ -61,7 +61,7 @@ public abstract class SCommand<S extends SPlugin> implements ISCommand {
 	}
 	
 	public boolean hasPermission() {
-		return (this.permission == null) ? true : PermissionBase.hasPermission(sender, permission);
+		return (permission == null) ? true : PermissionBase.hasPermission(sender, permission);
 	}
 	
 	public void msg(String msg) {

@@ -9,7 +9,7 @@ public class ACAirship extends ACProperties {
 		this.ALLOWED_BLOCKS.add(5);
 		this.ALLOWED_BLOCKS.add(17);
 		this.ALLOWED_BLOCKS.add(35);
-		this.CANNON_LENGTH = 0;
+		this.MAX_CANNON_LENGTH = 0;
 		this.CANNON_MATERIAL = 1;
 		this.DROPS_BOMB = false;
 		this.DROPS_NAPALM = false;

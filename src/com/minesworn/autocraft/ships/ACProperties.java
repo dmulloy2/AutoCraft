@@ -18,7 +18,7 @@ public class ACProperties extends Entity {
 	public boolean DROPS_BOMB;
 	public boolean FIRES_TNT;
 	public boolean FIRES_TORPEDO;
-	public int CANNON_LENGTH;
+	public int MAX_CANNON_LENGTH;
 	public int MAX_NUMBER_OF_CANNONS;
 	public int CANNON_MATERIAL;
 	public List<Integer> ALLOWED_BLOCKS = new ArrayList<Integer>();

@@ -9,6 +9,7 @@ public class ACPropertiesManager extends SCache<ACProperties, Autocraft> {
 
 	public ACPropertiesManager(Autocraft p) {
 		super(p, "ships", new ACFactory());
+		loadAllEntities();
 	}
 	
 	public ACProperties getACProperties(String name) {

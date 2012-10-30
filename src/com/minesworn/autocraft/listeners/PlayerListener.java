@@ -52,6 +52,7 @@ public class PlayerListener implements Listener {
 				Autocraft.shipmanager.ships.get(e.getPlayer().getName()).move(	(int) Math.round(dir.getX()), 
 																				(int) Math.round(dir.getY()), 
 																				(int) Math.round(dir.getZ()));
+				e.setCancelled(true);
 			}
 		}
 	}

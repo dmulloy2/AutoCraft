@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import org.bukkit.ChatColor;
 
+import com.minesworn.autocraft.Autocraft;
 import com.minesworn.core.SPlugin;
 
 public class CmdHelp<S extends SPlugin> extends SCommand<S> {
@@ -24,7 +25,7 @@ public class CmdHelp<S extends SPlugin> extends SCommand<S> {
 		ArrayList<String> pageLines = new ArrayList<String>();
 		pageLines.add(ChatColor.GOLD + "AutoCraft Help:");
 		
-		for (SCommand<?> command : s.commandRoot.commands) {
+		for (SCommand<?> command : Autocraft.p.commandRoot.commands) {
 			if (command.hasPermission())
 				pageLines.add(command.getUsageTemplate(true));
 		}
