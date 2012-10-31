@@ -2,6 +2,7 @@ package com.minesworn.autocraft.ships.weapons;
 
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.entity.TNTPrimed;
 
 import com.minesworn.autocraft.Config;
 
@@ -19,7 +20,9 @@ public class Napalm extends Projectile {
 
 	public void explode() {
 		this.exploded = true;
-		napalm.getWorld().createExplosion(napalm.getLocation(), 3.0f);
+		TNTPrimed tnt = napalm.getWorld().spawn(napalm.getLocation(), TNTPrimed.class);
+		tnt.setYield(3.0f);
+		tnt.setFuseTicks(0);
 		napalm.setType(Material.AIR);
 		burn();
 	}

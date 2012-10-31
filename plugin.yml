@@ -7,3 +7,47 @@ commands:
   ac:
     description:
     usage:
+permissions:
+  autocraft.all:
+    description: Gives all autocraft permissions
+    children:
+      autocraft.allowed: true
+      autocraft.dismount: true
+      autocraft.fire: true
+      autocraft.list: true
+      autocraft.info: true
+      autocraft.drop: true
+      autocraft.napalm: true
+      autocraft.pilot: true
+      autocraft.rotate: true
+      autocraft.torpedo: true
+  autocraft.allowed:
+    description: Access to allowed command.
+    default: false
+  autocraft.dismount:
+    description: Access to dismount command.
+    default: false
+  autocraft.fire:
+    description: Access to fire command.
+    default: false
+  autocraft.list:
+    description: Access to list command.
+    default: false
+  autocraft.info:
+    description: Access to info command.
+    default: false
+  autocraft.drop:
+    description: Access to drop command.
+    default: false
+  autocraft.napalm:
+    description: Access to napalm command.
+    default: false
+  autocraft.pilot:
+    description: Access to pilot command.
+    default: false
+  autocraft.rotate:
+    description: Access to rotate command.
+    default: false
+  autocraft.torpedo:
+    description: Access to torpedo command.
+    default: false

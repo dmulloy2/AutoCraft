@@ -3,6 +3,7 @@ package com.minesworn.autocraft.commands;
 import org.bukkit.ChatColor;
 
 import com.minesworn.autocraft.Autocraft;
+import com.minesworn.autocraft.PermissionsManager.Permission;
 import com.minesworn.autocraft.ships.ACBaseShip;
 
 public class CmdPilot extends ACCommand {
@@ -21,7 +22,8 @@ public class CmdPilot extends ACCommand {
 			errorMessage("You are already piloting a ship, please type " + ChatColor.WHITE + "/ac dismount");
 		
 		if (Autocraft.propertiesmanager.getACProperties(args[0]) != null) {
-			new ACBaseShip(player, Autocraft.propertiesmanager.getACProperties(args[0]));
+			if (player.hasPermission(Permission.CMD_PILOT.node + "." + args[0]))
+				new ACBaseShip(player, Autocraft.propertiesmanager.getACProperties(args[0]));
 		}
 	}
 }

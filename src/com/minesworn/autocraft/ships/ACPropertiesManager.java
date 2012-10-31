@@ -1,5 +1,6 @@
 package com.minesworn.autocraft.ships;
 
+import java.io.File;
 import java.util.Map;
 
 import com.minesworn.autocraft.Autocraft;
@@ -9,6 +10,10 @@ public class ACPropertiesManager extends SCache<ACProperties, Autocraft> {
 
 	public ACPropertiesManager(Autocraft p) {
 		super(p, "ships", new ACFactory());
+		for (File f : FOLDER.listFiles()) {
+			if (f.getName().endsWith(".txt"))
+				f.delete();
+		}
 		loadAllEntities();
 	}
 	

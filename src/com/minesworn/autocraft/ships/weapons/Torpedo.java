@@ -3,13 +3,15 @@ package com.minesworn.autocraft.ships.weapons;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.entity.TNTPrimed;
 
 public class Torpedo extends Projectile {
 
 	Block[] torpedo = new Block[2];
 	BlockFace dir;
 	
-	double yvelo = 0.00125;
+	double yvelo;
+	double gravity;
 	
 	public Torpedo(Block dispenser, BlockFace dir) {
 		super(200L);
@@ -33,7 +35,8 @@ public class Torpedo extends Projectile {
 	@Override
 	public void move() {
 		if (!isExploded()) {
-			this.yvelo = Math.sqrt(this.yvelo) + this.yvelo;
+			this.gravity += this.gravity / 15.0 + 0.00125;
+			this.yvelo += this.gravity;
 			if (this.yvelo > 20.0D)
 				this.yvelo = 20.0D;
 			Block b = torpedo[0].getRelative(dir.getModX(), (int) -this.yvelo, dir.getModZ());
@@ -57,7 +60,9 @@ public class Torpedo extends Projectile {
 		this.exploded = true;
 		torpedo[0].setType(Material.AIR);
 		torpedo[1].setType(Material.AIR);
-		torpedo[0].getWorld().createExplosion(torpedo[0].getLocation(), 3.5f);
+		TNTPrimed tnt = torpedo[0].getWorld().spawn(torpedo[0].getLocation(), TNTPrimed.class);
+		tnt.setYield(3.5f);
+		tnt.setFuseTicks(0);	
 	}
 	
 }

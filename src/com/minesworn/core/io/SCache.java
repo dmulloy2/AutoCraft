@@ -9,13 +9,13 @@ import java.util.Map.Entry;
 import com.minesworn.core.SPlugin;
 
 public class SCache<E extends Entity, S extends SPlugin> {
-	final S s;
-	final File FOLDER;
+	protected final S s;
+	protected final File FOLDER;
 	
-	volatile transient Map<String, E> entities = new HashMap<String, E>();
+	protected volatile transient Map<String, E> entities = new HashMap<String, E>();
 	
-	final String name;
-	final EFactory<E> factory;
+	protected final String name;
+	protected final EFactory<E> factory;
 
 	public SCache(S p, String name, EFactory<E> factory) {
 		this.s = p;

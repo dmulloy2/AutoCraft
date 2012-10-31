@@ -175,7 +175,7 @@ public class ACBaseShip {
 			player.sendMessage(ChatColor.GOLD + "COOLING DOWN FOR " + ChatColor.AQUA + (int)(Math.round(6 - (System.currentTimeMillis() - this.lastFired) / 1000)) + ChatColor.GOLD + " MORE SECONDS");
 	}
 	
-	// Fire some torpedoes c: TODO: fix torpedoes not working...
+	// Fire some torpedoes c:
 	public void fireTorpedo() {
 		// Has player waited cooldown before trying to fire again?
 		if (System.currentTimeMillis() - this.lastFired > Config.WEAPON_COOLDOWN_TIME * 1000) {
@@ -190,12 +190,13 @@ public class ACBaseShip {
 						boolean missingMaterial = false;
 						
 						for (int id : Config.MATERIALS_NEEDED_FOR_TORPEDO) {
-							if (!cannonHasItem(cannons[i], id, 1))
+							if (!cannonHasItem(cannons[i], id, 1)) {
 								missingMaterial = true;
+							}
 						}
 						
 						if (!cannons[i].getRelative(face.getModX(), 0, face.getModZ()).getType().equals(Material.AIR) || missingMaterial)
-							return;
+							continue;
 						
 						if (numfiredcannons < this.properties.MAX_NUMBER_OF_CANNONS) {
 							numfiredcannons++;
@@ -278,7 +279,7 @@ public class ACBaseShip {
 	public Block[] getCannons() {
 		ArrayList<Block> cannons = new ArrayList<Block>();
 		for (int i = 0; i < this.blocks.length; i++) {
-			if (blocks[i].getState() instanceof Dispenser)
+			if (blocks[i].getType().equals(Material.DISPENSER))
 				cannons.add(blocks[i]);
 		}
 		return cannons.toArray(new Block[0]);
@@ -356,15 +357,11 @@ public class ACBaseShip {
 				
 				Block[] blocks = this.blocks.clone();
 				
-				Vector center = getCenter();
-				
+				updateMainBlock();
 				// Check each block's new position for obstructions
 				for (int i = 0; i < blocks.length; i++) {
-					Block block = blocks[i].getWorld().getBlockAt(
-									getRotatedVector(	blocks[i].getLocation().toVector(), 
-														center, 
-														dir)
-										.toLocation(blocks[i].getWorld()));
+					Vector v = getRotationVector(blocks[i].getLocation(), this.mainblock, dir);
+					Block block = this.mainblock.getRelative(v.getBlockX(), v.getBlockY(), v.getBlockZ());
 					if (block.getType().equals(Material.AIR) || blockBelongsToShip(block, blocks))
 						continue;
 					obstruction = true;
@@ -380,7 +377,7 @@ public class ACBaseShip {
 	
 	}
 	
-	// Rotate the ship and all passengers in the specified direction TODO: Fix occasional bugs with rotation
+	// Rotate the ship and all passengers in the specified direction
 	public void dorotate(TurnDirection dir) {
 		List<Player> passengers = getPassengers();
 		ACBlockState[] temp = new ACBlockState[blocks.length];
@@ -393,36 +390,35 @@ public class ACBaseShip {
 			blocks[i].setType(Material.AIR);
 		}
 		
-		Vector center = getCenter();
+		updateMainBlock();
 		
 		// Make new blocks in their new respective positions
-		for (int i = 0; i < blocks.length; i++) {			
-			blocks[i] = blocks[i].getWorld().getBlockAt(
-							getRotatedVector(	blocks[i].getLocation().toVector(), 
-												center, 
-												dir)
-								.toLocation(blocks[i].getWorld()));
+		for (int i = 0; i < blocks.length; i++) {
+			blocks[i].getLocation().distance(this.mainblock.getLocation());
+			Vector v = getRotationVector(blocks[i].getLocation(), this.mainblock, dir);
+			blocks[i] = this.mainblock.getRelative(v.getBlockX(), v.getBlockY(), v.getBlockZ());
 			setBlock(blocks[i], temp[i], dir);			
 		}
 		
 		for (Player p : passengers) {
-			Location l = getRotatedVector(p.getLocation().toVector(), center, dir).toLocation(p.getWorld());
+			Location l = p.getLocation().clone().add(getRotationVector(p.getLocation(), this.mainblock, dir).toLocation(p.getWorld()));
 			l.setYaw(l.getYaw() + ((dir == TurnDirection.LEFT) ? -90 : 90)); 
 			p.teleport(l);
 		}
 	}
 	
-	// Returns the coordinates of the position rotated around the center in the specified direction
-	public Vector getRotatedVector(Vector v, Vector center, TurnDirection dir) {
-		int dz = v.getBlockX() - center.getBlockX();
-		int dx = v.getBlockZ() - center.getBlockZ();
+	// Returns the relative position from the main block that this vector is at once rotated
+	public Vector getRotationVector(Location l, Block main, TurnDirection dir) {
+		Location n = l.clone().subtract(main.getLocation());
+		int dz = n.getBlockX();
+		int dx = n.getBlockZ();
 		
 		if (dir == TurnDirection.RIGHT)
 			dx *= -1;
 		else
 			dz *= -1;
 		
-		return new Vector(center.getBlockX() + dx, v.getBlockY(), center.getBlockZ() + dz);
+		return new Vector(dx, n.getBlockY(), dz);
 	}
 	
 	// Move the ship and all passengers the specified distance
@@ -452,20 +448,19 @@ public class ACBaseShip {
 	
 	public void setBlock(Block to, ACBlockState from, TurnDirection dir) {
 		MaterialData data = from.data;
-		if (data instanceof DirectionalContainer) {			
+		if (data instanceof DirectionalContainer) {
 			BlockFace face = (dir.equals(TurnDirection.LEFT)) ? ((DirectionalContainer) data).getFacing() : ((DirectionalContainer)data).getFacing().getOppositeFace();		
-			
 			int x = face.getModX();
 			int z = face.getModZ();
 			
 			if (x == 1)
 				data.setData((byte) 2);
 			else if (x == -1)
-				data.setData((byte) 4);
+				data.setData((byte) 3);
 			else if (z == 1)
 				data.setData((byte) 5);
-			else
-				data.setData((byte) 3);
+			else if (z == -1)
+				data.setData((byte) 4);
 		}
 		setBlock(to, from, data.getData());
 	}
@@ -493,7 +488,10 @@ public class ACBaseShip {
 	
 	// Checks the block material against the AC properties for this ship
 	public boolean isValidMaterial(Block block) {
-		return (this.properties.MAIN_TYPE == block.getTypeId() || this.properties.ALLOWED_BLOCKS.contains(block.getTypeId()));
+		return (this.properties.MAIN_TYPE == block.getTypeId() 
+				|| this.properties.ALLOWED_BLOCKS.contains(block.getTypeId()) 
+				|| this.properties.CANNON_MATERIAL == block.getTypeId() 
+				|| block.getType().equals(Material.DISPENSER));
 	}
 	
 	// Checks that the ship is within its size restraints as defined by its AC properties.
@@ -566,23 +564,6 @@ public class ACBaseShip {
 				return true;
 		}
 		return false;
-	}
-	
-	public Vector getCenter() {
-		List<Double> c = new ArrayList<Double>(3);
-		for (Direction dir : Direction.values()) {
-			double min = mainblock.getLocation().toVector().dot(dir.v);
-			double max = min;
-			for (Block b : blocks) {
-				double bLoc = b.getLocation().toVector().dot(dir.v);
-				if (bLoc < min)
-					min = bLoc;
-				if (bLoc > max)
-					max = bLoc;
-			}
-			c.add((min + (max - min) / 2));	
-		}
-		return new Vector(c.get(0), c.get(1), c.get(2));
 	}
 	
 	public boolean beginRecursion(Block block) {
