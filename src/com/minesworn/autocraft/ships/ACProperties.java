@@ -3,7 +3,7 @@ package com.minesworn.autocraft.ships;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.minesworn.core.io.Entity;
+import com.minesworn.autocraft.core.io.Entity;
 
 public class ACProperties extends Entity {
 	public static final transient int MAX_ALTITUDE = 254;

@@ -105,7 +105,7 @@ public class ACBaseShip {
 						BlockFace face = ((Directional) cannons[i].getState().getData()).getFacing();
 						int x = face.getModX();
 						int z = face.getModZ();
-						dist *= getCannonLength(cannons[i], x, z);
+						dist *= getCannonLength(cannons[i], -x, -z);
 						
 						if (cannons[i].getRelative(x, 0, z).getType().equals(Material.AIR)) {
 							if (numfiredcannons < this.properties.MAX_NUMBER_OF_CANNONS) {
@@ -114,7 +114,7 @@ public class ACBaseShip {
 								withdrawTnt(cannons[i], Config.NUM_TNT_TO_FIRE_NORMAL);
 								
 								// Spawn primed tnt firing in the direction of the dispenser TODO: maybe add sound effects for tnt firing? :P
-								TNTPrimed tnt = cannons[i].getWorld().spawn(cannons[i].getLocation().clone().add(0, -1, 0), TNTPrimed.class);
+								TNTPrimed tnt = cannons[i].getWorld().spawn(cannons[i].getLocation().clone().add(x, 0, z), TNTPrimed.class);
 								tnt.setVelocity(new Vector(x * dist, 0.5, z * dist));
 							} else {
 								// More cannons on ship than allowed. Not all fired - can break out of loop now.
@@ -122,11 +122,6 @@ public class ACBaseShip {
 								break;
 							}
 						}
-					}
-					
-					
-					if (cannons[i] != null && cannons[i].getRelative(0, -1, 0).equals(Material.AIR) && cannonHasTnt(cannons[i], Config.NUM_TNT_TO_DROP_BOMB)) {
-						
 					}
 				}
 			} else
@@ -224,8 +219,8 @@ public class ACBaseShip {
 	// Returns the length of cannon material behind the dispenser or MAX_CANNON_LENGTH;
 	public double getCannonLength(Block b, int x, int z) {
 		double ret = 1.0;
-		for (int i = 0; i < this.properties.MAX_CANNON_LENGTH; i++) {
-			Block bnext = b.getRelative(x, 0, z);
+		for (int i = 1; i <= this.properties.MAX_CANNON_LENGTH; i++) {
+			Block bnext = b.getRelative(x * i, 0, z * i);
 			if (bnext.getType().equals(Material.getMaterial(this.properties.CANNON_MATERIAL)))
 				ret++;
 			else
@@ -241,14 +236,18 @@ public class ACBaseShip {
 	// Check if dispenser has any number of item. Only send dispenser block types here.
 	public boolean cannonHasItem(Block b, int id, int num) {
 		Dispenser dispenser = (Dispenser) b.getState();
-		int ret = 0;
 		if (dispenser.getInventory() != null) {
 			for (ItemStack item : dispenser.getInventory().getContents()) {
 				if (item != null && item.getTypeId() == id)
-					ret += item.getAmount();
+					if (item.getAmount() >= num)
+						num = 0;
+					else
+						num = num - item.getAmount();
+				if (num <= 0)
+					return true;
 			}
 		}
-		return (ret >= num);
+		return false;
 	}
 	
 	public void withdrawTnt(Block b, int numtnt) {
@@ -259,10 +258,15 @@ public class ACBaseShip {
 	public void withdrawItem(Block b, int id, int num) {
 		Dispenser dispenser = (Dispenser) b.getState();
 		if (dispenser.getInventory() != null) {
-			for (ItemStack item : dispenser.getInventory().getContents()) {
+			for (int i = 0; i < dispenser.getInventory().getSize(); i++) {
+				ItemStack item = dispenser.getInventory().getItem(i);
 				if (item != null && item.getTypeId() == id) {
 					if (item.getAmount() >= num) {
-						item.setAmount(item.getAmount() - num);
+						if (item.getAmount() - num > 0)
+							item.setAmount(item.getAmount() - num);
+						else {
+							dispenser.getInventory().setItem(i, null);
+						}
 						num = 0;
 					} else {
 						num = num - item.getAmount();
@@ -272,7 +276,7 @@ public class ACBaseShip {
 				if (num <= 0)
 					return;
 			}
-		}
+		} 
 	}
 	
 	// Returns all dispensers on the ship.

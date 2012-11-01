@@ -1,6 +1,7 @@
 package com.minesworn.autocraft.commands;
 
 import com.minesworn.autocraft.Autocraft;
+import com.minesworn.autocraft.PermissionsManager.Permission;
 import com.minesworn.autocraft.ships.TurnDirection;
 
 public class CmdRotate extends ACCommand {
@@ -13,6 +14,7 @@ public class CmdRotate extends ACCommand {
 		this.description = "Turns your airship left or right.";
 		this.requiredArgs.add("left/right");
 		this.mustBePlayer = true;
+		this.permission = Permission.CMD_ROTATE.node;
 	}
 
 	@Override

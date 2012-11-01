@@ -1,6 +1,6 @@
 package com.minesworn.autocraft;
 
-import com.minesworn.core.permissions.PermissionBase;
+import com.minesworn.autocraft.core.permissions.PermissionBase;
 
 public class PermissionsManager extends PermissionBase {
 

@@ -3,7 +3,7 @@ package com.minesworn.autocraft.ships.weapons;
 import org.bukkit.Bukkit;
 
 import com.minesworn.autocraft.Autocraft;
-import com.minesworn.core.util.SThread;
+import com.minesworn.autocraft.core.util.SThread;
 
 public class ProjectileUpdateThread extends SThread {
 	final Projectile p;

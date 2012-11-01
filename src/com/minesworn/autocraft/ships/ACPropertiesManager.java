@@ -4,7 +4,7 @@ import java.io.File;
 import java.util.Map;
 
 import com.minesworn.autocraft.Autocraft;
-import com.minesworn.core.io.SCache;
+import com.minesworn.autocraft.core.io.SCache;
 
 public class ACPropertiesManager extends SCache<ACProperties, Autocraft> {
 

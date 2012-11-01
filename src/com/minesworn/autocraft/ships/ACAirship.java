@@ -1,7 +1,7 @@
 package com.minesworn.autocraft.ships;
 
 import com.minesworn.autocraft.Autocraft;
-import com.minesworn.core.io.SPersist;
+import com.minesworn.autocraft.core.io.SPersist;
 
 public class ACAirship extends ACProperties {
 

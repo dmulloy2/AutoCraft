@@ -3,6 +3,7 @@ package com.minesworn.autocraft.commands;
 import org.bukkit.ChatColor;
 
 import com.minesworn.autocraft.Autocraft;
+import com.minesworn.autocraft.PermissionsManager.Permission;
 import com.minesworn.autocraft.ships.ACBaseShip;
 
 public class CmdInfo extends ACCommand {
@@ -12,6 +13,7 @@ public class CmdInfo extends ACCommand {
 		this.aliases.add("i");
 		this.description = "View your ship's info.";
 		this.mustBePlayer = true;
+		this.permission = Permission.CMD_INFO.node;
 	}
 	
 	@Override

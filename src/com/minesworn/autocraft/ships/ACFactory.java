@@ -1,6 +1,6 @@
 package com.minesworn.autocraft.ships;
 
-import com.minesworn.core.io.EFactory;
+import com.minesworn.autocraft.core.io.EFactory;
 
 public class ACFactory implements EFactory<ACProperties> {
 

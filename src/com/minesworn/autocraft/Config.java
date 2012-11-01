@@ -3,7 +3,7 @@ package com.minesworn.autocraft;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.minesworn.core.io.SPersist;
+import com.minesworn.autocraft.core.io.SPersist;
 
 public class Config {
 	
