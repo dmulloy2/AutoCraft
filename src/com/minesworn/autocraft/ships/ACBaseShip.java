@@ -320,7 +320,7 @@ public class ACBaseShip {
 				if (Math.abs(dz) > 1)
 					dz /= Math.abs(dz);
 				
-				if (System.currentTimeMillis() - this.lastmove < 2000L) {
+				if (System.currentTimeMillis() - this.lastmove < 1500L) {
 					dx *= this.properties.MOVE_SPEED;
 					dy *= this.properties.MOVE_SPEED;
 					dz *= this.properties.MOVE_SPEED;
