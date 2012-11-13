@@ -18,7 +18,7 @@ public class Config {
 	public static int NAPALM_BURN_RADIUS = 6;
 	
 	public static boolean SHIPS_CAN_FLY = true;
-	
+		
 	static {
 		Config.MATERIALS_NEEDED_FOR_TORPEDO.add(57);
 		Config.MATERIALS_NEEDED_FOR_TORPEDO.add(42);

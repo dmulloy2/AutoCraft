@@ -320,9 +320,11 @@ public class ACBaseShip {
 				if (Math.abs(dz) > 1)
 					dz /= Math.abs(dz);
 				
-				dx *= this.properties.MOVE_SPEED;
-				dy *= this.properties.MOVE_SPEED;
-				dz *= this.properties.MOVE_SPEED;
+				if (System.currentTimeMillis() - this.lastmove < 2000L) {
+					dx *= this.properties.MOVE_SPEED;
+					dy *= this.properties.MOVE_SPEED;
+					dz *= this.properties.MOVE_SPEED;
+				}
 								
 				// Set last move to current time.
 				this.lastmove = System.currentTimeMillis();
@@ -533,8 +535,8 @@ public class ACBaseShip {
 	public boolean blockBelongsToShip(Block block, Block[] blocks) {
 		if (blocks == null)
 			blocks = this.blocks.clone();
-		for (int i = 0; i < blocks.length; i++)
-			if (blocks[i].equals(block))
+		for (Block b : blocks)
+			if (b.equals(block))
 				return true;
 		return false;
 	}
@@ -571,7 +573,7 @@ public class ACBaseShip {
 	}
 	
 	public boolean beginRecursion(Block block) {
-		ArrayList<Block> blockList = new ArrayList<Block>(ACProperties.MAX_SHIP_SIZE);
+		ArrayList<Block> blockList = new ArrayList<Block>(this.properties.MAX_BLOCKS);
 		blockList = recurse(block, blockList);
 		
 		if (blockList != null) {
@@ -586,12 +588,12 @@ public class ACBaseShip {
 		boolean original = ((blockList != null) ? blockList.isEmpty() : false);
 		
 		if (!this.stopped) {
-			if (blockList.size() <= ACProperties.MAX_SHIP_SIZE) {
+			if (blockList.size() <= this.properties.MAX_BLOCKS) {
 				// If this new block to be checked doesn't already belong to the ship and is a valid material, accept it.
 				if (!blockBelongsToShip(block, blockList.toArray(new Block[0])) && isValidMaterial(block)) {
 					// If its material is same as main type than add to number of main block count.
 					if (block.getTypeId() == this.properties.MAIN_TYPE)
-						this.numMainBlocks++;
+						this.numMainBlocks++;				
 					
 					// Add current block to recursing block list.
 					blockList.add(block);
@@ -620,7 +622,7 @@ public class ACBaseShip {
 			} else {
 				// Ship is too large as defined by built in limit
 				Autocraft.shipmanager.ships.remove(this.player.getName());
-				player.sendMessage(ChatColor.GRAY + "This ship has over " + ACProperties.MAX_SHIP_SIZE + " blocks!");
+				player.sendMessage(ChatColor.GRAY + "This ship has over " + this.properties.MAX_BLOCKS + " blocks!");
 				this.stopped = true;
 				return null;
 			}
