@@ -16,6 +16,7 @@ public class Autocraft extends SPlugin {
 	public static Autocraft p;
 	public static ACPropertiesManager propertiesmanager;
 	public static ACShipManager shipmanager;
+	public static boolean factionsEnabled;
 	
 	@Override
 	public void onEnable() {
@@ -28,6 +29,14 @@ public class Autocraft extends SPlugin {
 		shipmanager = new ACShipManager();
 		propertiesmanager = new ACPropertiesManager(p);
 		commandRoot = new ACCommandRoot(p);
+		
+		if (Config.factionsProtectionsEnabled && 
+				(getServer().getPluginManager().isPluginEnabled("SwornNations") || 
+						getServer().getPluginManager().isPluginEnabled("Factions"))) {
+			
+			factionsEnabled = true;
+			
+		}
 
 		registerEvents();
 	}

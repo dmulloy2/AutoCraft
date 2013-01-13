@@ -5,6 +5,10 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.TNTPrimed;
 
+import com.massivecraft.factions.Board;
+import com.massivecraft.factions.FLocation;
+import com.minesworn.autocraft.Autocraft;
+
 public class Torpedo extends Projectile {
 
 	Block[] torpedo = new Block[2];
@@ -48,10 +52,17 @@ public class Torpedo extends Projectile {
 				torpedo[0] = b;
 				torpedo[0].setType(Material.DIAMOND_BLOCK);
 			} else {
+				if (Autocraft.factionsEnabled && !Board.getFactionAt(new FLocation(b.getLocation())).hasPlayersOnline()) {
+					torpedo[0].setType(Material.AIR);
+					torpedo[1].setType(Material.AIR);
+					this.exploded = true;
+					return;
+				}
+				
 				if (b.getType().equals(Material.OBSIDIAN) || b.getType().equals(Material.ENCHANTMENT_TABLE))
 					b.setType(Material.AIR);
-				this.exploded = true;
 				explode();
+				this.exploded = true;
 			}
 		}
 	}

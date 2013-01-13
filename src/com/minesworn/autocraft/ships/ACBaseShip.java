@@ -18,8 +18,15 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.Directional;
 import org.bukkit.material.DirectionalContainer;
 import org.bukkit.material.MaterialData;
+import org.bukkit.plugin.PluginManager;
 import org.bukkit.util.Vector;
 
+import com.massivecraft.factions.Board;
+import com.massivecraft.factions.FLocation;
+import com.massivecraft.factions.FPlayer;
+import com.massivecraft.factions.FPlayers;
+import com.massivecraft.factions.Faction;
+import com.massivecraft.factions.struct.Relation;
 import com.minesworn.autocraft.Autocraft;
 import com.minesworn.autocraft.Config;
 import com.minesworn.autocraft.ships.weapons.Napalm;
@@ -65,6 +72,9 @@ public class ACBaseShip {
 			
 			// Can this airship drop bombs?
 			if (this.properties.DROPS_BOMB) {
+				if (Autocraft.factionsEnabled && !canPlayerUseWeaponHere())
+					return;		
+				
 				Block[] cannons = getCannons();
 				int numfiredcannons = 0;
 				for (int i = 0; i < cannons.length; i++) {
@@ -97,6 +107,9 @@ public class ACBaseShip {
 			
 			// Can this airship drop bombs?
 			if (this.properties.FIRES_TNT) {
+				if (Autocraft.factionsEnabled && !canPlayerUseWeaponHere())
+					return;				
+				
 				Block[] cannons = getCannons();
 				int numfiredcannons = 0;
 				for (int i = 0; i < cannons.length; i++) {
@@ -137,6 +150,9 @@ public class ACBaseShip {
 			System.out.println(player.getDisplayName() + " is attempting to launch napalm");
 			// Can this airship drop napalm?
 			if (this.properties.DROPS_NAPALM) {
+				if (Autocraft.factionsEnabled && !canPlayerUseWeaponHere())
+					return;		
+				
 				Block[] cannons = getCannons();
 				int numfiredcannons = 0;
 				for (int i = 0; i < cannons.length; i++) {
@@ -177,6 +193,9 @@ public class ACBaseShip {
 			System.out.println(player.getDisplayName() + " is attempting to fire a torpedo");
 			// Can this airship fire torpedoes?
 			if (this.properties.FIRES_TORPEDO) {
+				if (Autocraft.factionsEnabled && !canPlayerUseWeaponHere())
+					return;		
+				
 				Block[] cannons = getCannons();
 				int numfiredcannons = 0;
 				for (int i = 0; i < cannons.length; i++) {
@@ -337,7 +356,7 @@ public class ACBaseShip {
 					Block block = blocks[i].getRelative(dx, dy, dz);
 					if (block.getLocation().getBlockY() + dy > ACProperties.MAX_ALTITUDE)
 						obstruction = true;
-					if (block.getType().equals(Material.AIR) || blockBelongsToShip(block, blocks))
+					if (block.getType().equals(Material.AIR) || block.getType().equals(Material.SNOW) || blockBelongsToShip(block, blocks))
 						continue;
 					obstruction = true;
 				}
@@ -368,7 +387,7 @@ public class ACBaseShip {
 				for (int i = 0; i < blocks.length; i++) {
 					Vector v = getRotationVector(blocks[i].getLocation(), this.mainblock, dir);
 					Block block = this.mainblock.getRelative(v.getBlockX(), v.getBlockY(), v.getBlockZ());
-					if (block.getType().equals(Material.AIR) || blockBelongsToShip(block, blocks))
+					if (block.getType().equals(Material.AIR) || block.getType().equals(Material.SNOW) || blockBelongsToShip(block, blocks))
 						continue;
 					obstruction = true;
 				}
@@ -604,6 +623,7 @@ public class ACBaseShip {
 					}
 				// Otherwise if the block isn't a block that the ship is allowed to touch then stop creating the ship.
 				} else if (!isValidMaterial(block) && !block.getType().equals(Material.AIR) 
+						&& !block.getType().equals(Material.SNOW)
 						&& !block.getType().equals(Material.BEDROCK) 
 						&& !block.getType().equals(Material.WATER) 
 						&& !block.getType().equals(Material.STATIONARY_WATER)) {
@@ -650,5 +670,35 @@ public class ACBaseShip {
 		}
 		
 		return blockList;
+	}
+	
+	public boolean canPlayerUseWeaponHere() {
+		
+		PluginManager pm = Autocraft.p.getServer().getPluginManager();
+		FLocation loc = new FLocation(player.getLocation());
+		FPlayer fme = FPlayers.i.get(this.player);
+		Faction myFaction = fme.getFaction();
+		Faction them = Board.getFactionAt(loc);
+		if (pm.isPluginEnabled("SwornNations"))
+			them = Board.getAbsoluteFactionAt(loc);
+		
+		// Allow in Wilderness
+		if (them.isNone())
+			return true;
+		
+		// Deny in war/safe zones
+		if (!them.isNormal()) {
+			fme.msg("<i>You cannot use weapons in %s.", them.getTag(fme));
+			return false;
+		}
+		
+		Relation rel = myFaction.getRelationTo(them);
+		// Deny if allies
+		if (rel.isAtLeast(Relation.ALLY)) {
+			fme.msg("<i>You cannot do that in the territory of %s.", them.getTag(fme));
+			return false;
+		}
+	
+		return true;
 	}
 }

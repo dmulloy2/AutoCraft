@@ -4,6 +4,9 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.TNTPrimed;
 
+import com.massivecraft.factions.Board;
+import com.massivecraft.factions.FLocation;
+import com.minesworn.autocraft.Autocraft;
 import com.minesworn.autocraft.Config;
 
 public class Napalm extends Projectile {
@@ -61,8 +64,12 @@ public class Napalm extends Projectile {
 				b.setData((byte) 13);
 				napalm = b;
 			} else {
+				if (Autocraft.factionsEnabled && !Board.getFactionAt(new FLocation(b.getLocation())).hasPlayersOnline()) {
+					this.exploded = true;
+					return;
+				}
+				
 				b.setType(Material.AIR);
-				this.exploded = true;
 				explode();
 			}
 		}
