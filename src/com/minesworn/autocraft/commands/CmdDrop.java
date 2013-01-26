@@ -13,7 +13,6 @@ public class CmdDrop extends ACCommand {
 		this.description = "Drop a bomb";
 	}
 	
-	@Override
 	public void perform() {
 		if (Autocraft.shipmanager.ships.containsKey(player.getName())) {
 			Autocraft.shipmanager.ships.get(player.getName()).drop();

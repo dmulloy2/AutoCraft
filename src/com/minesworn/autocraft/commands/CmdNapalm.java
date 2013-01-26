@@ -13,7 +13,6 @@ public class CmdNapalm extends ACCommand {
 		this.mustBePlayer = true;
 	}
 	
-	@Override
 	public void perform() {
 		if (Autocraft.shipmanager.ships.containsKey(player.getName())) {
 			Autocraft.shipmanager.ships.get(player.getName()).dropNapalm();

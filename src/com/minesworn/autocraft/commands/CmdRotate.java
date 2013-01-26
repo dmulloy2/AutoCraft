@@ -17,7 +17,6 @@ public class CmdRotate extends ACCommand {
 		this.permission = Permission.CMD_ROTATE.node;
 	}
 
-	@Override
 	public void perform() {
 		if (Autocraft.shipmanager.ships.containsKey(player.getName())) {
 			if (args[0].equalsIgnoreCase("left") || args[0].equalsIgnoreCase("l")) {

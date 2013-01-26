@@ -15,7 +15,6 @@ public class CmdHelp<S extends SPlugin> extends SCommand<S> {
 		this.permission = "";
 	}
 	
-	@Override
 	public void perform() {
 		for (String s : getPageLines()) {
 			msg(s);

@@ -16,17 +16,10 @@ import org.bukkit.entity.TNTPrimed;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.Directional;
-import org.bukkit.material.DirectionalContainer;
 import org.bukkit.material.MaterialData;
-import org.bukkit.plugin.PluginManager;
+import org.bukkit.material.Stairs;
 import org.bukkit.util.Vector;
 
-import com.massivecraft.factions.Board;
-import com.massivecraft.factions.FLocation;
-import com.massivecraft.factions.FPlayer;
-import com.massivecraft.factions.FPlayers;
-import com.massivecraft.factions.Faction;
-import com.massivecraft.factions.struct.Relation;
 import com.minesworn.autocraft.Autocraft;
 import com.minesworn.autocraft.Config;
 import com.minesworn.autocraft.ships.weapons.Napalm;
@@ -72,7 +65,7 @@ public class ACBaseShip {
 			
 			// Can this airship drop bombs?
 			if (this.properties.DROPS_BOMB) {
-				if (Autocraft.factionsEnabled && !canPlayerUseWeaponHere())
+				if (Autocraft.factionsEnabled && !FactionUtil.canPlayerUseWeapon(player))
 					return;		
 				
 				Block[] cannons = getCannons();
@@ -107,7 +100,7 @@ public class ACBaseShip {
 			
 			// Can this airship drop bombs?
 			if (this.properties.FIRES_TNT) {
-				if (Autocraft.factionsEnabled && !canPlayerUseWeaponHere())
+				if (Autocraft.factionsEnabled && !FactionUtil.canPlayerUseWeapon(player))
 					return;				
 				
 				Block[] cannons = getCannons();
@@ -150,7 +143,7 @@ public class ACBaseShip {
 			System.out.println(player.getDisplayName() + " is attempting to launch napalm");
 			// Can this airship drop napalm?
 			if (this.properties.DROPS_NAPALM) {
-				if (Autocraft.factionsEnabled && !canPlayerUseWeaponHere())
+				if (Autocraft.factionsEnabled && !FactionUtil.canPlayerUseWeapon(player))
 					return;		
 				
 				Block[] cannons = getCannons();
@@ -193,7 +186,7 @@ public class ACBaseShip {
 			System.out.println(player.getDisplayName() + " is attempting to fire a torpedo");
 			// Can this airship fire torpedoes?
 			if (this.properties.FIRES_TORPEDO) {
-				if (Autocraft.factionsEnabled && !canPlayerUseWeaponHere())
+				if (Autocraft.factionsEnabled && !FactionUtil.canPlayerUseWeapon(player))
 					return;		
 				
 				Block[] cannons = getCannons();
@@ -354,7 +347,7 @@ public class ACBaseShip {
 				// Check each block's new position for obstructions
 				for (int i = 0; i < blocks.length; i++) {
 					Block block = blocks[i].getRelative(dx, dy, dz);
-					if (block.getLocation().getBlockY() + dy > ACProperties.MAX_ALTITUDE)
+					if (block.getLocation().getBlockY() + dy > ACProperties.MAX_ALTITUDE || block.getLocation().getBlockY() + dy < ACProperties.MIN_ALTITUDE)
 						obstruction = true;
 					if (block.getType().equals(Material.AIR) || block.getType().equals(Material.SNOW) || blockBelongsToShip(block, blocks))
 						continue;
@@ -459,7 +452,7 @@ public class ACBaseShip {
 			blocks[i].setType(Material.AIR);
 		}
 		
-		// Make new blocks in their new respective positions
+		// Make new blocks in their new respective positions		
 		for (int i = 0; i < blocks.length; i++) {
 			blocks[i] = blocks[i].getRelative(dx, dy, dz);
 			setBlock(blocks[i], temp[i], temp[i].data.getData());
@@ -473,21 +466,36 @@ public class ACBaseShip {
 	
 	public void setBlock(Block to, ACBlockState from, TurnDirection dir) {
 		MaterialData data = from.data;
-		if (data instanceof DirectionalContainer) {
-			BlockFace face = (dir.equals(TurnDirection.LEFT)) ? ((DirectionalContainer) data).getFacing() : ((DirectionalContainer)data).getFacing().getOppositeFace();		
-			int x = face.getModX();
-			int z = face.getModZ();
-			
-			if (x == 1)
-				data.setData((byte) 2);
-			else if (x == -1)
-				data.setData((byte) 3);
-			else if (z == 1)
-				data.setData((byte) 5);
-			else if (z == -1)
-				data.setData((byte) 4);
+		if (data instanceof Directional) {
+			Directional directional = (Directional) data; 
+			directional.setFacingDirection(getRotatedBlockFace(dir, (Directional) from.data));
 		}
 		setBlock(to, from, data.getData());
+	}
+	
+	public BlockFace getRotatedBlockFace(TurnDirection dir, Directional data) {
+		
+		BlockFace face;
+		
+		if (data instanceof Stairs) {
+			face = ((Stairs) data).getAscendingDirection();
+		} else {
+			face = data.getFacing();
+		}
+		
+		switch (face) {
+		case EAST:
+			return dir == TurnDirection.RIGHT ? BlockFace.SOUTH : BlockFace.NORTH;
+		case NORTH:
+			return dir == TurnDirection.RIGHT ? BlockFace.EAST : BlockFace.WEST;
+		case SOUTH:
+			return dir == TurnDirection.RIGHT ? BlockFace.WEST : BlockFace.EAST;
+		case WEST:
+			return dir == TurnDirection.RIGHT ? BlockFace.NORTH : BlockFace.SOUTH;
+		default:
+			return BlockFace.NORTH;
+		}
+		
 	}
 	
 	public void setBlock(Block to, ACBlockState from, byte data) {
@@ -672,33 +680,4 @@ public class ACBaseShip {
 		return blockList;
 	}
 	
-	public boolean canPlayerUseWeaponHere() {
-		
-		PluginManager pm = Autocraft.p.getServer().getPluginManager();
-		FLocation loc = new FLocation(player.getLocation());
-		FPlayer fme = FPlayers.i.get(this.player);
-		Faction myFaction = fme.getFaction();
-		Faction them = Board.getFactionAt(loc);
-		if (pm.isPluginEnabled("SwornNations"))
-			them = Board.getAbsoluteFactionAt(loc);
-		
-		// Allow in Wilderness
-		if (them.isNone())
-			return true;
-		
-		// Deny in war/safe zones
-		if (!them.isNormal()) {
-			fme.msg("<i>You cannot use weapons in %s.", them.getTag(fme));
-			return false;
-		}
-		
-		Relation rel = myFaction.getRelationTo(them);
-		// Deny if allies
-		if (rel.isAtLeast(Relation.ALLY)) {
-			fme.msg("<i>You cannot do that in the territory of %s.", them.getTag(fme));
-			return false;
-		}
-	
-		return true;
-	}
 }

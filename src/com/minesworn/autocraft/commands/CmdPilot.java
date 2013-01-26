@@ -17,7 +17,6 @@ public class CmdPilot extends ACCommand {
 		this.aliases.add("p");
 	}
 	
-	@Override
 	public void perform() {
 		if (Autocraft.shipmanager.ships.containsKey(player.getName()))
 			errorMessage("You are already piloting a ship, please type " + ChatColor.WHITE + "/ac dismount");

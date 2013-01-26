@@ -14,7 +14,6 @@ public class CmdList extends ACCommand {
 		this.permission = Permission.CMD_LIST.node;
 	}
 	
-	@Override
 	public void perform() {
 		confirmMessage(ChatColor.GOLD + "AUTOCRAFT SHIP TYPES");
 		

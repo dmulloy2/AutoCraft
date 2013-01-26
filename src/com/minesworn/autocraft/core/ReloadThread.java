@@ -8,7 +8,6 @@ public class ReloadThread extends SThread {
 		this.s = p;
 	}
 	
-	@Override
 	public void run() {
 		try {
 			s.onDisable();

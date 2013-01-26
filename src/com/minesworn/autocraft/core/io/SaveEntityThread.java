@@ -18,7 +18,6 @@ public class SaveEntityThread<E extends Entity, S extends SPlugin> extends SThre
 		this.e = e;
 	}
 	
-	@Override
 	public void run() {
 		SPersist.save(s, e, e.getClass(), new File(cache.FOLDER, name));
 	}

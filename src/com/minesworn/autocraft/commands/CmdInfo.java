@@ -16,7 +16,6 @@ public class CmdInfo extends ACCommand {
 		this.permission = Permission.CMD_INFO.node;
 	}
 	
-	@Override
 	public void perform() {
 		if (Autocraft.shipmanager.ships.containsKey(player.getName())) {
 			ACBaseShip ship = Autocraft.shipmanager.ships.get(player.getName());

@@ -17,7 +17,6 @@ public class CmdAllowed extends ACCommand {
 		this.permission = Permission.CMD_ALLOWED.node;
 	}
 	
-	@Override
 	public void perform() {
 		if (Autocraft.propertiesmanager.getACs().containsKey(args[0].toLowerCase())) {
 			confirmMessage(ChatColor.GOLD + "Allowed block types for " + ChatColor.YELLOW + args[0].toLowerCase());

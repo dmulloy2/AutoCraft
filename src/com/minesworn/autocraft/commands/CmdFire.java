@@ -13,7 +13,6 @@ public class CmdFire extends ACCommand {
 		this.description = "Fire your ship's tnt cannons";
 	}
 	
-	@Override
 	public void perform() {
 		if (Autocraft.shipmanager.ships.containsKey(player.getName())) {
 			Autocraft.shipmanager.ships.get(player.getName()).fire();
