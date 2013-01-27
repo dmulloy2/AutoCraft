@@ -30,6 +30,7 @@ public class CmdAllowed extends ACCommand {
 				confirmMessage("MAX CANNON LENGTH: " + ChatColor.GREEN + shipproperties.MAX_CANNON_LENGTH);
 				confirmMessage("CANNON MATERIAL: " + ChatColor.GREEN + Material.getMaterial(shipproperties.CANNON_MATERIAL).toString());
 			}
+			confirmMessage("MAX NUMBER OF CANNONS: " + ChatColor.GREEN + shipproperties.MAX_NUMBER_OF_CANNONS);
 			confirmMessage("MIN BLOCKS: " + ChatColor.GREEN + shipproperties.MIN_BLOCKS);
 			confirmMessage("MAX BLOCKS: " + ChatColor.GREEN + shipproperties.MAX_BLOCKS);
 			confirmMessage("MAIN BLOCK: " + ChatColor.GREEN + Material.getMaterial(shipproperties.MAIN_TYPE).toString());
@@ -41,6 +42,7 @@ public class CmdAllowed extends ACCommand {
 			if (ret.lastIndexOf(",") != -1)
 				ret.deleteCharAt(ret.lastIndexOf(","));
 			confirmMessage(ChatColor.GREEN + ret.toString());
+			confirmMessage("IGNORE ATTACHMENTS: " + ChatColor.GREEN + shipproperties.IGNORE_ATTACHMENTS);
 		} else
 			errorMessage("No such ship");
 	}

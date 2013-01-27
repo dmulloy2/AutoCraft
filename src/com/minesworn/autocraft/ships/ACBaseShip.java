@@ -634,7 +634,8 @@ public class ACBaseShip {
 						&& !block.getType().equals(Material.SNOW)
 						&& !block.getType().equals(Material.BEDROCK) 
 						&& !block.getType().equals(Material.WATER) 
-						&& !block.getType().equals(Material.STATIONARY_WATER)) {
+						&& !block.getType().equals(Material.STATIONARY_WATER)
+						&& !properties.IGNORE_ATTACHMENTS) {
 					
 					Autocraft.shipmanager.ships.remove(this.player.getName());
 					player.sendMessage(ChatColor.DARK_RED + "This ship needs to be floating!");
