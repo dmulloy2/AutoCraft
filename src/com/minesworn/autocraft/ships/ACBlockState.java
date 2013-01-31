@@ -9,9 +9,11 @@ public class ACBlockState {
 
 	MaterialData data;
 	ItemStack[] inv;
+	BlockState state;
 	
 	public ACBlockState(BlockState s) {
 		this.data = s.getData();
+		this.state = s;
 		
 		if (s instanceof InventoryHolder) {
 			this.inv = ((InventoryHolder) s).getInventory().getContents();

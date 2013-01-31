@@ -9,15 +9,23 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.block.BlockState;
 import org.bukkit.block.Dispenser;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.TNTPrimed;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.material.Bed;
+import org.bukkit.material.Diode;
 import org.bukkit.material.Directional;
 import org.bukkit.material.MaterialData;
+import org.bukkit.material.PressurePlate;
+import org.bukkit.material.Rails;
+import org.bukkit.material.RedstoneWire;
+import org.bukkit.material.SimpleAttachableMaterialData;
 import org.bukkit.material.Stairs;
+import org.bukkit.material.Vine;
 import org.bukkit.util.Vector;
 
 import com.minesworn.autocraft.Autocraft;
@@ -43,6 +51,7 @@ public class ACBaseShip {
 	
 	// Hold all blocks part of this ship.
 	Block[] blocks;
+	Block[] specialBlocks;
 	// Place holder for the block the player is standing on. Probably unnecessary but haven't removed it in this update TODO: remove this.
 	Block mainblock;
 	
@@ -343,13 +352,14 @@ public class ACBaseShip {
 				boolean obstruction = false;
 				
 				Block[] blocks = this.blocks.clone();
+				Block[] specialBlocks = this.specialBlocks.clone();
 				
 				// Check each block's new position for obstructions
 				for (int i = 0; i < blocks.length; i++) {
 					Block block = blocks[i].getRelative(dx, dy, dz);
 					if (block.getLocation().getBlockY() + dy > ACProperties.MAX_ALTITUDE || block.getLocation().getBlockY() + dy < ACProperties.MIN_ALTITUDE)
 						obstruction = true;
-					if (block.getType().equals(Material.AIR) || block.getType().equals(Material.SNOW) || blockBelongsToShip(block, blocks))
+					if (block.getType().equals(Material.AIR) || block.getType().equals(Material.SNOW) || blockBelongsToShip(block, blocks) || blockBelongsToShip(block, specialBlocks))
 						continue;
 					obstruction = true;
 				}
@@ -374,13 +384,14 @@ public class ACBaseShip {
 				boolean obstruction = false;
 				
 				Block[] blocks = this.blocks.clone();
+				Block[] specialBlocks = this.specialBlocks.clone();
 				
 				updateMainBlock();
 				// Check each block's new position for obstructions
 				for (int i = 0; i < blocks.length; i++) {
 					Vector v = getRotationVector(blocks[i].getLocation(), this.mainblock, dir);
 					Block block = this.mainblock.getRelative(v.getBlockX(), v.getBlockY(), v.getBlockZ());
-					if (block.getType().equals(Material.AIR) || block.getType().equals(Material.SNOW) || blockBelongsToShip(block, blocks))
+					if (block.getType().equals(Material.AIR) || block.getType().equals(Material.SNOW) || blockBelongsToShip(block, blocks) || blockBelongsToShip(block, specialBlocks))
 						continue;
 					obstruction = true;
 				}
@@ -399,6 +410,12 @@ public class ACBaseShip {
 	public void dorotate(TurnDirection dir) {
 		List<Player> passengers = getPassengers();
 		ACBlockState[] temp = new ACBlockState[blocks.length];
+		ACBlockState[] special = new ACBlockState[blocks.length];
+		
+		for (int i = 0; i < specialBlocks.length; i++) {
+			special[i] = new ACBlockState(specialBlocks[i].getState());
+			specialBlocks[i].setType(Material.AIR);
+		}
 		
 		// First remove all blocks from the scene
 		for (int i = 0; i < blocks.length; i++) {
@@ -412,10 +429,16 @@ public class ACBaseShip {
 		
 		// Make new blocks in their new respective positions
 		for (int i = 0; i < blocks.length; i++) {
-			blocks[i].getLocation().distance(this.mainblock.getLocation());
+			//blocks[i].getLocation().distance(this.mainblock.getLocation());
 			Vector v = getRotationVector(blocks[i].getLocation(), this.mainblock, dir);
 			blocks[i] = this.mainblock.getRelative(v.getBlockX(), v.getBlockY(), v.getBlockZ());
 			setBlock(blocks[i], temp[i], dir);			
+		}
+		
+		for (int i = 0; i < specialBlocks.length; i++) {
+			Vector v = getRotationVector(specialBlocks[i].getLocation(), this.mainblock, dir);
+			specialBlocks[i] = this.mainblock.getRelative(v.getBlockX(), v.getBlockY(), v.getBlockZ());
+			setBlock(specialBlocks[i], special[i], dir);
 		}
 		
 		for (Player p : passengers) {
@@ -443,8 +466,15 @@ public class ACBaseShip {
 	public void domove(int dx, int dy, int dz) {
 		List<Player> passengers = getPassengers();
 		ACBlockState[] temp = new ACBlockState[blocks.length];
+		ACBlockState[] special = new ACBlockState[specialBlocks.length];
 		
-		// First remove all blocks from the scene
+		// First remove all special blocks from the world
+		for (int i = 0; i < specialBlocks.length; i++) {
+			special[i] = new ACBlockState(specialBlocks[i].getState());
+			specialBlocks[i].setType(Material.AIR);
+		}
+		
+		// Then remove the rest of the blocks from the scene
 		for (int i = 0; i < blocks.length; i++) {
 			temp[i] = new ACBlockState(blocks[i].getState());
 			if (blocks[i].getState() instanceof InventoryHolder)
@@ -455,7 +485,13 @@ public class ACBaseShip {
 		// Make new blocks in their new respective positions		
 		for (int i = 0; i < blocks.length; i++) {
 			blocks[i] = blocks[i].getRelative(dx, dy, dz);
-			setBlock(blocks[i], temp[i], temp[i].data.getData());
+			setBlock(blocks[i], temp[i], temp[i].state.getData().getData());
+		}
+		
+		// Make special blocks
+		for (int i = 0; i < specialBlocks.length; i++) {
+			specialBlocks[i] = specialBlocks[i].getRelative(dx, dy, dz);
+			setBlock(specialBlocks[i], special[i], special[i].state.getData().getData());
 		}
 		
 		// Teleport players back on to the ship
@@ -464,11 +500,22 @@ public class ACBaseShip {
 		}
 	}
 	
+	public boolean isSpecial(MaterialData data) {
+		return (data instanceof SimpleAttachableMaterialData || 
+				data instanceof org.bukkit.material.Sign || 
+				data instanceof Bed ||
+				data instanceof PressurePlate || 
+				data instanceof RedstoneWire || 
+				data instanceof Rails ||
+				data instanceof Diode ||
+				data instanceof Vine);
+	}
+	
 	public void setBlock(Block to, ACBlockState from, TurnDirection dir) {
-		MaterialData data = from.data;
+		MaterialData data = from.state.getData();
 		if (data instanceof Directional) {
 			Directional directional = (Directional) data; 
-			directional.setFacingDirection(getRotatedBlockFace(dir, (Directional) from.data));
+			directional.setFacingDirection(getRotatedBlockFace(dir, (Directional) data));
 		}
 		setBlock(to, from, data.getData());
 	}
@@ -507,10 +554,11 @@ public class ACBaseShip {
 				if (item != null)
 					((InventoryHolder) to.getState()).getInventory().addItem(item);
 			to.getState().update(true);
-		} else if (from instanceof Sign) {
+		} else if (from.state instanceof Sign) {
+			BlockState state = to.getState();
 			for (int j = 0; j < 4; j++)
-				((Sign) to.getState()).setLine(j, ((Sign) from).getLine(j));
-			to.getState().update(true);
+				((Sign) state).setLine(j, ((Sign) from.state).getLine(j));
+			state.update(true);
 		}
 	}
 	
@@ -600,18 +648,27 @@ public class ACBaseShip {
 	}
 	
 	public boolean beginRecursion(Block block) {
-		ArrayList<Block> blockList = new ArrayList<Block>(this.properties.MAX_BLOCKS);
+		List<Block> blockList = new ArrayList<Block>(this.properties.MAX_BLOCKS);
 		blockList = recurse(block, blockList);
 		
 		if (blockList != null) {
+			List<Block> specialBlockList = new ArrayList<Block>();
+			for (Block b : blockList.toArray(new Block[0])) {
+				if (isSpecial(b.getState().getData())) {
+					specialBlockList.add(b);
+					blockList.remove(b);
+				}
+			}
+						
 			blocks = blockList.toArray(new Block[0]);
+			specialBlocks = specialBlockList.toArray(new Block[0]);
 			return true;
 		}
 		return false;
 	}
 	
 	// Recursively call this method for every block relative to the starting block.
-	public ArrayList<Block> recurse(Block block, ArrayList<Block> blockList) {
+	public List<Block> recurse(Block block, List<Block> blockList) {
 		boolean original = ((blockList != null) ? blockList.isEmpty() : false);
 		
 		if (!this.stopped) {
