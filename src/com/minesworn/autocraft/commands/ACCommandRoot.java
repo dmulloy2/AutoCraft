@@ -15,6 +15,7 @@ public class ACCommandRoot extends SCommandRoot<Autocraft> {
 	public CmdDrop CMD_DROP = new CmdDrop();
 	public CmdNapalm CMD_NAPALM = new CmdNapalm();
 	public CmdTorpedo CMD_TORPEDO = new CmdTorpedo();
+	public CmdMove CMD_MOVE = new CmdMove();
 	
 	public ACCommandRoot(Autocraft s) {
 		super(s);
@@ -28,6 +29,7 @@ public class ACCommandRoot extends SCommandRoot<Autocraft> {
 		addCommand(CMD_DROP);
 		addCommand(CMD_NAPALM);
 		addCommand(CMD_TORPEDO);
+		addCommand(CMD_MOVE);
 	}
 	
 }

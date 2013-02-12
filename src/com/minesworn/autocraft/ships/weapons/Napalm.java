@@ -64,12 +64,13 @@ public class Napalm extends Projectile {
 				b.setData((byte) 13);
 				napalm = b;
 			} else {
-				if (Autocraft.factionsEnabled && !Board.getFactionAt(new FLocation(b.getLocation())).hasPlayersOnline()) {
+				if (Autocraft.factionsEnabled && !Board.getFactionAt(new FLocation(b.getLocation())).isNone() && !Board.getFactionAt(new FLocation(b.getLocation())).hasPlayersOnline()) {
 					this.exploded = true;
 					return;
 				}
 				
-				b.setType(Material.AIR);
+				if (b.getType() != Material.BEDROCK)
+					b.setType(Material.AIR);
 				explode();
 			}
 		}

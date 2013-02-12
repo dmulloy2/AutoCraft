@@ -26,6 +26,7 @@ import org.bukkit.material.RedstoneWire;
 import org.bukkit.material.SimpleAttachableMaterialData;
 import org.bukkit.material.Stairs;
 import org.bukkit.material.Vine;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
 import com.minesworn.autocraft.Autocraft;
@@ -52,6 +53,10 @@ public class ACBaseShip {
 	// Hold all blocks part of this ship.
 	Block[] blocks;
 	Block[] specialBlocks;
+	
+	ACBlockState[] largeShipBlocks;
+	ACBlockState[] largeShipSpecialBlocks;
+	
 	// Place holder for the block the player is standing on. Probably unnecessary but haven't removed it in this update TODO: remove this.
 	Block mainblock;
 	
@@ -465,33 +470,99 @@ public class ACBaseShip {
 	// Move the ship and all passengers the specified distance
 	public void domove(int dx, int dy, int dz) {
 		List<Player> passengers = getPassengers();
-		ACBlockState[] temp = new ACBlockState[blocks.length];
-		ACBlockState[] special = new ACBlockState[specialBlocks.length];
 		
-		// First remove all special blocks from the world
-		for (int i = 0; i < specialBlocks.length; i++) {
-			special[i] = new ACBlockState(specialBlocks[i].getState());
-			specialBlocks[i].setType(Material.AIR);
-		}
+		boolean fastFly = (properties.FAST_FLY_AT_SIZE == 0 ? false : properties.FAST_FLY_AT_SIZE < (blocks.length + specialBlocks.length));
 		
-		// Then remove the rest of the blocks from the scene
-		for (int i = 0; i < blocks.length; i++) {
-			temp[i] = new ACBlockState(blocks[i].getState());
-			if (blocks[i].getState() instanceof InventoryHolder)
-				((InventoryHolder) blocks[i].getState()).getInventory().clear();
-			blocks[i].setType(Material.AIR);
-		}
-		
-		// Make new blocks in their new respective positions		
-		for (int i = 0; i < blocks.length; i++) {
-			blocks[i] = blocks[i].getRelative(dx, dy, dz);
-			setBlock(blocks[i], temp[i], temp[i].state.getData().getData());
-		}
-		
-		// Make special blocks
-		for (int i = 0; i < specialBlocks.length; i++) {
-			specialBlocks[i] = specialBlocks[i].getRelative(dx, dy, dz);
-			setBlock(specialBlocks[i], special[i], special[i].state.getData().getData());
+		if (fastFly) {
+			if (largeShipSpecialBlocks == null || largeShipBlocks == null) {
+				largeShipSpecialBlocks = new ACBlockState[specialBlocks.length];
+				largeShipBlocks = new ACBlockState[blocks.length];
+				
+				// First remove all special blocks from the world
+				for (int i = 0; i < specialBlocks.length; i++) {
+					largeShipSpecialBlocks[i] = new ACBlockState(specialBlocks[i].getState());
+					specialBlocks[i].setType(Material.AIR);
+				}
+				
+				// Then remove the rest of the blocks from the scene
+				for (int i = 0; i < blocks.length; i++) {
+					largeShipBlocks[i] = new ACBlockState(blocks[i].getState());
+					if (blocks[i].getState() instanceof InventoryHolder)
+						((InventoryHolder) blocks[i].getState()).getInventory().clear();
+					blocks[i].setType(Material.AIR);
+				}
+			} else {
+				for (int i = 0; i < blocks.length; i++) {
+					if (blocks[i].getType() != Material.AIR)
+						blocks[i].setType(Material.AIR);
+				}
+				
+				for (int i = 0; i < specialBlocks.length; i++) {
+					if (specialBlocks[i].getType() != Material.AIR)
+						specialBlocks[i].setType(Material.AIR);
+				}
+			}
+			
+			// Update block locations.		
+			for (int i = 0; i < blocks.length; i++) {
+				blocks[i] = blocks[i].getRelative(dx, dy, dz);
+			}
+			
+			for (int i = 0; i < specialBlocks.length; i++) {
+				specialBlocks[i] = specialBlocks[i].getRelative(dx, dy, dz);
+			}
+			
+			for (Player p : passengers) {
+				Block b = p.getWorld().getBlockAt(p.getLocation().subtract(0, 1, 0));
+				b = b.getRelative(dx, dy, dz);
+				b.setType(Material.GLASS);
+			}
+			
+			new BukkitRunnable() {
+
+				public void run() {
+					if (System.currentTimeMillis() - lastmove > 1500L) {
+						for (int i = 0; i < blocks.length; i++) {
+							setBlock(blocks[i], largeShipBlocks[i], largeShipBlocks[i].state.getData().getData());
+						}
+						
+						for (int i = 0; i < specialBlocks.length; i++) {
+							setBlock(specialBlocks[i], largeShipSpecialBlocks[i], largeShipSpecialBlocks[i].state.getData().getData());
+						}
+					}
+				}
+				
+			}.runTaskLater(Autocraft.p, 40L);
+			
+		} else {
+			ACBlockState[] temp = new ACBlockState[blocks.length];
+			ACBlockState[] special = new ACBlockState[specialBlocks.length];
+			
+			// First remove all special blocks from the world
+			for (int i = 0; i < specialBlocks.length; i++) {
+				special[i] = new ACBlockState(specialBlocks[i].getState());
+				specialBlocks[i].setType(Material.AIR);
+			}
+			
+			// Then remove the rest of the blocks from the scene
+			for (int i = 0; i < blocks.length; i++) {
+				temp[i] = new ACBlockState(blocks[i].getState());
+				if (blocks[i].getState() instanceof InventoryHolder)
+					((InventoryHolder) blocks[i].getState()).getInventory().clear();
+				blocks[i].setType(Material.AIR);
+			}
+			
+			// Make new blocks in their new respective positions		
+			for (int i = 0; i < blocks.length; i++) {
+				blocks[i] = blocks[i].getRelative(dx, dy, dz);
+				setBlock(blocks[i], temp[i], temp[i].state.getData().getData());
+			}
+			
+			// Make special blocks
+			for (int i = 0; i < specialBlocks.length; i++) {
+				specialBlocks[i] = specialBlocks[i].getRelative(dx, dy, dz);
+				setBlock(specialBlocks[i], special[i], special[i].state.getData().getData());
+			}
 		}
 		
 		// Teleport players back on to the ship
@@ -517,6 +588,21 @@ public class ACBaseShip {
 			Directional directional = (Directional) data; 
 			directional.setFacingDirection(getRotatedBlockFace(dir, (Directional) data));
 		}
+		
+		// Wood isn't a directional material in bukkit >_>
+		if (data.getItemTypeId() == 17) {
+			byte d = data.getData();
+			
+			if ((d & 0x4) != 0) {
+				// Currently East-West - Change to North-South
+				data.setData((byte) ((d & 0x3) | 0x8));
+			} else if ((d & 0x8) != 0) {
+				// Currently North-South - Change to East-West
+				data.setData((byte) ((d & 0x3) | 0x4));
+			}
+			// else directionless, we don't need to do anything.
+		}
+		
 		setBlock(to, from, data.getData());
 	}
 	

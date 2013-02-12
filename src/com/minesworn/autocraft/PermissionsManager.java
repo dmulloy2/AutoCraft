@@ -11,6 +11,7 @@ public class PermissionsManager extends PermissionBase {
 		CMD_FIRE("fire"),
 		CMD_INFO("info"),
 		CMD_LIST("list"),
+		CMD_MOVE("move"),
 		CMD_NAPALM("napalm"),
 		CMD_PILOT("pilot"),
 		CMD_ROTATE("rotate"),

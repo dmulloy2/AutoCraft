@@ -22,5 +22,6 @@ public class ACProperties extends Entity {
 	public int MAX_CANNON_LENGTH;
 	public int MAX_NUMBER_OF_CANNONS;
 	public int CANNON_MATERIAL;
+	public int FAST_FLY_AT_SIZE = 1000;
 	public List<Integer> ALLOWED_BLOCKS = new ArrayList<Integer>();
 }
