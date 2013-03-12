@@ -5,8 +5,6 @@ import java.util.Map;
 
 public class ACShipManager {
 
-	public volatile Map<String, ACBaseShip> ships = new HashMap<String, ACBaseShip>();
-	
-	
+	public Map<String, ACBaseShip> ships = new HashMap<String, ACBaseShip>();
 	
 }

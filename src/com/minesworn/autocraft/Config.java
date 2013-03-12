@@ -17,7 +17,7 @@ public class Config {
 		
 	public static int NAPALM_BURN_RADIUS = 6;
 	
-	public static boolean SHIPS_CAN_FLY = true;
+//	public static boolean SHIPS_CAN_FLY = true;
 	
 	public static boolean factionsProtectionsEnabled = true;
 		

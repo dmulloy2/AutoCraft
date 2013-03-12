@@ -52,7 +52,7 @@ public class Autocraft extends SPlugin {
 	}
 	
 	public void registerEvents() {
-		Bukkit.getPluginManager().registerEvents(new PlayerListener(p), p);
+		Bukkit.getPluginManager().registerEvents(new PlayerListener(), p);
 	}
 	
 }
