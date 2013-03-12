@@ -13,11 +13,6 @@ import org.bukkit.util.Vector;
 import com.minesworn.autocraft.Autocraft;
 
 public class PlayerListener implements Listener {
-	private Autocraft p;
-	
-	public PlayerListener(Autocraft p) {
-		this.p = p;
-	}
 	
 	@EventHandler
 	public void onPlayerQuit(PlayerQuitEvent e) {
