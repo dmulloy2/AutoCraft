@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.minesworn.autocraft.core.io.SPersist;
 
+// TODO: Convert to YAML
 public class Config {
 	
 	public static int WEAPON_COOLDOWN_TIME = 6;
