@@ -14,7 +14,7 @@ team and has been passed down from author to author. This repository represents 
 like to help contribute to AutoCraft, we do accept pull requests.
 
 == Download AutoCraft
-** Development builds will be available soon! **
+** Development builds can be found here: http://ci.minesworn.com/job/AutoCraft/ **
 
 == Plugin Authors
 * GarretSidzaka (2011 - present)
