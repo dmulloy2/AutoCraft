@@ -31,6 +31,7 @@ import org.bukkit.util.Vector;
 
 import com.minesworn.autocraft.Autocraft;
 import com.minesworn.autocraft.Config;
+import com.minesworn.autocraft.core.util.FormatUtil;
 import com.minesworn.autocraft.ships.weapons.Napalm;
 import com.minesworn.autocraft.ships.weapons.Torpedo;
 
@@ -63,12 +64,15 @@ public class ACBaseShip {
 	public ACBaseShip(Player player, ACProperties properties) {
 		this.player = player;
 		this.properties = properties;
-		System.out.println("PLAYER " + player.getName() + " HAS STARTED FLYING " + 
-					this.properties.SHIP_TYPE + " AT (" + 
-					player.getLocation().getBlockX() + "," + 
-					player.getLocation().getBlockY() + "," + 
-					player.getLocation().getBlockZ() + ")");
 		
+		log("{0} has started flying {1} at: {2}, {3}, {4} in world {5}", 
+				player.getName(),
+				properties.SHIP_TYPE,
+				player.getLocation().getBlockX(),
+				player.getLocation().getBlockY(),
+				player.getLocation().getBlockZ(),
+				player.getWorld().getName());
+
 		startship();
 	}
 	
@@ -85,7 +89,9 @@ public class ACBaseShip {
 				Block[] cannons = getCannons();
 				int numfiredcannons = 0;
 				for (int i = 0; i < cannons.length; i++) {
-					if (cannons[i] != null && cannons[i].getRelative(0, -1, 0).getType().equals(Material.AIR) && cannonHasTnt(cannons[i], Config.NUM_TNT_TO_DROP_BOMB)) {
+					if (cannons[i] != null 
+							&& cannons[i].getRelative(0, -1, 0).getType().equals(Material.AIR) 
+							&& cannonHasTnt(cannons[i], Config.NUM_TNT_TO_DROP_BOMB)) {
 						if (numfiredcannons < this.properties.MAX_NUMBER_OF_CANNONS ) {
 							numfiredcannons++;
 							lastFired = System.currentTimeMillis();
@@ -96,15 +102,18 @@ public class ACBaseShip {
 							tnt.setVelocity(new Vector(0, -0.5, 0));
 						} else {
 							// More cannons on ship than allowed. Not all fired - can break out of loop now.
-							player.sendMessage(ChatColor.AQUA + "Some cannons did not fire. Max cannon limit is " + ChatColor.GOLD + this.properties.MAX_NUMBER_OF_CANNONS);
+							sendMessage("&bSome cannons did not fire. Max cannon limit is: &6{0}", properties.MAX_NUMBER_OF_CANNONS);
 							break;
 						}
 					}
 				}
-			} else
-				player.sendMessage(ChatColor.GOLD + this.properties.SHIP_TYPE + " CANNOT DROP BOMBS");
-		} else
-			player.sendMessage(ChatColor.GOLD + "COOLING DOWN FOR " + ChatColor.AQUA + (int)(Math.round(6 - (System.currentTimeMillis() - this.lastFired) / 1000)) + ChatColor.GOLD + " MORE SECONDS");
+			} else {
+				sendMessage("&b{0} &6cannot drop TNT bombs!", properties.SHIP_TYPE);
+			}
+		} else {
+			sendMessage("&6Cooling down for &b{0} &6more seconds",
+					(int)(Math.round(6 - (System.currentTimeMillis() - this.lastFired) / 1000)));
+		}
 	}
 	
 	// Fire tnt like a cannon :3
@@ -138,23 +147,26 @@ public class ACBaseShip {
 								tnt.setVelocity(new Vector(x * dist, 0.5, z * dist));
 							} else {
 								// More cannons on ship than allowed. Not all fired - can break out of loop now.
-								player.sendMessage(ChatColor.AQUA + "Some cannons did not fire. Max cannon limit is " + ChatColor.GOLD + this.properties.MAX_NUMBER_OF_CANNONS);
+								sendMessage("&bSome cannons did not fire. Max cannon limit is &6{0}", properties.MAX_NUMBER_OF_CANNONS);
 								break;
 							}
 						}
 					}
 				}
-			} else
-				player.sendMessage(ChatColor.GOLD + this.properties.SHIP_TYPE + " CANNOT FIRE TNT");
-		} else
-			player.sendMessage(ChatColor.GOLD + "COOLING DOWN FOR " + ChatColor.AQUA + (int)(Math.round(6 - (System.currentTimeMillis() - this.lastFired) / 1000)) + ChatColor.GOLD + " MORE SECONDS");
+			} else {
+				sendMessage("&b{0} &6cannot fire TNT!", properties.SHIP_TYPE);
+			}
+		} else {
+			sendMessage("&6Cooling down for &b{0} &6more seconds",
+					(int)(Math.round(6 - (System.currentTimeMillis() - this.lastFired) / 1000)));
+		}
 	}
 	
 	// Drop some napalms ;o
 	public void dropNapalm() {
 		// Has player waited cooldown before trying to fire again?
 		if (System.currentTimeMillis() - this.lastFired > Config.WEAPON_COOLDOWN_TIME * 1000) {
-			System.out.println(player.getDisplayName() + " is attempting to launch napalm");
+			log("{0} is attempting to drop napalm.", player.getName());
 			// Can this airship drop napalm?
 			if (this.properties.DROPS_NAPALM) {
 				if (Autocraft.factionsEnabled && !FactionUtil.canPlayerUseWeapon(player))
@@ -163,7 +175,9 @@ public class ACBaseShip {
 				Block[] cannons = getCannons();
 				int numfiredcannons = 0;
 				for (int i = 0; i < cannons.length; i++) {
-					if (cannons[i] != null && cannons[i].getRelative(0, -1, 0).getType().equals(Material.AIR) && cannonHasTnt(cannons[i], Config.NUM_TNT_TO_DROP_NAPALM)) {
+					if (cannons[i] != null 
+							&& cannons[i].getRelative(0, -1, 0).getType().equals(Material.AIR) 
+							&& cannonHasTnt(cannons[i], Config.NUM_TNT_TO_DROP_NAPALM)) {
 						boolean missingMaterial = false;
 						for (int id : Config.MATERIALS_NEEDED_FOR_NAPALM) {
 							if (!cannonHasItem(cannons[i], id, 1))
@@ -182,22 +196,25 @@ public class ACBaseShip {
 							new Napalm(cannons[i]);
 						} else {
 							// More cannons on ship than allowed. Not all fired - can break out of loop now.
-							player.sendMessage(ChatColor.AQUA + "Some napalm-cannons did not fire. Max cannon limit is " + ChatColor.GOLD + this.properties.MAX_NUMBER_OF_CANNONS);
+							sendMessage("&bSome napalm cannons did not fire. Max cannon limit is &6{0}", properties.MAX_NUMBER_OF_CANNONS);
 							break;
 						}
 					}
 				}
-			} else
-				player.sendMessage(ChatColor.GOLD + this.properties.SHIP_TYPE + " CANNOT DROP NAPALM");
-		} else
-			player.sendMessage(ChatColor.GOLD + "COOLING DOWN FOR " + ChatColor.AQUA + (int)(Math.round(6 - (System.currentTimeMillis() - this.lastFired) / 1000)) + ChatColor.GOLD + " MORE SECONDS");
+			} else {
+				sendMessage("&b{0} &6cannot drop napalm!", properties.SHIP_TYPE);
+			}
+		} else {
+			sendMessage("&6Cooling down for &b{0} &6more seconds",
+					(int)(Math.round(6 - (System.currentTimeMillis() - this.lastFired) / 1000)));
+		}
 	}
 	
 	// Fire some torpedoes c:
 	public void fireTorpedo() {
 		// Has player waited cooldown before trying to fire again?
 		if (System.currentTimeMillis() - this.lastFired > Config.WEAPON_COOLDOWN_TIME * 1000) {
-			System.out.println(player.getDisplayName() + " is attempting to fire a torpedo");
+			log("{0} is attempting to fire a torpedo", player.getName());
 			// Can this airship fire torpedoes?
 			if (this.properties.FIRES_TORPEDO) {
 				if (Autocraft.factionsEnabled && !FactionUtil.canPlayerUseWeapon(player))
@@ -231,15 +248,19 @@ public class ACBaseShip {
 							new Torpedo(cannons[i], face);
 						} else {
 							// More cannons on ship than allowed. Not all fired - can break out of loop now.
-							player.sendMessage(ChatColor.AQUA + "Some cannons did not fire. Max cannon limit is " + ChatColor.GOLD + this.properties.MAX_NUMBER_OF_CANNONS);
+							sendMessage("&bSome cannons did not fire. Max cannon limit is &6{0}",
+									properties.MAX_NUMBER_OF_CANNONS);
 							break;
 						}
 					}
 				}
-			} else
-				player.sendMessage(ChatColor.GOLD + this.properties.SHIP_TYPE + " CANNOT FIRE TORPEDO");
-		} else
-			player.sendMessage(ChatColor.GOLD + "COOLING DOWN FOR " + ChatColor.AQUA + (int)(Math.round(6 - (System.currentTimeMillis() - this.lastFired) / 1000)) + ChatColor.GOLD + " MORE SECONDS");
+			} else {
+				sendMessage("&b{0} &6cannot drop TNT bombs!", properties.SHIP_TYPE);
+			}
+		} else {
+			sendMessage("&6Cooling down for &b{0} &6more seconds",
+					(int)(Math.round(6 - (System.currentTimeMillis() - this.lastFired) / 1000)));
+		}
 	}
 	
 	// Returns the length of cannon material behind the dispenser or MAX_CANNON_LENGTH;
@@ -320,11 +341,11 @@ public class ACBaseShip {
 		if (beginRecursion(this.mainblock)) {
 			if (areBlocksValid()) {
 				if (isShipAlreadyPiloted()) {
-					player.sendMessage(ChatColor.RED + "This ship is already being piloted");
+					sendMessage("&cThis ship is already being piloted");
 				} else {
 					Autocraft.shipmanager.ships.put(player.getName(), this);
-					player.sendMessage(ChatColor.GRAY + "You are in control of this ship");
-					player.sendMessage(ChatColor.GRAY + "\tUse the right mouse to guide the ship");
+					sendMessage("&7You are in control of this ship");
+					sendMessage("Use the right mouse to guide the ship");
 				}
 			}
 		}
@@ -362,16 +383,20 @@ public class ACBaseShip {
 				// Check each block's new position for obstructions
 				for (int i = 0; i < blocks.length; i++) {
 					Block block = blocks[i].getRelative(dx, dy, dz);
-					if (block.getLocation().getBlockY() + dy > ACProperties.MAX_ALTITUDE || block.getLocation().getBlockY() + dy < ACProperties.MIN_ALTITUDE)
+					if (block.getLocation().getBlockY() + dy > ACProperties.MAX_ALTITUDE 
+							|| block.getLocation().getBlockY() + dy < ACProperties.MIN_ALTITUDE)
 						obstruction = true;
-					if (block.getType().equals(Material.AIR) || block.getType().equals(Material.SNOW) || blockBelongsToShip(block, blocks) || blockBelongsToShip(block, specialBlocks))
+					if (block.getType().equals(Material.AIR) 
+							|| block.getType().equals(Material.SNOW) 
+							|| blockBelongsToShip(block, blocks) 
+							|| blockBelongsToShip(block, specialBlocks))
 						continue;
 					obstruction = true;
 				}
 				
 				// Can't move :/
 				if (obstruction)
-					this.player.sendMessage(ChatColor.YELLOW + "Obstruction" + ChatColor.RED + " - Cannot move any further in this direction.");
+					sendMessage("&eObstruction - &cCannot move any further in this direction.");
 				// Lets move this thing :D
 				else
 					domove(dx, dy, dz);
@@ -396,14 +421,17 @@ public class ACBaseShip {
 				for (int i = 0; i < blocks.length; i++) {
 					Vector v = getRotationVector(blocks[i].getLocation(), this.mainblock, dir);
 					Block block = this.mainblock.getRelative(v.getBlockX(), v.getBlockY(), v.getBlockZ());
-					if (block.getType().equals(Material.AIR) || block.getType().equals(Material.SNOW) || blockBelongsToShip(block, blocks) || blockBelongsToShip(block, specialBlocks))
+					if (block.getType().equals(Material.AIR) 
+							|| block.getType().equals(Material.SNOW) 
+							|| blockBelongsToShip(block, blocks) 
+							|| blockBelongsToShip(block, specialBlocks))
 						continue;
 					obstruction = true;
 				}
 				
 				// Can't move :/
 				if (obstruction)
-					this.player.sendMessage(ChatColor.YELLOW + "Obstruction" + ChatColor.RED + " - Cannot rotate in this direction.");
+					sendMessage("&eObstruction - &cCannot move any further in this direction.");
 				else
 					dorotate(dir);
 			}
@@ -664,12 +692,14 @@ public class ACBaseShip {
 	// Checks that the ship is within its size restraints as defined by its AC properties.
 	public boolean areBlocksValid() {
 		if (!isValidMaterial(this.mainblock))
-			this.player.sendMessage(ChatColor.RED + "Please stand on a valid block for this type of ship");
+			sendMessage("&cPlease stand on a valid block for this type of ship");
 		else {
 			if (this.blocks.length > this.properties.MAX_BLOCKS)
-				this.player.sendMessage(ChatColor.RED + "Your ship has " + ChatColor.YELLOW + this.blocks.length + ChatColor.RED + "/" + ChatColor.YELLOW + this.properties.MAX_BLOCKS + ChatColor.RED + " blocks. Please delete some.");
+				sendMessage("&cYour ship has &e{0}&c/&e{1} &cblocks. Please remove some.", 
+						blocks.length, properties.MAX_BLOCKS);
 			else if (this.numMainBlocks < this.properties.MIN_BLOCKS)
-				this.player.sendMessage(ChatColor.RED + "Your ship has " + ChatColor.YELLOW + this.numMainBlocks + ChatColor.RED + "/" + ChatColor.YELLOW + this.properties.MIN_BLOCKS + ChatColor.AQUA + " " + getMainType() + ChatColor.RED + " blocks. Please add more.");
+				sendMessage("&cYour ship has &e{0}&c/&e{1} {2} &cblocks. Please add more.",
+						numMainBlocks, properties.MIN_BLOCKS, getMainType());
 			else
 				return true;
 		}
@@ -768,7 +798,8 @@ public class ACBaseShip {
 					// Add current block to recursing block list.
 					blockList.add(block);
 					
-					// Recurse for each block around this block and in turn each block around them before eventually returning to this method instance.
+					// Recurse for each block around this block and in turn each block around them before eventually returning to
+					// this method instance.
 					for (RelativePosition dir : RelativePosition.values()) {
 						blockList = recurse(block.getRelative(dir.x, dir.y, dir.z), blockList);
 					}
@@ -781,20 +812,20 @@ public class ACBaseShip {
 						&& !properties.IGNORE_ATTACHMENTS) {
 					
 					Autocraft.shipmanager.ships.remove(this.player.getName());
-					player.sendMessage(ChatColor.DARK_RED + "This ship needs to be floating!");
-					String str = "problem at (" + String.valueOf(block.getX()) + "," + 
+					sendMessage("&cThis ship needs to be floating!");
+					String str = "Problem at (" + String.valueOf(block.getX()) + "," + 
 													String.valueOf(block.getY()) + "," + 
-													String.valueOf(block.getZ()) + ") ITS ON " + 
+													String.valueOf(block.getZ()) + ") it''s on " + 
 													block.getType().toString();
-					player.sendMessage(str);
-					System.out.println("PLAYER " + this.player.getName() + " HAD PROBLEM FLYING AIRSHIP. " + str);
+					sendMessage(str);
+					log("{0} had a problem flying an airship: {1}", player.getName(), str);
 					this.stopped = true;
 					return null;
 				}
 			} else {
 				// Ship is too large as defined by built in limit
 				Autocraft.shipmanager.ships.remove(this.player.getName());
-				player.sendMessage(ChatColor.GRAY + "This ship has over " + this.properties.MAX_BLOCKS + " blocks!");
+				sendMessage("&7This ship has over {0} blocks!", this.properties.MAX_BLOCKS);
 				this.stopped = true;
 				return null;
 			}
@@ -814,7 +845,7 @@ public class ACBaseShip {
 				}
 				if (max - min > this.properties.MAX_SHIP_DIMENSIONS) {
 					Autocraft.shipmanager.ships.remove(this.player.getName());
-					player.sendMessage(ChatColor.RED + "This ship is either too long, too tall or too wide!");
+					sendMessage("&cThis ship is either too long, too tall or too wide!");
 					this.stopped = true;
 					return null;					
 				}
@@ -822,6 +853,14 @@ public class ACBaseShip {
 		}
 		
 		return blockList;
+	}
+	
+	public void log(String msg, Object... args) {
+		Autocraft.p.log(ChatColor.stripColor(FormatUtil.format(msg, args)));
+	}
+	
+	public void sendMessage(String msg, Object... args) {
+		player.sendMessage(FormatUtil.format("&4[&6&lAC&4]&6" + msg, args));
 	}
 	
 }

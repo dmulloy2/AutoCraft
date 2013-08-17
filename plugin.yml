@@ -2,6 +2,7 @@ name: AutoCraft
 main: com.minesworn.autocraft.Autocraft
 version: 2.6.1
 author: [t7seven7t, dmulloy2]
+description: The MoveCraft alternative. Allows players to create PvP Airships!
 commands: 
   ac:
     description:
