@@ -37,12 +37,17 @@ public class Autocraft extends SPlugin {
 	
 	@Override
 	public void onEnable() {
-		Autocraft.p = this;
+		long start = System.currentTimeMillis();
+		
+		p = this;
+		
 		preEnable();
 		
 		lang = new SLang(this);
 		lang.load();
+		
 		Config.load();
+		
 		shipmanager = new ACShipManager();
 		propertiesmanager = new ACPropertiesManager(p);
 		commandRoot = new ACCommandRoot(p);
@@ -62,11 +67,21 @@ public class Autocraft extends SPlugin {
 		}
 
 		registerEvents();
+		
+		long finish = System.currentTimeMillis();
+		
+		log("{0} has been enabled ({1}ms)", getDescription().getFullName(), finish - start);
 	}
 	
 	@Override
 	public void onDisable() {
+		long start = System.currentTimeMillis();
+		
 		preDisable();
+		
+		long finish = System.currentTimeMillis();
+		
+		log("{0} has been disabled ({1}ms)", getDescription().getFullName(), finish - start);
 	}
 	
 	@Override
