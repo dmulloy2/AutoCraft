@@ -157,7 +157,7 @@ public class ACBaseShip {
 				sendMessage("&b{0} &6cannot fire TNT!", properties.SHIP_TYPE);
 			}
 		} else {
-			sendMessage("&6Cooling down for &b{0} &6more seconds",
+			sendMessage("&6Cooling down for &b{0} &6more seconds!",
 					(int)(Math.round(6 - (System.currentTimeMillis() - this.lastFired) / 1000)));
 		}
 	}
@@ -205,7 +205,7 @@ public class ACBaseShip {
 				sendMessage("&b{0} &6cannot drop napalm!", properties.SHIP_TYPE);
 			}
 		} else {
-			sendMessage("&6Cooling down for &b{0} &6more seconds",
+			sendMessage("&6Cooling down for &b{0} &6more seconds!",
 					(int)(Math.round(6 - (System.currentTimeMillis() - this.lastFired) / 1000)));
 		}
 	}
@@ -255,10 +255,10 @@ public class ACBaseShip {
 					}
 				}
 			} else {
-				sendMessage("&b{0} &6cannot drop TNT bombs!", properties.SHIP_TYPE);
+				sendMessage("&b{0} &6cannot fire torpedos!", properties.SHIP_TYPE);
 			}
 		} else {
-			sendMessage("&6Cooling down for &b{0} &6more seconds",
+			sendMessage("&6Cooling down for &b{0} &6more seconds!",
 					(int)(Math.round(6 - (System.currentTimeMillis() - this.lastFired) / 1000)));
 		}
 	}
@@ -345,7 +345,7 @@ public class ACBaseShip {
 				} else {
 					Autocraft.shipmanager.ships.put(player.getName(), this);
 					sendMessage("&7You are in control of this ship");
-					sendMessage("Use the right mouse to guide the ship");
+					sendMessage("&7Use the right mouse to guide the ship");
 				}
 			}
 		}
@@ -863,4 +863,8 @@ public class ACBaseShip {
 		player.sendMessage(FormatUtil.format("&4[&6&lAC&4]&6" + msg, args));
 	}
 	
+	// TODO: Sounds for firing >;3
+	public void playSound() {
+		
+	}
 }
