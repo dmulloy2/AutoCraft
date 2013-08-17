@@ -5,18 +5,16 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.logging.Level;
 
-import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.minesworn.autocraft.core.commands.SCommand;
 import com.minesworn.autocraft.core.commands.SCommandRoot;
+import com.minesworn.autocraft.core.util.FormatUtil;
 import com.minesworn.autocraft.core.util.SLang;
-import com.minesworn.autocraft.core.util.Util;
 
 public abstract class SPlugin extends JavaPlugin implements ISPlugin {
-	private String PLUGIN_NAME;
 	private ArrayList<String> COMMAND_PREFIXES = new ArrayList<String>();
 	private ArrayList<String> enabledSoftDependPlugins = new ArrayList<String>();
 	
@@ -24,9 +22,7 @@ public abstract class SPlugin extends JavaPlugin implements ISPlugin {
 	public SCommandRoot<?> commandRoot;
 	public volatile boolean enabled;
 		
-	public boolean preEnable() {		
-		PLUGIN_NAME = this.getName();
-
+	public boolean preEnable() {
 		if (this.getDescription().getCommands().size() == 1)
 			for (Entry<String, Map<String, Object>> entry : this.getDescription().getCommands().entrySet())
 				COMMAND_PREFIXES.add(entry.getKey());
@@ -98,16 +94,12 @@ public abstract class SPlugin extends JavaPlugin implements ISPlugin {
 	public String getCommandPrefix() {return (!COMMAND_PREFIXES.isEmpty()) ? COMMAND_PREFIXES.get(0) : null;}	
 	public boolean isPluginEnabled(String s) {return enabledSoftDependPlugins.contains(s);}
 	
-	public void log(String msg) {
-		log(Level.INFO, msg);
+	public void log(String string, Object... objects) {
+		log(Level.INFO, string, objects);
 	}
 	
-	public void log(Level level, String msg) {
-		Bukkit.getLogger().log(level, "[" + PLUGIN_NAME + "] " + msg);
+	public void log(Level level, String string, Object... objects) {
+		getLogger().log(level, FormatUtil.format(string, objects));
 	}
-	
-	public void log(String msg, Object... args) {
-		log(Level.INFO, Util.parseMsg(msg, args));
-	}	
 
 }
