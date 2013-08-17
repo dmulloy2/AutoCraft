@@ -16,7 +16,6 @@ import com.minesworn.autocraft.core.util.SLang;
 
 public abstract class SPlugin extends JavaPlugin implements ISPlugin {
 	private ArrayList<String> COMMAND_PREFIXES = new ArrayList<String>();
-	private ArrayList<String> enabledSoftDependPlugins = new ArrayList<String>();
 	
 	public SLang lang;
 	public SCommandRoot<?> commandRoot;
@@ -91,8 +90,9 @@ public abstract class SPlugin extends JavaPlugin implements ISPlugin {
 		
 	}
 	
-	public String getCommandPrefix() {return (!COMMAND_PREFIXES.isEmpty()) ? COMMAND_PREFIXES.get(0) : null;}	
-	public boolean isPluginEnabled(String s) {return enabledSoftDependPlugins.contains(s);}
+	public String getCommandPrefix() {
+		return (!COMMAND_PREFIXES.isEmpty()) ? COMMAND_PREFIXES.get(0) : null;
+	}	
 	
 	public void log(String string) {
 		log(string, new Object[0]);
