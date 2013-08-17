@@ -17,7 +17,6 @@
 */
 package com.minesworn.autocraft;
 
-import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 
 import com.minesworn.autocraft.commands.ACCommandRoot;
@@ -90,7 +89,7 @@ public class Autocraft extends SPlugin {
 	}
 	
 	public void registerEvents() {
-		Bukkit.getPluginManager().registerEvents(new PlayerListener(), p);
+		getServer().getPluginManager().registerEvents(new PlayerListener(), p);
 	}
 	
 }

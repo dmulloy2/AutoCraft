@@ -94,6 +94,10 @@ public abstract class SPlugin extends JavaPlugin implements ISPlugin {
 	public String getCommandPrefix() {return (!COMMAND_PREFIXES.isEmpty()) ? COMMAND_PREFIXES.get(0) : null;}	
 	public boolean isPluginEnabled(String s) {return enabledSoftDependPlugins.contains(s);}
 	
+	public void log(String string) {
+		log(string, new Object[0]);
+	}
+	
 	public void log(String string, Object... objects) {
 		log(Level.INFO, string, objects);
 	}
