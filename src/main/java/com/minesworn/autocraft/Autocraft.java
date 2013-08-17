@@ -54,6 +54,12 @@ public class Autocraft extends SPlugin {
 			factionsEnabled = true;
 			
 		}
+		
+		if (factionsEnabled) {
+			log("Factions plugin found. Enabling integration.");
+		} else  {
+			log("Factions plugin not found. Disabling integration.");
+		}
 
 		registerEvents();
 	}

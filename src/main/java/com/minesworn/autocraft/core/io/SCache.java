@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.commons.lang.WordUtils;
+
 import com.minesworn.autocraft.core.SPlugin;
 
 public class SCache<E extends Entity, S extends SPlugin> {
@@ -40,7 +42,7 @@ public class SCache<E extends Entity, S extends SPlugin> {
 		}
 		
 		entities = Collections.unmodifiableMap(loadMap);
-		s.log(name + " loaded! [" + (System.currentTimeMillis() - start) + "ms]");
+		s.log(WordUtils.capitalize(name) + " loaded! [" + (System.currentTimeMillis() - start) + "ms]");
 	}
 	
 	// Loads entity from file or creates a new file for them if none exists.
@@ -94,7 +96,7 @@ public class SCache<E extends Entity, S extends SPlugin> {
 			for (Entry<String, E> entry : getEntities().entrySet()) {
 				SPersist.save(s, entry.getValue(), entry.getValue().getClass(), new File(FOLDER, entry.getKey()));
 			}
-			s.log(this.name + " saved! [" + (System.currentTimeMillis() - start) + "ms]");
+			s.log(WordUtils.capitalize(name) + " saved! [" + (System.currentTimeMillis() - start) + "ms]");
 		} catch (Exception e) {
 			s.log("Cannot save " + this.name + " before they have even loaded!");
 		}

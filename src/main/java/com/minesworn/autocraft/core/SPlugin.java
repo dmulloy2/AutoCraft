@@ -27,23 +27,6 @@ public abstract class SPlugin extends JavaPlugin implements ISPlugin {
 	public boolean preEnable() {		
 		PLUGIN_NAME = this.getName();
 
-		if (this.getDescription().getDepend() != null)
-			for (String s : this.getDescription().getDepend())
-				if (!Bukkit.getPluginManager().isPluginEnabled(s)) {
-					log(s + " not found. Disabling " + PLUGIN_NAME + ".");
-					return false;
-				}
-		
-		if (this.getDescription().getSoftDepend() != null)
-			for (String s : this.getDescription().getSoftDepend()) {
-				if (!Bukkit.getPluginManager().isPluginEnabled(s))
-					log(s + " not found. Disabling " + s + " related features.");
-				else {
-					log(s + " was found! Enabling " + s + " related features.");
-					enabledSoftDependPlugins.add(s);
-				}
-			}
-		
 		if (this.getDescription().getCommands().size() == 1)
 			for (Entry<String, Map<String, Object>> entry : this.getDescription().getCommands().entrySet())
 				COMMAND_PREFIXES.add(entry.getKey());
