@@ -1,0 +1,41 @@
+name: AutoCraft
+main: com.minesworn.autocraft.Autocraft
+version: 2.6.1
+author: [t7seven7t, dmulloy2]
+softdepend: [SwornNations, Factions]
+description: The MoveCraft alternative. Allows players to create PvP Airships!
+commands: 
+  ac:
+    description:
+    usage:
+permissions:
+  autocraft.allowed:
+    description: Access to allowed command.
+    default: true
+  autocraft.dismount:
+    description: Access to dismount command.
+    default: true
+  autocraft.fire:
+    description: Access to fire command.
+    default: true
+  autocraft.list:
+    description: Access to list command.
+    default: true
+  autocraft.info:
+    description: Access to info command.
+    default: true
+  autocraft.drop:
+    description: Access to drop command.
+    default: true
+  autocraft.napalm:
+    description: Access to napalm command.
+    default: true
+  autocraft.pilot:
+    description: Access to pilot command.
+    default: true
+  autocraft.rotate:
+    description: Access to rotate command.
+    default: true
+  autocraft.torpedo:
+    description: Access to torpedo command.
+    default: true
