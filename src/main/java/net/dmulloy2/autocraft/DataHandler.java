@@ -50,4 +50,8 @@ public class DataHandler {
 	public boolean isValidShip(String key) {
 		return getData(key) != null;
 	}
+	
+	public void clearMemory() {
+		data.clear();
+	}
 }

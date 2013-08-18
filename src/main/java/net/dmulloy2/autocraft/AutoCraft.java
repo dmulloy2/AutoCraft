@@ -86,6 +86,9 @@ public class AutoCraft extends JavaPlugin {
 	public void onDisable() {
 		long start = System.currentTimeMillis();
 		
+		dataHandler.clearMemory();
+		shipManager.clearMemory();
+		
 		long finish = System.currentTimeMillis();
 		
 		logHandler.log("{0} has been disabled ({1}ms)", getDescription().getFullName(), finish - start);
