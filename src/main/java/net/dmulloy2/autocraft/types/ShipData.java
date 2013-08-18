@@ -1,25 +1,18 @@
 package net.dmulloy2.autocraft.types;
 
-import java.io.File;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
-import java.util.logging.Level;
 
-import net.dmulloy2.autocraft.AutoCraft;
+import org.bukkit.configuration.serialization.ConfigurationSerializable;
 
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
+public class ShipData implements ConfigurationSerializable {
 
-public class ShipData {
-	private transient AutoCraft plugin;
-	
-	private transient FileConfiguration fc;
-	
-	private transient boolean loaded;
-	
 	private int maxAltitude = 254;
 	private int minAltitude = 2;
 	private String shipType;
@@ -38,46 +31,77 @@ public class ShipData {
 	private int cannonMaterial;
 	private int fastFlyAtSize = 1000;
 	private List<Integer> allowedBlocks = new ArrayList<Integer>();
-	
-	public ShipData(AutoCraft plugin) {
-		this.plugin = plugin;
+
+	public ShipData() {
+		
 	}
 	
-	public ShipData(AutoCraft plugin, File file) {
-		this.plugin = plugin;
-		
-		this.fc = YamlConfiguration.loadConfiguration(file);
-		
-		try {
-			load();
-		} catch (Exception e) {
-			plugin.getLogHandler().log(Level.SEVERE, "Could not load ship {0}: {1}", file.getName(), e);
-		} finally {
-			plugin.getLogHandler().log("Loaded ship: {0}", shipType);
-			loaded = true;
-		}
-	}
-	
-	public void load() throws Exception {
-		for (Entry<String, Object> entry : fc.getValues(true).entrySet()) {
-			for (Field f : getClass().getDeclaredFields()) {
-				if (Modifier.isTransient(f.getModifiers()))
-					continue;
-				
-				if (f.getName().equalsIgnoreCase(entry.getKey())) {
-					f.set(f.getType(), entry.getValue());
+	public ShipData(Map<String, Object> args) {
+		for (Entry<String, Object> entry : args.entrySet()) {
+			try {
+				for (Field field : getClass().getDeclaredFields()) {
+					if (field.getName().equals(entry.getKey())) {
+						boolean accessible = field.isAccessible();
+						if (!accessible)
+							field.setAccessible(true);
+												
+						field.set(this, entry.getValue());
+												
+						if (!accessible)
+							field.setAccessible(false);
+					}
 				}
+			} catch (Throwable ex) {
 			}
 		}
 	}
-	
-	public void save() throws Exception {
-		File file = new File(plugin.getDataFolder(), shipType + ".yml");
-		for (Field f : getClass().getDeclaredFields()) {
-			fc.set(f.getName(), f.get(f.getType()));
+
+	@SuppressWarnings("rawtypes")
+	@Override
+	public Map<String, Object> serialize() {
+		Map<String, Object> data = new HashMap<String, Object>();
+		
+		for (Field field : getClass().getDeclaredFields()) {
+			if (Modifier.isTransient(field.getModifiers()))
+				continue;
+			
+			try {
+				boolean accessible = field.isAccessible();
+				
+				if (!accessible)
+					field.setAccessible(true);
+				
+				if (field.getType().equals(Integer.TYPE)) {
+					if (field.getInt(this) != 0)
+						data.put(field.getName(), field.getInt(this));
+				} else if (field.getType().equals(Long.TYPE)) {
+					if (field.getLong(this) != 0)
+						data.put(field.getName(), field.getLong(this));
+				} else if (field.getType().equals(Boolean.TYPE)) {
+					if (field.getBoolean(this))
+						data.put(field.getName(), field.getBoolean(this));
+				} else if (field.getType().isAssignableFrom(Collection.class)) {
+					if (!((Collection) field.get(this)).isEmpty())
+						data.put(field.getName(), field.get(this));
+				} else if (field.getType().isAssignableFrom(String.class)) {
+					if (((String) field.get(this)) != null)
+						data.put(field.getName(), field.get(this));
+				} else if (field.getType().isAssignableFrom(Map.class)) {
+					if (!((Map) field.get(this)).isEmpty())
+						data.put(field.getName(), field.get(this));
+				} else {
+					if (field.get(this) != null)
+						data.put(field.getName(), field.get(this));
+				}
+								
+				if (!accessible)
+					field.setAccessible(false);
+				
+			} catch (Throwable ex) {
+			}
 		}
 		
-		fc.save(file);
+		return data;
 	}
 
 	public int getMaxAltitude() {
@@ -222,9 +246,5 @@ public class ShipData {
 
 	public void setAllowedBlocks(List<Integer> allowedBlocks) {
 		this.allowedBlocks = allowedBlocks;
-	}
-	
-	public boolean isLoaded() {
-		return loaded;
 	}
 }

@@ -1,14 +1,13 @@
 package net.dmulloy2.autocraft.legacy;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Map.Entry;
-import java.util.logging.Level;
-
-import com.google.common.io.Files;
 
 import net.dmulloy2.autocraft.AutoCraft;
 import net.dmulloy2.autocraft.types.ShipData;
+import net.dmulloy2.autocraft.util.FileSerialization;
+
+import com.google.common.io.Files;
 
 public class FileConverter {
 	private final AutoCraft plugin;
@@ -39,51 +38,46 @@ public class FileConverter {
 			if (! to.exists()) {
 				try {
 					to.createNewFile();
-				} catch (IOException e) {
-					//
-				} finally {
-					try {
-						Files.move(file, to);
-					} catch (IOException e) {
-						//
-					}
+					
+					Files.move(file, to);
+				} catch (Exception e) {
+					e.printStackTrace();
 				}
 			}
+		}
+		
+		ACPropertiesManager manager = new ACPropertiesManager(plugin);
+		for (Entry<String, ACProperties> ships : manager.getACs().entrySet()) {
+			convertShip(ships.getValue(), ships.getKey());
 		}
 		
 		File shipArchive = new File(archiveFile, "ships");
 		shipArchive.mkdir();
 		
-		ACPropertiesManager manager = new ACPropertiesManager(plugin);
-		for (Entry<String, ACProperties> ships : manager.getACs().entrySet()) {
-			convertShip(ships.getValue());
-		}
-		
 		File shipFile = new File(dataFolder, "ships");
 		for (File file : shipFile.listFiles()) {
+			if (file.getName().endsWith(".yml"))
+				continue;
+			
 			File to = new File(shipArchive, file.getName());
 			if (! to.exists()) {
 				try {
 					to.createNewFile();
-				} catch (IOException e) {
-					//
-				} finally {
-					try {
-						Files.move(file, to);
-					} catch (IOException e) {
-						//
-					}
+					
+					Files.move(file, to);
+				} catch (Exception e) {
+					e.printStackTrace();
 				}
 			}
 		}
-		
+
 		plugin.saveDefaultConfig();
 		
 		plugin.getLogHandler().log("File conversion task completed. Took {0} ms!", System.currentTimeMillis() - start);
 	}
 	
-	public void convertShip(ACProperties ship) {
-		ShipData data = new ShipData(plugin);
+	public void convertShip(ACProperties ship, String name) {
+		ShipData data = new ShipData();
 		
 		data.setAllowedBlocks(ship.ALLOWED_BLOCKS);
 		data.setCannonMaterial(ship.CANNON_MATERIAL);
@@ -102,13 +96,10 @@ public class FileConverter {
 		data.setMinAltitude(ACProperties.MIN_ALTITUDE);
 		data.setMinBlocks(ship.MIN_BLOCKS);
 		data.setMoveSpeed(ship.MOVE_SPEED);
-		data.setShipType(ship.SHIP_TYPE);
-		
-		try {
-			data.save();
-		} catch (Exception e) {
-			plugin.getLogHandler().log(Level.SEVERE, "Could not save ship {0}: {1}", data.getShipType(), e);
-		}
+		data.setShipType(name);
+
+		File shipsFile = new File(plugin.getDataFolder(), "ships");
+		FileSerialization.save(data, new File(shipsFile, name + ".yml"));
 	}
 	
 	public boolean needsConversion() {

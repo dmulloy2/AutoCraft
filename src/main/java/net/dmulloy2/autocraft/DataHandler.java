@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.HashMap;
 
 import net.dmulloy2.autocraft.types.ShipData;
+import net.dmulloy2.autocraft.util.FileSerialization;
 
 public class DataHandler {
 	private HashMap<String, ShipData> data;
@@ -28,11 +29,8 @@ public class DataHandler {
 		
 		File[] children = shipsFolder.listFiles();
 		for (File file : children) {
-			ShipData shipData = new ShipData(plugin, file);
-			if (shipData.isLoaded()) {
-				data.put(shipData.getShipType(), shipData);
-				loadedShips++;
-			}
+			FileSerialization.load(file, ShipData.class);
+			loadedShips++;
 		}
 		
 		plugin.getLogHandler().log("Loaded {0} ships!", loadedShips);
