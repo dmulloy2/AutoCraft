@@ -1,4 +1,4 @@
-package net.dmulloy2.autocraft.util;
+package net.dmulloy2.autocraft.io;
 
 import java.io.File;
 import java.util.Map;

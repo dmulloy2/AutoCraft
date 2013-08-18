@@ -1,4 +1,4 @@
-package net.dmulloy2.autocraft.legacy;
+package net.dmulloy2.autocraft.io.legacy;
 
 import java.io.File;
 import java.util.Collections;
@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.apache.commons.lang.WordUtils;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class SCache<E extends Entity, S extends JavaPlugin> {
@@ -33,7 +32,6 @@ public class SCache<E extends Entity, S extends JavaPlugin> {
 	
 	// Load all entities in the cache's serialization directory
 	protected void loadAllEntities() {
-		long start = System.currentTimeMillis();
 		Map<String, E> loadMap = new HashMap<String, E>();
 		for (File file : FOLDER.listFiles()) {
 			String name = file.getName();
@@ -41,7 +39,6 @@ public class SCache<E extends Entity, S extends JavaPlugin> {
 		}
 		
 		entities = Collections.unmodifiableMap(loadMap);
-		s.getLogger().info(WordUtils.capitalize(name) + " loaded! [" + (System.currentTimeMillis() - start) + "ms]");
 	}
 	
 	// Loads entity from file or creates a new file for them if none exists.
@@ -90,12 +87,10 @@ public class SCache<E extends Entity, S extends JavaPlugin> {
 	public void save() {
 		s.getLogger().info("Saving " + this.name + " to disk...");
 		try {
-			long start = System.currentTimeMillis();
 			cleanupEntities();
 			for (Entry<String, E> entry : getEntities().entrySet()) {
 				SPersist.save(s, entry.getValue(), entry.getValue().getClass(), new File(FOLDER, entry.getKey()));
 			}
-			s.getLogger().info(WordUtils.capitalize(name) + " saved! [" + (System.currentTimeMillis() - start) + "ms]");
 		} catch (Exception e) {
 			s.getLogger().info("Cannot save " + this.name + " before they have even loaded!");
 		}

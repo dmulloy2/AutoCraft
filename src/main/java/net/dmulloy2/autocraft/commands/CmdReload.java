@@ -19,7 +19,7 @@ public class CmdReload extends AutoCraftCommand {
 		plugin.onDisable();
 		plugin.onEnable();
 		
-		sendMessage("&aReload complete!");
+		sendpMessage("&aReload complete!");
 		
 		plugin.getLogHandler().log("{0} has reloaded AutoCraft!", sender.getName());
 	}

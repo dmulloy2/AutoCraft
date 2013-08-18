@@ -1,0 +1,15 @@
+moveSpeed: 10
+minBlocks: 30
+shipType: stealth
+maxNumberOfCannons: 1
+cannonMaterial: 42
+maxShipDimensions: 10
+maxBlocks: 45
+firesTorpedo: true
+allowedBlocks:
+- 20
+- 23
+mainType: 20
+minAltitude: 2
+fastFlyAtSize: 1000
+maxAltitude: 254

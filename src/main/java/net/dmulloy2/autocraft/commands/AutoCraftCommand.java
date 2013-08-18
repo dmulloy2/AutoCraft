@@ -32,9 +32,9 @@ public abstract class AutoCraftCommand implements CommandExecutor {
 	
 	public AutoCraftCommand(AutoCraft plugin) {
 		this.plugin = plugin;
-		requiredArgs = new ArrayList<String>(2);
-		optionalArgs = new ArrayList<String>(2);
-		aliases = new ArrayList<String>(2);
+		this.requiredArgs = new ArrayList<String>(2);
+		this.optionalArgs = new ArrayList<String>(2);
+		this.aliases = new ArrayList<String>(2);
 	}
 	
 	public abstract void perform();
@@ -50,7 +50,7 @@ public abstract class AutoCraftCommand implements CommandExecutor {
 		if (sender instanceof Player)
 			player = (Player) sender;
 		
-		if (mustBePlayer && !isPlayer()) {
+		if (mustBePlayer && ! isPlayer()) {
 			err(plugin.getMessage("error_must_be_player"));
 			return;
 		}
@@ -60,10 +60,11 @@ public abstract class AutoCraftCommand implements CommandExecutor {
 			return;
 		}
 		
-		if (hasPermission())
+		if (hasPermission()) {
 			perform();
-		else
+		} else {
 			err(plugin.getMessage("error_insufficient_permissions"));
+		}
 	}
 	
 	protected final boolean isPlayer() {
@@ -75,9 +76,12 @@ public abstract class AutoCraftCommand implements CommandExecutor {
 	}
 	
 	protected final boolean argMatchesAlias(String arg, String... aliases) {
-		for (String s : aliases)
-			if (arg.equalsIgnoreCase(s))
+		for (String s : aliases) {
+			if (arg.equalsIgnoreCase(s)) {
 				return true;
+			}
+		}
+		
 		return false;
 	}
 	

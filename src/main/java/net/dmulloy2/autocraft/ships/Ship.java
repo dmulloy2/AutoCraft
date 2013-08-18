@@ -17,6 +17,7 @@ import net.dmulloy2.autocraft.util.FormatUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
@@ -90,8 +91,11 @@ public class Ship {
 			
 			// Can this airship drop bombs?
 			if (data.isDropsBomb()) {
-				if (plugin.isFactionsEnabled() && !FactionUtil.canPlayerUseWeapon(player))
-					return;		
+				if (plugin.isFactionsEnabled() && !FactionUtil.canPlayerUseWeapon(player)) {
+					return;
+				}
+				
+				sendMessage("&6Attempting to drop TNT...");	
 				
 				Block[] cannons = getCannons();
 				int numfiredcannons = 0;
@@ -112,6 +116,8 @@ public class Ship {
 							sendMessage("&bSome cannons did not fire. Max cannon limit is: &6{0}", data.getMaxNumberOfCannons());
 							break;
 						}
+					} else {
+						sendMessage("&cYou do not have enough TNT to perform this operation!");
 					}
 				}
 			} else {
@@ -127,11 +133,14 @@ public class Ship {
 	public void fire() {
 		// Has player waited cooldown before trying to fire again?
 		if ((System.currentTimeMillis() - lastFired) > (plugin.getConfig().getInt("weaponCooldownTime") * 1000)) {
-			
+			log("{0} is attempting to fire TNT.", player.getName());
 			// Can this airship drop bombs?
 			if (data.isFiresTnt()) {
-				if (plugin.isFactionsEnabled() && !FactionUtil.canPlayerUseWeapon(player))
-					return;				
+				if (plugin.isFactionsEnabled() && !FactionUtil.canPlayerUseWeapon(player)) {
+					return;
+				}
+				
+				sendMessage("&6Attempting to fire TNT...");
 				
 				Block[] cannons = getCannons();
 				int numfiredcannons = 0;
@@ -158,6 +167,8 @@ public class Ship {
 								break;
 							}
 						}
+					} else {
+						sendMessage("&cYou do not have enough TNT to perform this operation!");
 					}
 				}
 			} else {
@@ -176,8 +187,11 @@ public class Ship {
 			log("{0} is attempting to drop napalm.", player.getName());
 			// Can this airship drop napalm?
 			if (data.isDropsNapalm()) {
-				if (plugin.isFactionsEnabled() && !FactionUtil.canPlayerUseWeapon(player))
-					return;		
+				if (plugin.isFactionsEnabled() && !FactionUtil.canPlayerUseWeapon(player)) {
+					return;
+				}
+				
+				sendMessage("&6Attempting to drop napalm...");
 				
 				Block[] cannons = getCannons();
 				int numfiredcannons = 0;
@@ -206,6 +220,8 @@ public class Ship {
 							sendMessage("&bSome napalm cannons did not fire. Max cannon limit is &6{0}", data.getMaxNumberOfCannons());
 							break;
 						}
+					} else {
+						sendMessage("&cYou do not have enough TNT to perform this operation!");
 					}
 				}
 			} else {
@@ -224,8 +240,11 @@ public class Ship {
 			log("{0} is attempting to fire a torpedo", player.getName());
 			// Can this airship fire torpedoes?
 			if (data.isFiresTorpedo()) {
-				if (plugin.isFactionsEnabled() && !FactionUtil.canPlayerUseWeapon(player))
-					return;		
+				if (plugin.isFactionsEnabled() && !FactionUtil.canPlayerUseWeapon(player)) {
+					return;
+				}
+				
+				sendMessage("&6Attempting to fire a torpedo...");
 				
 				Block[] cannons = getCannons();
 				int numfiredcannons = 0;
@@ -259,6 +278,8 @@ public class Ship {
 									data.getMaxNumberOfCannons());
 							break;
 						}
+					} else {
+						sendMessage("&cYou do not have enough TNT to perform this operation!");
 					}
 				}
 			} else {
@@ -280,6 +301,7 @@ public class Ship {
 			else
 				break;
 		}
+		
 		return ret;
 	}
 	
@@ -301,6 +323,7 @@ public class Ship {
 					return true;
 			}
 		}
+		
 		return false;
 	}
 	
@@ -327,6 +350,7 @@ public class Ship {
 						item.setAmount(0);
 					}
 				}
+				
 				if (num <= 0)
 					return;
 			}
@@ -335,11 +359,12 @@ public class Ship {
 	
 	// Returns all dispensers on the ship.
 	public Block[] getCannons() {
-		ArrayList<Block> cannons = new ArrayList<Block>();
+		List<Block> cannons = new ArrayList<Block>();
 		for (int i = 0; i < this.blocks.length; i++) {
 			if (blocks[i].getType().equals(Material.DISPENSER))
 				cannons.add(blocks[i]);
 		}
+		
 		return cannons.toArray(new Block[0]);
 	}
 	
@@ -361,11 +386,11 @@ public class Ship {
 	// This method doesn't actually move the ship, only prepares to before it calls domove().
 	public void move(int dx, int dy, int dz) {
 		// If the airship has been stopped then remove it from the mapping.
-		if (this.stopped)
+		if (stopped) {
 			plugin.getShipManager().ships.remove(player.getName());
-		else {
+		} else {
 			// Check that the ship hasn't already moved within the last second.
-			if (System.currentTimeMillis() - this.lastmove > 1000L) {
+			if (System.currentTimeMillis() - lastmove > 1000L) {
 				// Reduce the matrix given to identities only.
 				if (Math.abs(dx) > 1)
 					dx /= Math.abs(dx);
@@ -374,7 +399,7 @@ public class Ship {
 				if (Math.abs(dz) > 1)
 					dz /= Math.abs(dz);
 				
-				if (System.currentTimeMillis() - this.lastmove < 1500L) {
+				if (System.currentTimeMillis() - lastmove < 1500L) {
 					dx *= data.getMoveSpeed();
 					dy *= data.getMoveSpeed();
 					dz *= data.getMoveSpeed();
@@ -402,19 +427,20 @@ public class Ship {
 				}
 				
 				// Can't move :/
-				if (obstruction)
+				if (obstruction) {
 					sendMessage("&eObstruction - &cCannot move any further in this direction.");
 				// Lets move this thing :D
-				else
+				} else {
 					domove(dx, dy, dz);
+				}
 			}
 		}
 	}
 	
 	public void rotate(TurnDirection dir) {	
-		if (this.stopped)
+		if (stopped) {
 			plugin.getShipManager().ships.remove(player.getName());
-		else {
+		} else {
 			// Check that the ship hasn't moved within the last second.
 			if (System.currentTimeMillis() - this.lastmove > 1000L) {
 				this.lastmove = System.currentTimeMillis();
@@ -437,10 +463,11 @@ public class Ship {
 				}
 				
 				// Can't move :/
-				if (obstruction)
+				if (obstruction) {
 					sendMessage("&eObstruction - &cCannot move any further in this direction.");
-				else
+				} else {
 					dorotate(dir);
+				}
 			}
 		}
 	
@@ -555,6 +582,7 @@ public class Ship {
 			
 			new BukkitRunnable() {
 
+				@Override
 				public void run() {
 					if (System.currentTimeMillis() - lastmove > 1500L) {
 						for (int i = 0; i < blocks.length; i++) {
@@ -698,24 +726,26 @@ public class Ship {
 	
 	// Checks that the ship is within its size restraints as defined by its AC data.
 	public boolean areBlocksValid() {
-		if (!isValidMaterial(this.mainblock))
+		if (! isValidMaterial(mainblock)) {
 			sendMessage("&cPlease stand on a valid block for this type of ship");
-		else {
-			if (this.blocks.length > data.getMaxBlocks())
-				sendMessage("&cYour ship has &e{0}&c/&e{1} &cblocks. Please remove some.", 
+		} else {
+			if (blocks.length > data.getMaxBlocks()) {
+				sendMessage("&cYour ship has &e{0}&c/&e{1} &cblocks. Please remove some.",
 						blocks.length, data.getMaxBlocks());
-			else if (this.numMainBlocks < data.getMaxBlocks())
+			} else if (numMainBlocks < data.getMinBlocks()) {
 				sendMessage("&cYour ship has &e{0}&c/&e{1} {2} &cblocks. Please add more.",
 						numMainBlocks, data.getMinBlocks(), getMainType());
-			else
+			} else {
 				return true;
+			}
 		}
+		
 		return false;
 	}
 	
 	// Returns a string name for the main material of this ship.
 	public String getMainType() {
-		return Material.getMaterial(data.getMainType()).toString().replace("", " ").toLowerCase();
+		return FormatUtil.getFriendlyName(Material.getMaterial(data.getMainType()));
 	}
 	
 	// Checks if ship is already being piloted
@@ -752,6 +782,7 @@ public class Ship {
 			if (isPassenger(p))
 				ret.add(p);
 		}
+		
 		return ret;
 	}
 	
@@ -767,6 +798,7 @@ public class Ship {
 			if (blockon.getLocation().equals(block.getLocation()) || blockon2.getLocation().equals(block.getLocation()))
 				return true;
 		}
+		
 		return false;
 	}
 	
@@ -787,6 +819,7 @@ public class Ship {
 			specialBlocks = specialBlockList.toArray(new Block[0]);
 			return true;
 		}
+		
 		return false;
 	}
 	
@@ -869,13 +902,12 @@ public class Ship {
 	public void sendMessage(String msg, Object... args) {
 		player.sendMessage(plugin.getPrefix() + FormatUtil.format(msg, args));
 	}
+
+	public void playSound(Location location, Sound sound, float volume, float pitch) {
+		player.playSound(location, sound, volume, pitch);
+	}
 	
 	public ShipData getData() {
 		return data;
-	}
-	
-	// TODO: Sounds for firing >;3
-	public void playSound() {
-		
 	}
 }

@@ -22,6 +22,6 @@ public class CmdDismount extends AutoCraftCommand {
 		}
 		
 		plugin.getShipManager().ships.remove(player.getName());
-		sendMessage("&7You have stopped piloting this ship.");
+		sendpMessage("&7You have stopped piloting this ship.");
 	}
 }

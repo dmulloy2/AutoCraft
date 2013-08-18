@@ -1,5 +1,7 @@
 package net.dmulloy2.autocraft.commands;
 
+import org.bukkit.Location;
+
 import net.dmulloy2.autocraft.AutoCraft;
 import net.dmulloy2.autocraft.permissions.Permission;
 import net.dmulloy2.autocraft.ships.Ship;
@@ -26,9 +28,12 @@ public class CmdInfo extends AutoCraftCommand {
 		
 		sendMessage("&3====[ &eYour Ship Data &3]====");
 		sendMessage("&bLocation: ");
-		sendMessage("&bX: &e{0}");
-		sendMessage("&bY: &e{0}");
-		sendMessage("&bZ: &e{0}");
+		
+		Location loc = player.getLocation();
+		sendMessage("&bX: &e{0}", loc.getBlockX());
+		sendMessage("&bY: &e{0}", loc.getBlockY());
+		sendMessage("&bZ: &e{0}", loc.getBlockZ());
+		sendMessage("&bWorld: &e{0}", loc.getWorld().getName());
 		
 		sendMessage("");
 		

@@ -35,13 +35,14 @@ import net.dmulloy2.autocraft.commands.CmdReload;
 import net.dmulloy2.autocraft.commands.CmdRotate;
 import net.dmulloy2.autocraft.commands.CmdTorpedo;
 import net.dmulloy2.autocraft.commands.CommandHandler;
-import net.dmulloy2.autocraft.legacy.FileConverter;
+import net.dmulloy2.autocraft.io.DataHandler;
+import net.dmulloy2.autocraft.io.FileConverter;
+import net.dmulloy2.autocraft.io.ResourceHandler;
 import net.dmulloy2.autocraft.listeners.PlayerListener;
 import net.dmulloy2.autocraft.permissions.PermissionHandler;
 import net.dmulloy2.autocraft.ships.ShipManager;
 import net.dmulloy2.autocraft.util.FormatUtil;
 import net.dmulloy2.autocraft.util.LogHandler;
-import net.dmulloy2.autocraft.util.ResourceHandler;
 
 import org.bukkit.plugin.java.JavaPlugin;
 

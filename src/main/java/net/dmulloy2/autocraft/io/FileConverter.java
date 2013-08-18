@@ -1,11 +1,12 @@
-package net.dmulloy2.autocraft.legacy;
+package net.dmulloy2.autocraft.io;
 
 import java.io.File;
 import java.util.Map.Entry;
 
 import net.dmulloy2.autocraft.AutoCraft;
+import net.dmulloy2.autocraft.io.legacy.ACProperties;
+import net.dmulloy2.autocraft.io.legacy.ACPropertiesManager;
 import net.dmulloy2.autocraft.types.ShipData;
-import net.dmulloy2.autocraft.util.FileSerialization;
 
 import com.google.common.io.Files;
 

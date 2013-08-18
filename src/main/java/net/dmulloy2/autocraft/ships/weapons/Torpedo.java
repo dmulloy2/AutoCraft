@@ -42,7 +42,7 @@ public class Torpedo extends Projectile {
 
 	@Override
 	public void move() {
-		if (!isExploded()) {
+		if (! isExploded()) {
 			this.gravity += this.gravity / 15.0 + 0.00125;
 			this.yvelo += this.gravity;
 			if (this.yvelo > 20.0D)
@@ -56,7 +56,9 @@ public class Torpedo extends Projectile {
 				torpedo[0] = b;
 				torpedo[0].setType(Material.DIAMOND_BLOCK);
 			} else {
-				if (plugin.isFactionsEnabled() && !Board.getFactionAt(new FLocation(b.getLocation())).hasPlayersOnline()) {
+				if (plugin.isFactionsEnabled() 
+						&& !Board.getFactionAt(new FLocation(b.getLocation())).isNone() 
+						&& !Board.getFactionAt(new FLocation(b.getLocation())).hasPlayersOnline()) {
 					torpedo[0].setType(Material.AIR);
 					torpedo[1].setType(Material.AIR);
 					this.exploded = true;

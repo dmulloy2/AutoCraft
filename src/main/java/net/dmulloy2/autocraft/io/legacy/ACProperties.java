@@ -1,4 +1,4 @@
-package net.dmulloy2.autocraft.legacy;
+package net.dmulloy2.autocraft.io.legacy;
 
 import java.util.ArrayList;
 import java.util.List;

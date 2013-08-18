@@ -58,6 +58,14 @@
 		  <include>README.creole</include>
         </includes>
       </resource>
+      <resource>
+        <targetPath>.</targetPath>
+        <directory>${basedir}/src/main/resources/ships</directory>
+        <filtering>true</filtering>
+        <includes>
+          <include>*.yml</include>
+        </includes>
+      </resource>
     </resources>
   </build>
   

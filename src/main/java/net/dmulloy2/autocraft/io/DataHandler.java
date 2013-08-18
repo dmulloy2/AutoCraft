@@ -1,11 +1,11 @@
-package net.dmulloy2.autocraft;
+package net.dmulloy2.autocraft.io;
 
 import java.io.File;
 import java.util.HashMap;
 import java.util.Set;
 
+import net.dmulloy2.autocraft.AutoCraft;
 import net.dmulloy2.autocraft.types.ShipData;
-import net.dmulloy2.autocraft.util.FileSerialization;
 
 public class DataHandler {
 	private HashMap<String, ShipData> data;
@@ -26,6 +26,10 @@ public class DataHandler {
 			generateStockShips();
 		}
 		
+		if (shipsFolder.listFiles().length == 0) {
+			generateStockShips();
+		}
+		
 		int loadedShips = 0;
 		
 		File[] children = shipsFolder.listFiles();
@@ -37,10 +41,15 @@ public class DataHandler {
 		
 		plugin.getLogHandler().log("Loaded {0} ships!", loadedShips);
 	}
-	
-	// TODO
+
 	public void generateStockShips() {
+		plugin.getLogHandler().log("Generating stock ships!");
 		
+		String[] stocks = new String[] { "airship", "base", "battle", "dreadnought", "pirate", "stealth", "titan", "turret" };
+		
+		for (String stock : stocks) {
+			plugin.saveResource("ships/" + stock + ".yml", false);
+		}
 	}
 	
 	public ShipData getData(String key) {

@@ -5,6 +5,7 @@ import net.dmulloy2.autocraft.permissions.Permission;
 import net.dmulloy2.autocraft.types.ShipData;
 import net.dmulloy2.autocraft.util.FormatUtil;
 
+import org.apache.commons.lang.WordUtils;
 import org.bukkit.Material;
 
 public class CmdAllowed extends AutoCraftCommand {
@@ -29,7 +30,7 @@ public class CmdAllowed extends AutoCraftCommand {
 		
 		ShipData data = plugin.getDataHandler().getData(shipName);
 		
-		sendMessage("&3====[ &e{0} &3]====", data.getShipType());
+		sendMessage("&3====[ &e{0} &3]====", WordUtils.capitalize(data.getShipType()));
 		sendMessage("&bCan fire TNT: &e{0}", data.isFiresTnt());
 		sendMessage("&bCan fire Torpedo: &e{0}", data.isFiresTorpedo());
 		sendMessage("&bCan drop Bombs: &e{0}", data.isDropsBomb());
