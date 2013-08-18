@@ -1,7 +1,7 @@
 name: AutoCraft
-main: com.minesworn.autocraft.Autocraft
-version: 2.6.1
-author: [t7seven7t, dmulloy2]
+main: net.dmulloy2.autocraft.AutoCraft
+version: ${project.version}
+author: dmulloy2
 softdepend: [SwornNations, Factions]
 description: The MoveCraft alternative. Allows players to create PvP Airships!
 commands: 
