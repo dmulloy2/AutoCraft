@@ -1,0 +1,27 @@
+# AutoCraft Configuration File
+# By dmulloy2
+
+# Weapon Cooldown Time (seconds)
+weaponCooldownTime: 6
+
+# Amount of TNT to fire/drop (integer)
+numTntToFireNormal: 4
+numTntToFireTorpedo: 8
+numTntToDropBomb: 2
+numTntToDropNapalm: 4
+
+# Materials Needed (integer)
+materialsNeededForTorpedo:
+- 57
+- 42
+
+materialsNeededForNapalm:
+- 341
+- 327
+- 57
+
+# Napalm Burn Radius
+napalmBurnRadius: 6
+
+# Factions Protection Enabled
+factionsProtectionsEnabled: true

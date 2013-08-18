@@ -1,13 +1,14 @@
 name: AutoCraft
-main: com.minesworn.autocraft.Autocraft
-version: 2.6.1
-author: [t7seven7t, dmulloy2]
+main: net.dmulloy2.autocraft.AutoCraft
+version: ${project.version}
+author: dmulloy2
 softdepend: [SwornNations, Factions]
 description: The MoveCraft alternative. Allows players to create PvP Airships!
 commands: 
   ac:
-    description:
-    usage:
+    description: AutoCraft base command
+    usage: /<command> <args>
+    aliases: [autocraft, ships]
 permissions:
   autocraft.allowed:
     description: Access to allowed command.
@@ -33,6 +34,9 @@ permissions:
   autocraft.pilot:
     description: Access to pilot command.
     default: true
+  autocraft.reload:
+    description: Access to reload command.
+    default: false
   autocraft.rotate:
     description: Access to rotate command.
     default: true

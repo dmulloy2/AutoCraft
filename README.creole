@@ -2,11 +2,8 @@
 ** The MoveCraft alternative. Allows players to create PvP Airships! **
 
 == Planned Features
-* General code cleanup and optimization
-* Turrets
-* Ship Cargo
+* Sounds
 * Boats
-* Ship Ownership
 
 == About AutoCraft
 AutoCraft was origionally created in 2011, but has undergone significant changes since then. AutoCraft was created by the MineSworn development
