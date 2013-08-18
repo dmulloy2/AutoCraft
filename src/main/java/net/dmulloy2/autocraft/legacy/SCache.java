@@ -120,6 +120,5 @@ public class SCache<E extends Entity, S extends JavaPlugin> {
 		copy.remove(name);
 		
 		this.entities = Collections.unmodifiableMap(copy);
-	}
-	
+	}	
 }

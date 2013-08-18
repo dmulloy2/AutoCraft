@@ -10,6 +10,7 @@ public enum Permission {
 	CMD_MOVE("move"),
 	CMD_NAPALM("napalm"),
 	CMD_PILOT("pilot"),
+	CMD_RELOAD("reload"),
 	CMD_ROTATE("rotate"),
 	CMD_TORPEDO("torpedo");
 	

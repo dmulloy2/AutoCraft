@@ -1,6 +1,3 @@
-/**
- * Copyright (C) 2012 t7seven7t
- */
 package net.dmulloy2.autocraft.commands;
 
 import java.util.ArrayList;
@@ -9,7 +6,6 @@ import java.util.List;
 import net.dmulloy2.autocraft.AutoCraft;
 
 /**
- * @author t7seven7t
  * Represents a command that can have pages
  */
 public abstract class PaginatedCommand extends AutoCraftCommand {

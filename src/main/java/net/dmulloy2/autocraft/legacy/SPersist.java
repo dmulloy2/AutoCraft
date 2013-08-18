@@ -115,6 +115,5 @@ public class SPersist {
 			p.getLogger().info("Exception ocurred while attempting to add defaults to file.");
 			e.printStackTrace();
 		}
-	}
-	
+	}	
 }

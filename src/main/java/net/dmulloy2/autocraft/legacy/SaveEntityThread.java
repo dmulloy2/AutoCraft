@@ -20,5 +20,4 @@ public class SaveEntityThread<E extends Entity, S extends JavaPlugin> extends ST
 	public void run() {
 		SPersist.save(s, e, e.getClass(), new File(cache.FOLDER, name));
 	}
-
 }

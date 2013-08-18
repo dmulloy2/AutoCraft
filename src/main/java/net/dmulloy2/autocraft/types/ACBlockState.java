@@ -17,6 +17,5 @@ public class ACBlockState {
 		if (s instanceof InventoryHolder) {
 			this.inv = ((InventoryHolder) s).getInventory().getContents();
 		}
-	}
-	
+	}	
 }

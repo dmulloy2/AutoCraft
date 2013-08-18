@@ -28,5 +28,4 @@ public class PermissionHandler {
 	private String getPermissionString(Permission permission) {
 		return plugin.getName().toLowerCase() + "." + permission.node.toLowerCase();
 	}
-
 }

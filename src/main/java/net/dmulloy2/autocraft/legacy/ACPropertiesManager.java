@@ -25,5 +25,4 @@ public class ACPropertiesManager extends SCache<ACProperties, AutoCraft> {
 	public Map<String, ACProperties> getACs() {
 		return getEntities();
 	}
-
 }
