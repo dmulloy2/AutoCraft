@@ -21,6 +21,19 @@ import java.util.MissingResourceException;
 import java.util.logging.Level;
 
 import lombok.Getter;
+import net.dmulloy2.autocraft.commands.CmdAllowed;
+import net.dmulloy2.autocraft.commands.CmdDismount;
+import net.dmulloy2.autocraft.commands.CmdDrop;
+import net.dmulloy2.autocraft.commands.CmdFire;
+import net.dmulloy2.autocraft.commands.CmdHelp;
+import net.dmulloy2.autocraft.commands.CmdInfo;
+import net.dmulloy2.autocraft.commands.CmdList;
+import net.dmulloy2.autocraft.commands.CmdMove;
+import net.dmulloy2.autocraft.commands.CmdNapalm;
+import net.dmulloy2.autocraft.commands.CmdPilot;
+import net.dmulloy2.autocraft.commands.CmdReload;
+import net.dmulloy2.autocraft.commands.CmdRotate;
+import net.dmulloy2.autocraft.commands.CmdTorpedo;
 import net.dmulloy2.autocraft.commands.CommandHandler;
 import net.dmulloy2.autocraft.legacy.FileConverter;
 import net.dmulloy2.autocraft.listeners.PlayerListener;
@@ -63,6 +76,21 @@ public class AutoCraft extends JavaPlugin {
 		
 		dataHandler = new DataHandler(this);
 		dataHandler.load();
+		
+		commandHandler.setCommandPrefix("ac");
+		commandHandler.registerCommand(new CmdAllowed(this));
+		commandHandler.registerCommand(new CmdDismount(this));
+		commandHandler.registerCommand(new CmdDrop(this));
+		commandHandler.registerCommand(new CmdFire(this));
+		commandHandler.registerCommand(new CmdHelp(this));
+		commandHandler.registerCommand(new CmdInfo(this));
+		commandHandler.registerCommand(new CmdList(this));
+		commandHandler.registerCommand(new CmdMove(this));
+		commandHandler.registerCommand(new CmdNapalm(this));
+		commandHandler.registerCommand(new CmdPilot(this));
+		commandHandler.registerCommand(new CmdReload(this));
+		commandHandler.registerCommand(new CmdRotate(this));
+		commandHandler.registerCommand(new CmdTorpedo(this));
 		
 		if (getConfig().getBoolean("factionsProtectionsEnabled") && 
 				(getServer().getPluginManager().isPluginEnabled("SwornNations") || 
