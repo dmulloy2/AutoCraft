@@ -82,11 +82,15 @@ public abstract class AutoCraftCommand implements CommandExecutor {
 	}
 	
 	protected final void err(String msg, Object... args) {
-		sendMessage("&c" + FormatUtil.format(msg, args));
+		sendpMessage("&c" + msg, args);
+	}
+	
+	protected final void sendpMessage(String msg, Object... args) {
+		sender.sendMessage(plugin.getPrefix() + FormatUtil.format(msg, args));
 	}
 	
 	protected final void sendMessage(String msg, Object... args) {
-		sender.sendMessage(plugin.getPrefix() + FormatUtil.format(msg, args));
+		sender.sendMessage(FormatUtil.format(msg, args));
 	}
 
 	public final String getName() {

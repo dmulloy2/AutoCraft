@@ -2,6 +2,7 @@ package net.dmulloy2.autocraft;
 
 import java.io.File;
 import java.util.HashMap;
+import java.util.Set;
 
 import net.dmulloy2.autocraft.types.ShipData;
 import net.dmulloy2.autocraft.util.FileSerialization;
@@ -29,7 +30,8 @@ public class DataHandler {
 		
 		File[] children = shipsFolder.listFiles();
 		for (File file : children) {
-			FileSerialization.load(file, ShipData.class);
+			ShipData shipData = FileSerialization.load(file, ShipData.class);
+			data.put(shipData.getShipType(), shipData);
 			loadedShips++;
 		}
 		
@@ -51,5 +53,9 @@ public class DataHandler {
 	
 	public void clearMemory() {
 		data.clear();
+	}
+	
+	public Set<String> getAvailableShips() {
+		return data.keySet();
 	}
 }

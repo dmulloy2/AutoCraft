@@ -17,7 +17,7 @@ public class CmdList extends AutoCraftCommand {
 	public void perform() {
 		sendMessage("&3====[ &eAutoCraft Ship Types &3]====");
 		
-		for (String type : plugin.getShipManager().ships.keySet()) {
+		for (String type : plugin.getDataHandler().getAvailableShips()) {
 			sendMessage("&b - &e{0}", type);
 		}
 	}
