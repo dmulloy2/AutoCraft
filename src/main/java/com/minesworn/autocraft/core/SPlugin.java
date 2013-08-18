@@ -1,6 +1,7 @@
 package com.minesworn.autocraft.core;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.logging.Level;
@@ -12,12 +13,10 @@ import org.bukkit.plugin.java.JavaPlugin;
 import com.minesworn.autocraft.core.commands.SCommand;
 import com.minesworn.autocraft.core.commands.SCommandRoot;
 import com.minesworn.autocraft.core.util.FormatUtil;
-import com.minesworn.autocraft.core.util.SLang;
 
 public abstract class SPlugin extends JavaPlugin implements ISPlugin {
-	private ArrayList<String> COMMAND_PREFIXES = new ArrayList<String>();
-	
-	public SLang lang;
+	private List<String> COMMAND_PREFIXES = new ArrayList<String>();
+
 	public SCommandRoot<?> commandRoot;
 	public volatile boolean enabled;
 		
@@ -36,8 +35,7 @@ public abstract class SPlugin extends JavaPlugin implements ISPlugin {
 	@Override
 	public void onEnable() {
 		preEnable();
-		lang = new SLang(this);
-		lang.load();
+
 		commandRoot = new SCommandRoot<SPlugin>(this);
 	}
 	

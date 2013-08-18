@@ -7,7 +7,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import com.minesworn.autocraft.Autocraft;
 import com.minesworn.autocraft.core.SPlugin;
 import com.minesworn.autocraft.core.permissions.PermissionBase;
 import com.minesworn.autocraft.core.util.Util;
@@ -39,19 +38,20 @@ public abstract class SCommand<S extends SPlugin> implements ISCommand {
 		}
 		
 		if (mustBePlayer && !isPlayer) {
-			errorMessage(s.lang.getErrorMessage("mustbeplayer"));
+			errorMessage("You must be a player to do this.");
 			return;
 		}
 		
 		if (requiredArgs.size() > args.length) {
-			errorMessage(s.lang.getErrorMessage("argcount") + getUsageTemplate(false));
+			errorMessage("Invalid arguments! Try: " + getUsageTemplate(false));
 			return;
 		}
 		
 		if (hasPermission()) {
 			perform();
-		} else
-			errorMessage(Autocraft.p.lang.getErrorMessage("permission"));
+		} else {
+			errorMessage("You do not have permission to perform this command!");
+		}
 	}
 	
 	public String getName() {

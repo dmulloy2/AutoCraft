@@ -22,7 +22,6 @@ import org.bukkit.command.CommandSender;
 import com.minesworn.autocraft.commands.ACCommandRoot;
 import com.minesworn.autocraft.core.SPlugin;
 import com.minesworn.autocraft.core.commands.CmdHelp;
-import com.minesworn.autocraft.core.util.SLang;
 import com.minesworn.autocraft.listeners.PlayerListener;
 import com.minesworn.autocraft.ships.ACPropertiesManager;
 import com.minesworn.autocraft.ships.ACShipManager;
@@ -41,10 +40,7 @@ public class Autocraft extends SPlugin {
 		p = this;
 		
 		preEnable();
-		
-		lang = new SLang(this);
-		lang.load();
-		
+
 		Config.load();
 		
 		shipmanager = new ACShipManager();
