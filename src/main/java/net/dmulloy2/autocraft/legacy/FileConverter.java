@@ -117,7 +117,7 @@ public class FileConverter {
 			if (file.isDirectory())
 				continue;
 			
-			if (! file.getName().contains(".yml"))
+			if (! file.getName().endsWith(".yml") && ! file.getName().endsWith(".properties"))
 				return true;
 		}
 		

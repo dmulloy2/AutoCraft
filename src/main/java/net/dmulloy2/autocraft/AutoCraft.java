@@ -50,15 +50,15 @@ public class AutoCraft extends JavaPlugin {
 		
 		saveDefaultConfig();
 		
-		new FileConverter(this).run();
-		
 		permissionHandler = new PermissionHandler(this);
 		commandHandler = new CommandHandler(this);
 		logHandler = new LogHandler(this);
 		
+		new FileConverter(this).run();
+		
 		saveResource("messages.properties", true);
 		resourceHandler = new ResourceHandler(this, getClassLoader());
-
+		
 		shipManager = new ShipManager();
 		
 		dataHandler = new DataHandler(this);
