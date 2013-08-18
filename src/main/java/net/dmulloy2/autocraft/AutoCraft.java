@@ -22,6 +22,7 @@ import java.util.logging.Level;
 
 import lombok.Getter;
 import net.dmulloy2.autocraft.commands.CommandHandler;
+import net.dmulloy2.autocraft.legacy.FileConverter;
 import net.dmulloy2.autocraft.listeners.PlayerListener;
 import net.dmulloy2.autocraft.permissions.PermissionHandler;
 import net.dmulloy2.autocraft.ships.ShipManager;
@@ -48,6 +49,8 @@ public class AutoCraft extends JavaPlugin {
 		long start = System.currentTimeMillis();
 		
 		saveDefaultConfig();
+		
+		new FileConverter(this).run();
 		
 		permissionHandler = new PermissionHandler(this);
 		commandHandler = new CommandHandler(this);
