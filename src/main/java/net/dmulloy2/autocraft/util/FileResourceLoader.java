@@ -1,6 +1,3 @@
-/**
- * Copyright (C) 2012 t7seven7t
- */
 package net.dmulloy2.autocraft.util;
 
 import java.io.File;
@@ -12,11 +9,7 @@ import java.net.URL;
 
 import org.bukkit.plugin.java.JavaPlugin;
 
-/**
- * @author t7seven7t
- */
 public class FileResourceLoader extends ClassLoader {
-
 	private final transient File dataFolder;
 	
 	public FileResourceLoader(final ClassLoader classLoader, final JavaPlugin plugin) {

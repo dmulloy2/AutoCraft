@@ -78,6 +78,5 @@ public class Torpedo extends Projectile {
 		TNTPrimed tnt = torpedo[0].getWorld().spawn(torpedo[0].getLocation(), TNTPrimed.class);
 		tnt.setYield(3.5f);
 		tnt.setFuseTicks(0);	
-	}
-	
+	}	
 }

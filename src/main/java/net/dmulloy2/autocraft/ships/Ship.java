@@ -867,7 +867,7 @@ public class Ship {
 	}
 	
 	public void sendMessage(String msg, Object... args) {
-		player.sendMessage(FormatUtil.format("&4[&6&lAC&4]&6" + msg, args));
+		player.sendMessage(plugin.getPrefix() + FormatUtil.format(msg, args));
 	}
 	
 	public ShipData getData() {

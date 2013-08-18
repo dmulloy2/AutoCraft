@@ -47,7 +47,7 @@ public class CommandHandler implements CommandExecutor {
 				}
 			}
 			
-			sender.sendMessage(FormatUtil.format(plugin.getMessage("unknown_command"), args[0]));
+			sender.sendMessage(plugin.getPrefix() + FormatUtil.format(plugin.getMessage("unknown_command"), args[0]));
 		} else {
 			new CmdHelp(plugin).execute(sender, args);
 		}

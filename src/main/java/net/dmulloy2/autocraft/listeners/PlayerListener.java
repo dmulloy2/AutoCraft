@@ -29,7 +29,8 @@ public class PlayerListener implements Listener {
 		if (plugin.getShipManager().ships.containsKey(e.getPlayer().getName())) {
 			if (!plugin.getShipManager().ships.get(e.getPlayer().getName()).isPassenger(e.getPlayer())) {
 				plugin.getShipManager().ships.remove(e.getPlayer().getName());
-				e.getPlayer().sendMessage(ChatColor.GRAY + "You have stepped off your ship, you have been unpiloted");
+				e.getPlayer().sendMessage(plugin.getPrefix() + 
+						ChatColor.GRAY + "You have stepped off your ship, you have been unpiloted");
 			}
 		}
 	}
@@ -49,9 +50,11 @@ public class PlayerListener implements Listener {
 						e.getClickedBlock().getType().equals(Material.WORKBENCH)))
 					return;
 				
-				plugin.getShipManager().ships.get(e.getPlayer().getName()).move(	(int) Math.round(dir.getX()), 
-																				(int) Math.round(dir.getY()), 
-																				(int) Math.round(dir.getZ()));
+				plugin.getShipManager().ships.get(e.getPlayer().getName()).move(
+						(int) Math.round(dir.getX()), 
+						(int) Math.round(dir.getY()), 
+						(int) Math.round(dir.getZ()));
+				
 				e.setCancelled(true);
 			}
 		}

@@ -1,6 +1,3 @@
-/**
- * Copyright (C) 2012 t7seven7t
- */
 package net.dmulloy2.autocraft.commands;
 
 import java.util.ArrayList;
@@ -9,18 +6,12 @@ import java.util.List;
 import net.dmulloy2.autocraft.AutoCraft;
 import net.dmulloy2.autocraft.permissions.Permission;
 import net.dmulloy2.autocraft.util.FormatUtil;
-import net.dmulloy2.autocraft.util.Util;
 
-import org.bukkit.ChatColor;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-/**
- * @author t7seven7t
- */
 public abstract class AutoCraftCommand implements CommandExecutor {
 	protected final AutoCraft plugin;
 	
@@ -48,8 +39,7 @@ public abstract class AutoCraftCommand implements CommandExecutor {
 	
 	public abstract void perform();
 	
-	public final boolean onCommand(CommandSender sender, Command command, String label,
-			String[] args) {
+	public final boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 		execute(sender, args);
 		return true;
 	}
@@ -92,11 +82,11 @@ public abstract class AutoCraftCommand implements CommandExecutor {
 	}
 	
 	protected final void err(String msg, Object... args) {
-		sendMessage(plugin.getMessage("error"), FormatUtil.format(msg, args));
+		sendMessage("&c" + FormatUtil.format(msg, args));
 	}
 	
 	protected final void sendMessage(String msg, Object... args) {
-		sender.sendMessage(ChatColor.YELLOW + FormatUtil.format(msg, args));
+		sender.sendMessage(plugin.getPrefix() + FormatUtil.format(msg, args));
 	}
 
 	public final String getName() {
@@ -127,12 +117,5 @@ public abstract class AutoCraftCommand implements CommandExecutor {
 			ret.append("&e" + description);
 		
 		return FormatUtil.format(ret.toString());
-	}
-	
-	protected OfflinePlayer getTarget(String name) {
-		OfflinePlayer target = Util.matchOfflinePlayer(name);
-		if (target == null)
-			err(plugin.getMessage("error_player_not_found"), name);
-		return target;
 	}
 }

@@ -1,6 +1,3 @@
-/**
- * Copyright (C) 2012 t7seven7t
- */
 package net.dmulloy2.autocraft.util;
 
 import java.util.Locale;
@@ -8,15 +5,12 @@ import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 
-import org.bukkit.plugin.java.JavaPlugin;
+import net.dmulloy2.autocraft.AutoCraft;
 
-/**
- * @author t7seven7t
- */
 public class ResourceHandler {
 	private ResourceBundle messages;
 	
-	public ResourceHandler(JavaPlugin plugin, ClassLoader classLoader) {
+	public ResourceHandler(AutoCraft plugin, ClassLoader classLoader) {
 		try {
 			messages = ResourceBundle.getBundle("messages", Locale.getDefault(), new FileResourceLoader(classLoader, plugin));
 		} catch (MissingResourceException ex) {
@@ -27,5 +21,4 @@ public class ResourceHandler {
 	public ResourceBundle getMessages() {
 		return messages;
 	}
-
 }

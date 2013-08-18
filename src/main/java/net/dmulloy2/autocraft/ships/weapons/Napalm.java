@@ -80,6 +80,5 @@ public class Napalm extends Projectile {
 				explode();
 			}
 		}
-	}
-	
+	}	
 }

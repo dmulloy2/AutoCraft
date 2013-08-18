@@ -25,6 +25,7 @@ import net.dmulloy2.autocraft.commands.CommandHandler;
 import net.dmulloy2.autocraft.listeners.PlayerListener;
 import net.dmulloy2.autocraft.permissions.PermissionHandler;
 import net.dmulloy2.autocraft.ships.ShipManager;
+import net.dmulloy2.autocraft.util.FormatUtil;
 import net.dmulloy2.autocraft.util.LogHandler;
 import net.dmulloy2.autocraft.util.ResourceHandler;
 
@@ -39,6 +40,8 @@ public class AutoCraft extends JavaPlugin {
 	private @Getter DataHandler dataHandler;
 	private @Getter ShipManager shipManager;
 	private @Getter boolean factionsEnabled;
+	
+	private @Getter String prefix = FormatUtil.format("&4[&6&lAC&4]&6 ");
 	
 	@Override
 	public void onEnable() {

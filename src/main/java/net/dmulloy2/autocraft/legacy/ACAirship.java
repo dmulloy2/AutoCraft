@@ -1,6 +1,5 @@
 package net.dmulloy2.autocraft.legacy;
 
-
 import org.bukkit.Material;
 
 public class ACAirship extends ACProperties {
@@ -23,11 +22,5 @@ public class ACAirship extends ACProperties {
 		this.MAX_SHIP_DIMENSIONS = 30;
 		this.MOVE_SPEED = 5;
 		this.SHIP_TYPE = "airship";
-		this.save();
 	}
-	
-	public void save() {
-		
-	}
-	
 }

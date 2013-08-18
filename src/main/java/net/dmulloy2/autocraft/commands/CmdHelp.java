@@ -22,33 +22,39 @@ public class CmdHelp extends PaginatedCommand {
 
 	@Override
 	public int getListSize() {
-		return plugin.getCommandHandler().getRegisteredCommands().size();
+		return buildHelpMenu().size();
 	}
 
 	@Override
 	public String getHeader(int index) {
-		return FormatUtil.format("&2{0} Help (&ePage {1}/{2}&2):", plugin.getName(), index, getPageCount());
+		return FormatUtil.format(plugin.getMessage("help_header"), plugin.getName(), index, getPageCount());
 	}
 
 	@Override
 	public List<String> getLines(int startIndex, int endIndex) {
 		List<String> lines = new ArrayList<String>();
 		for (int i = startIndex; i < endIndex && i < getListSize(); i++) {
-			AutoCraftCommand command;
-			command = plugin.getCommandHandler().getRegisteredCommands().get(i);
-			
-			if (plugin.getPermissionHandler().hasPermission(sender, permission))
-				lines.add(command.getUsageTemplate(true));
+			lines.add(buildHelpMenu().get(i));
 		}
+		
 		return lines;
 	}
 
-	
 	@Override
 	public String getLine(int index) {
 		// Unnecessary since we override getLines();
 		return null;
 	}
-
-
+	
+	public List<String> buildHelpMenu() {
+		List<String> helpMenu = new ArrayList<String>();
+		
+		for (AutoCraftCommand command : plugin.getCommandHandler().getRegisteredCommands()) {
+			if (plugin.getPermissionHandler().hasPermission(sender, command.permission)) {
+				helpMenu.add(command.getUsageTemplate(true));
+			}
+		}
+		
+		return helpMenu;
+	}
 }
