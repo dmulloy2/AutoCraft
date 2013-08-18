@@ -59,7 +59,7 @@
         </includes>
       </resource>
       <resource>
-        <targetPath>.</targetPath>
+        <targetPath>ships</targetPath>
         <directory>${basedir}/src/main/resources/ships</directory>
         <filtering>true</filtering>
         <includes>
