@@ -46,27 +46,27 @@ public class Ship {
 	private ShipData data;
 	
 	// Changes to true if the ship has a problem creating.
-	boolean stopped;
-	Player player;
+	private boolean stopped;
+	private Player player;
 	
 	// Used for checking if weapon cooldown is over.
-	long lastFired;
+	private long lastFired;
 	
 	// Total number of the main block on the ship.
-	int numMainBlocks = 0;
+	private int numMainBlocks = 0;
 	
 	// Used for checking if move cooldown is over.
-	long lastmove;
+	private long lastmove;
 	
 	// Hold all blocks part of this ship.
-	Block[] blocks;
-	Block[] specialBlocks;
+	private Block[] blocks;
+	private Block[] specialBlocks;
 	
-	ACBlockState[] largeShipBlocks;
-	ACBlockState[] largeShipSpecialBlocks;
+	private ACBlockState[] largeShipBlocks;
+	private ACBlockState[] largeShipSpecialBlocks;
 	
-	// Place holder for the block the player is standing on. Probably unnecessary but haven't removed it in this update TODO: remove this.
-	Block mainblock;
+	// Place holder for the block the player is standing on.
+	private Block mainblock;
 	
 	public Ship(Player player, ShipData data, AutoCraft plugin) {
 		this.player = player;
@@ -108,16 +108,16 @@ public class Ship {
 							lastFired = System.currentTimeMillis();
 							withdrawTnt(cannons[i], plugin.getConfig().getInt("numTntToDropBomb"));
 							
-							// Spawn primed tnt firing downwards TODO: maybe add sound effects for tnt firing? :P
+							// Spawn primed tnt firing downwards
 							TNTPrimed tnt = cannons[i].getWorld().spawn(cannons[i].getLocation().clone().add(0, -1, 0), TNTPrimed.class);
 							tnt.setVelocity(new Vector(0, -0.5, 0));
+							
+							// TODO: Sound effects for firing
 						} else {
 							// More cannons on ship than allowed. Not all fired - can break out of loop now.
 							sendMessage("&bSome cannons did not fire. Max cannon limit is: &6{0}", data.getMaxNumberOfCannons());
 							break;
 						}
-					} else {
-						sendMessage("&cYou do not have enough TNT to perform this operation!");
 					}
 				}
 			} else {
@@ -158,17 +158,17 @@ public class Ship {
 								lastFired = System.currentTimeMillis();
 								withdrawTnt(cannons[i], plugin.getConfig().getInt("numTntToFireNormal"));
 								
-								// Spawn primed tnt firing in the direction of the dispenser TODO: maybe add sound effects for tnt firing? :P
+								// Spawn primed tnt firing in the direction of the dispenser
 								TNTPrimed tnt = cannons[i].getWorld().spawn(cannons[i].getLocation().clone().add(x, 0, z), TNTPrimed.class);
 								tnt.setVelocity(new Vector(x * dist, 0.5, z * dist));
+								
+								// TODO: Sound effects for firing
 							} else {
 								// More cannons on ship than allowed. Not all fired - can break out of loop now.
 								sendMessage("&bSome cannons did not fire. Max cannon limit is &6{0}", data.getMaxNumberOfCannons());
 								break;
 							}
 						}
-					} else {
-						sendMessage("&cYou do not have enough TNT to perform this operation!");
 					}
 				}
 			} else {
@@ -213,15 +213,15 @@ public class Ship {
 								withdrawItem(cannons[i], id, 1);
 							}
 							
-							// Fire some napalms TODO: maybe add sound effects for napalm dropping? :P
+							// Fire some napalms
 							new Napalm(plugin, cannons[i]);
+							
+							// TODO: Sound effects for drop
 						} else {
 							// More cannons on ship than allowed. Not all fired - can break out of loop now.
 							sendMessage("&bSome napalm cannons did not fire. Max cannon limit is &6{0}", data.getMaxNumberOfCannons());
 							break;
 						}
-					} else {
-						sendMessage("&cYou do not have enough TNT to perform this operation!");
 					}
 				}
 			} else {
@@ -270,16 +270,16 @@ public class Ship {
 								withdrawItem(cannons[i], id, 1);
 							}
 							
-							// Fire some torpedoes TODO: maybe add sound effects for tnt firing? :P
+							// Fire some torpedoes
 							new Torpedo(plugin, cannons[i], face);
+							
+							// TODO: Sound effects for firing
 						} else {
 							// More cannons on ship than allowed. Not all fired - can break out of loop now.
 							sendMessage("&bSome cannons did not fire. Max cannon limit is &6{0}",
 									data.getMaxNumberOfCannons());
 							break;
 						}
-					} else {
-						sendMessage("&cYou do not have enough TNT to perform this operation!");
 					}
 				}
 			} else {
@@ -339,9 +339,9 @@ public class Ship {
 				ItemStack item = dispenser.getInventory().getItem(i);
 				if (item != null && item.getTypeId() == id) {
 					if (item.getAmount() >= num) {
-						if (item.getAmount() - num > 0)
+						if (item.getAmount() - num > 0) {
 							item.setAmount(item.getAmount() - num);
-						else {
+						} else {
 							dispenser.getInventory().setItem(i, null);
 						}
 						num = 0;
@@ -470,7 +470,6 @@ public class Ship {
 				}
 			}
 		}
-	
 	}
 	
 	// Rotate the ship and all passengers in the specified direction
@@ -670,7 +669,6 @@ public class Ship {
 	}
 	
 	public BlockFace getRotatedBlockFace(TurnDirection dir, Directional data) {
-		
 		BlockFace face;
 		
 		if (data instanceof Stairs) {
@@ -851,12 +849,11 @@ public class Ship {
 						&& !block.getType().equals(Material.STATIONARY_WATER)
 						&& !data.isIgnoreAttachments()) {
 					
-					plugin.getShipManager().ships.remove(this.player.getName());
+					plugin.getShipManager().ships.remove(player.getName());
 					sendMessage("&cThis ship needs to be floating!");
-					String str = "Problem at (" + String.valueOf(block.getX()) + "," + 
-													String.valueOf(block.getY()) + "," + 
-													String.valueOf(block.getZ()) + ") it''s on " + 
-													block.getType().toString();
+					String str = FormatUtil.format("Problem at ({0}, {1}, {2}) it''s on {3}",
+							block.getX(), block.getY(), block.getZ(), FormatUtil.getFriendlyName(block.getType()));
+
 					sendMessage(str);
 					log("{0} had a problem flying an airship: {1}", player.getName(), str);
 					this.stopped = true;
@@ -864,7 +861,7 @@ public class Ship {
 				}
 			} else {
 				// Ship is too large as defined by built in limit
-				plugin.getShipManager().ships.remove(this.player.getName());
+				plugin.getShipManager().ships.remove(player.getName());
 				sendMessage("&7This ship has over {0} blocks!", data.getMaxBlocks());
 				this.stopped = true;
 				return null;
@@ -904,7 +901,7 @@ public class Ship {
 	}
 
 	public void playSound(Location location, Sound sound, float volume, float pitch) {
-		player.playSound(location, sound, volume, pitch);
+		player.getWorld().playSound(location, sound, volume, pitch);
 	}
 	
 	public ShipData getData() {

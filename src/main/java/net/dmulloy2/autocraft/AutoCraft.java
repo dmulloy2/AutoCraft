@@ -68,15 +68,14 @@ public class AutoCraft extends JavaPlugin {
 		commandHandler = new CommandHandler(this);
 		logHandler = new LogHandler(this);
 		
+		// Converts files to 3.x format
 		new FileConverter(this).run();
 		
 		saveResource("messages.properties", true);
 		resourceHandler = new ResourceHandler(this, getClassLoader());
 		
 		shipManager = new ShipManager();
-		
 		dataHandler = new DataHandler(this);
-		dataHandler.load();
 		
 		commandHandler.setCommandPrefix("ac");
 		commandHandler.registerCommand(new CmdAllowed(this));
@@ -102,16 +101,16 @@ public class AutoCraft extends JavaPlugin {
 		}
 		
 		if (factionsEnabled) {
-			logHandler.log("Factions plugin found. Enabling integration.");
+			logHandler.log(getMessage("log_factions_found"));
 		} else  {
-			logHandler.log("Factions plugin not found. Disabling integration.");
+			logHandler.log(getMessage("log_factions_notfound"));
 		}
 
 		getServer().getPluginManager().registerEvents(new PlayerListener(this), this);
 		
 		long finish = System.currentTimeMillis();
 		
-		logHandler.log("{0} has been enabled ({1}ms)", getDescription().getFullName(), finish - start);
+		logHandler.log(getMessage("log_enabled"), getDescription().getFullName(), finish - start);
 	}
 	
 	@Override
@@ -123,14 +122,14 @@ public class AutoCraft extends JavaPlugin {
 		
 		long finish = System.currentTimeMillis();
 		
-		logHandler.log("{0} has been disabled ({1}ms)", getDescription().getFullName(), finish - start);
+		logHandler.log(getMessage("log_disabled"), getDescription().getFullName(), finish - start);
 	}
 
 	public String getMessage(String string) {
 		try {
 			return resourceHandler.getMessages().getString(string);
 		} catch (MissingResourceException ex) {
-			logHandler.log(Level.WARNING, "Messages locale is missing key for: {0}", string);
+			logHandler.log(Level.WARNING, getMessage("log_message_missing"), string);
 			return null;
 		}
 	}

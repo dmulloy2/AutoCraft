@@ -16,25 +16,28 @@ public class DataHandler {
 		this.plugin = plugin;
 		
 		this.data = new HashMap<String, ShipData>();
+		
+		load();
 	}
 	
 	public void load() {
 		File shipsFolder = new File(plugin.getDataFolder(), "ships");
 		if (! shipsFolder.exists()) {
 			shipsFolder.mkdir();
-			
-			generateStockShips();
 		}
-		
-		if (shipsFolder.listFiles().length == 0) {
-			generateStockShips();
-		}
-		
-		int loadedShips = 0;
 		
 		File[] children = shipsFolder.listFiles();
+		if (children.length == 0) {
+			generateStockShips();
+		}
+		
+		// Refresh
+		children = shipsFolder.listFiles();
+		
+		int loadedShips = 0;
 		for (File file : children) {
 			ShipData shipData = FileSerialization.load(file, ShipData.class);
+			shipData.setShipType(trimFileName(file));
 			data.put(shipData.getShipType(), shipData);
 			loadedShips++;
 		}
@@ -50,6 +53,10 @@ public class DataHandler {
 		for (String stock : stocks) {
 			plugin.saveResource("ships/" + stock + ".yml", false);
 		}
+	}
+	
+	private String trimFileName(File file) {
+		return file.getName().replaceAll(".yml", "");
 	}
 	
 	public ShipData getData(String key) {

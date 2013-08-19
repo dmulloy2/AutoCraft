@@ -126,4 +126,8 @@ public abstract class AutoCraftCommand implements CommandExecutor {
 		
 		return FormatUtil.format(ret.toString());
 	}
+	
+	protected final String getMessage(String string) {
+		return plugin.getMessage(string);
+	}
 }

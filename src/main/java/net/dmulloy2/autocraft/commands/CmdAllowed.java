@@ -14,7 +14,7 @@ public class CmdAllowed extends AutoCraftCommand {
 		super(plugin);
 		this.name = "allowed";
 		this.aliases.add("a");
-		this.description = "Displays ship information.";
+		this.description = getMessage("allowed_description");
 		this.requiredArgs.add("ship type");
 		this.permission = Permission.CMD_ALLOWED;
 	}
@@ -24,31 +24,31 @@ public class CmdAllowed extends AutoCraftCommand {
 		String shipName = args[0].toLowerCase();
 		
 		if (! plugin.getDataHandler().isValidShip(shipName)) {
-			err("Ship {0} does not exist!", shipName);
+			err(getMessage("invalid_ship"), shipName);
 			return;
 		}
 		
 		ShipData data = plugin.getDataHandler().getData(shipName);
 		
-		sendMessage("&3====[ &e{0} &3]====", WordUtils.capitalize(data.getShipType()));
-		sendMessage("&bCan fire TNT: &e{0}", data.isFiresTnt());
-		sendMessage("&bCan fire Torpedo: &e{0}", data.isFiresTorpedo());
-		sendMessage("&bCan drop Bombs: &e{0}", data.isDropsBomb());
-		sendMessage("&bCan drop Napalm: &e{0}", data.isDropsNapalm());
+		sendMessage(getMessage("allowed_header"), WordUtils.capitalize(data.getShipType()));
+		sendMessage(getMessage("allowed_tnt"), data.isFiresTnt());
+		sendMessage(getMessage("allowed_torpedo"), data.isFiresTorpedo());
+		sendMessage(getMessage("allowed_bombs"), data.isDropsBomb());
+		sendMessage(getMessage("allowed_napalm"), data.isDropsNapalm());
 		
 		if (data.isFiresTnt() || data.isFiresTorpedo()) {
-			sendMessage("&bMax cannon length: &e{0}", data.getMaxCannonLength());
-			sendMessage("&bCannon material: &e{0}", 
+			sendMessage(getMessage("allowed_max_cannon_length"), data.getMaxCannonLength());
+			sendMessage(getMessage("allowed_cannon_material"), 
 					FormatUtil.getFriendlyName(Material.getMaterial(data.getCannonMaterial())));
 		}
 		
-		sendMessage("&bMax number of cannons: &e{0}", data.getMaxNumberOfCannons());
-		sendMessage("&bMinimum blocks: &e{0}", data.getMinBlocks());
-		sendMessage("&bMaximum blocks: &e{0}", data.getMaxBlocks());
-		sendMessage("&bMain block: &e{0}",
+		sendMessage(getMessage("allowed_max_number_cannons"), data.getMaxNumberOfCannons());
+		sendMessage(getMessage("allowed_min_blocks"), data.getMinBlocks());
+		sendMessage(getMessage("allowed_max_blocks"), data.getMaxBlocks());
+		sendMessage(getMessage("allowed_main_block"),
 				FormatUtil.getFriendlyName(Material.getMaterial(data.getMainType())));
-		sendMessage("&bAllowed block(s): &e{0}", getAllowedList(data));
-		sendMessage("&bIgnore attachments: &e{0}", data.isIgnoreAttachments());
+		sendMessage(getMessage("allowed_blocks"), getAllowedList(data));
+		sendMessage(getMessage("allowed_ignore_attachments"), data.isIgnoreAttachments());
 	}
 	
 	public String getAllowedList(ShipData data) {
