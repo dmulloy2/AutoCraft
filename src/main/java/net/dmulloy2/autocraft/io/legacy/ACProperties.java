@@ -3,6 +3,7 @@ package net.dmulloy2.autocraft.io.legacy;
 import java.util.ArrayList;
 import java.util.List;
 
+@Deprecated
 public class ACProperties extends Entity {
 	public static final transient int MAX_ALTITUDE = 254;
 	public static final transient int MIN_ALTITUDE = 2;

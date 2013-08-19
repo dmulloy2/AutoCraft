@@ -44,6 +44,7 @@ import net.dmulloy2.autocraft.ships.ShipManager;
 import net.dmulloy2.autocraft.util.FormatUtil;
 import net.dmulloy2.autocraft.util.LogHandler;
 
+import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class AutoCraft extends JavaPlugin {
@@ -92,18 +93,16 @@ public class AutoCraft extends JavaPlugin {
 		commandHandler.registerCommand(new CmdRotate(this));
 		commandHandler.registerCommand(new CmdTorpedo(this));
 		
-		if (getConfig().getBoolean("factionsProtectionsEnabled") && 
-				(getServer().getPluginManager().isPluginEnabled("SwornNations") || 
-						getServer().getPluginManager().isPluginEnabled("Factions"))) {
+		if (getConfig().getBoolean("factionsProtectionsEnabled")) {
+			PluginManager pm = getServer().getPluginManager();
 			
-			factionsEnabled = true;
+			this.factionsEnabled = pm.isPluginEnabled("SwornNations") || pm.isPluginEnabled("Factions");
 			
-		}
-		
-		if (factionsEnabled) {
-			logHandler.log(getMessage("log_factions_found"));
-		} else  {
-			logHandler.log(getMessage("log_factions_notfound"));
+			if (factionsEnabled) {
+				logHandler.log(getMessage("log_factions_found"));
+			} else  {
+				logHandler.log(getMessage("log_factions_notfound"));
+			}
 		}
 
 		getServer().getPluginManager().registerEvents(new PlayerListener(this), this);

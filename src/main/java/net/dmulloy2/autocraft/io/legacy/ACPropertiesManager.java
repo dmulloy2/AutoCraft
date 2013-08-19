@@ -5,6 +5,7 @@ import java.util.Map;
 
 import net.dmulloy2.autocraft.AutoCraft;
 
+@Deprecated
 public class ACPropertiesManager extends SCache<ACProperties, AutoCraft> {
 
 	public ACPropertiesManager(AutoCraft p) {

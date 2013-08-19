@@ -1,7 +1,9 @@
 package net.dmulloy2.autocraft.io.legacy;
 
+@Deprecated
 public abstract class SThread implements Runnable {
-	Thread t;
+	private Thread t;
+	
 	public SThread() {
 		t = new Thread(this);
 		t.start();

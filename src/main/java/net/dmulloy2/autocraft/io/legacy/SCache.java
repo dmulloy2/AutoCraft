@@ -8,6 +8,7 @@ import java.util.Map.Entry;
 
 import org.bukkit.plugin.java.JavaPlugin;
 
+@Deprecated
 public class SCache<E extends Entity, S extends JavaPlugin> {
 	protected final S s;
 	protected final File FOLDER;
@@ -66,19 +67,7 @@ public class SCache<E extends Entity, S extends JavaPlugin> {
 		add(name, e);
 		return e;
 	}
-	
-	// Removes entity from the cache to clear memory.
-	protected void removeEntity(final String name, final E e) {
-		new SaveEntityThread<E, S>(s, this, name, e);
-		remove(name);
-	}
-	
-	// Deletes entity from disk and the cache.
-	protected void deleteEntity(final String name, final E e) {
-		removeEntity(name, e);
-		new File(FOLDER, name).delete();
-	}
-	
+
 	protected Map<String, E> getEntities() {
 		return Collections.unmodifiableMap(this.entities);
 	}

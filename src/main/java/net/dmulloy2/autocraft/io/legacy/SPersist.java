@@ -8,6 +8,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
+@Deprecated
 public class SPersist {
 
 	public static <T> void save(JavaPlugin p, T instance, Class<? extends T> clazz) {

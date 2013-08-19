@@ -10,6 +10,7 @@ import net.dmulloy2.autocraft.types.ShipData;
 
 import com.google.common.io.Files;
 
+@SuppressWarnings("deprecation")
 public class FileConverter {
 	private final AutoCraft plugin;
 	

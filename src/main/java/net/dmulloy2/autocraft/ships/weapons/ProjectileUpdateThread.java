@@ -2,7 +2,7 @@ package net.dmulloy2.autocraft.ships.weapons;
 
 import net.dmulloy2.autocraft.AutoCraft;
 
-public class ProjectileUpdateThread extends Thread {
+public class ProjectileUpdateThread extends Thread implements Runnable {
 	private final AutoCraft plugin;
 	
 	private Thread t;
@@ -11,7 +11,8 @@ public class ProjectileUpdateThread extends Thread {
 	private final long updatePeriod;
 	
 	public ProjectileUpdateThread(AutoCraft plugin, Projectile p, long updatePeriod) {
-		t = new Thread(this);
+		this.t = new Thread(this);
+		
 		t.start();
 		
 		this.plugin = plugin;
@@ -20,6 +21,7 @@ public class ProjectileUpdateThread extends Thread {
 		this.updatePeriod = updatePeriod;
 	}
 	
+	@Override
 	public void run() {
 		try {
 			while (!p.isExploded()) {
@@ -27,6 +29,7 @@ public class ProjectileUpdateThread extends Thread {
 				
 				plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
 					
+					@Override
 					public void run() {
 						p.move();
 					}
