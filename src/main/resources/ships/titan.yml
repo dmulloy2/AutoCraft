@@ -1,7 +1,13 @@
+dropsNapalm: true
 moveSpeed: 4
 dropsBomb: true
+minBlocks: 1000
+maxNumberOfCannons: 1
 maxCannonLength: 20
 maxShipDimensions: 200
+cannonMaterial: 42
+maxBlocks: 20000
+ignoreAttachments: false
 firesTorpedo: true
 allowedBlocks:
 - 45
@@ -44,13 +50,4 @@ allowedBlocks:
 - 88
 - 144
 mainType: 49
-fastFlyAtSize: 1000
-maxAltitude: 254
 firesTnt: true
-dropsNapalm: true
-shipType: titan
-minBlocks: 1000
-maxNumberOfCannons: 1
-cannonMaterial: 42
-maxBlocks: 20000
-minAltitude: 2

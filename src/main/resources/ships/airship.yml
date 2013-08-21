@@ -1,6 +1,13 @@
+dropsNapalm: false
 moveSpeed: 5
+dropsBomb: false
+minBlocks: 40
+maxNumberOfCannons: 4
 maxCannonLength: 3
 maxShipDimensions: 30
+cannonMaterial: 42
+maxBlocks: 100
+ignoreAttachments: false
 firesTorpedo: true
 allowedBlocks:
 - 5
@@ -42,12 +49,4 @@ allowedBlocks:
 - 88
 - 144
 mainType: 35
-fastFlyAtSize: 1000
-maxAltitude: 254
 firesTnt: true
-shipType: airship
-minBlocks: 40
-maxNumberOfCannons: 4
-cannonMaterial: 42
-maxBlocks: 100
-minAltitude: 2

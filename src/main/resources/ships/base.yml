@@ -1,10 +1,14 @@
+dropsNapalm: false
 moveSpeed: 3
+dropsBomb: false
 minBlocks: 1000
-shipType: base
+maxNumberOfCannons: 0
 maxCannonLength: 3
-cannonMaterial: 42
 maxShipDimensions: 120
+cannonMaterial: 42
 maxBlocks: 6000
+ignoreAttachments: false
+firesTorpedo: false
 allowedBlocks:
 - 5
 - 17
@@ -45,6 +49,4 @@ allowedBlocks:
 - 88
 - 144
 mainType: 5
-minAltitude: 2
-fastFlyAtSize: 1000
-maxAltitude: 254
+firesTnt: false

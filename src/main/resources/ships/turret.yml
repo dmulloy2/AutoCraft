@@ -1,10 +1,13 @@
+dropsNapalm: false
+moveSpeed: 0
+dropsBomb: false
 minBlocks: 4
-shipType: turret
 maxNumberOfCannons: 2
 maxCannonLength: 3
-cannonMaterial: 42
 maxShipDimensions: 5
+cannonMaterial: 42
 maxBlocks: 16
+ignoreAttachments: false
 firesTorpedo: true
 allowedBlocks:
 - 5
@@ -45,7 +48,4 @@ allowedBlocks:
 - 88
 - 144
 mainType: 35
-minAltitude: 2
-fastFlyAtSize: 1000
-maxAltitude: 254
 firesTnt: true

@@ -1,15 +1,16 @@
+dropsNapalm: false
 moveSpeed: 10
+dropsBomb: false
 minBlocks: 30
-shipType: stealth
 maxNumberOfCannons: 1
-cannonMaterial: 42
+maxCannonLength: 0
 maxShipDimensions: 10
+cannonMaterial: 42
 maxBlocks: 45
+ignoreAttachments: false
 firesTorpedo: true
 allowedBlocks:
 - 20
 - 23
 mainType: 20
-minAltitude: 2
-fastFlyAtSize: 1000
-maxAltitude: 254
+firesTnt: false
