@@ -1,10 +1,10 @@
 package net.dmulloy2.autocraft.commands;
 
-import org.bukkit.Location;
-
 import net.dmulloy2.autocraft.AutoCraft;
 import net.dmulloy2.autocraft.permissions.Permission;
 import net.dmulloy2.autocraft.ships.Ship;
+
+import org.bukkit.Location;
 
 public class CmdInfo extends AutoCraftCommand {
 

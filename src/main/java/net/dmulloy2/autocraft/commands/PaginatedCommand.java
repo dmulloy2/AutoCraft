@@ -18,6 +18,7 @@ public abstract class PaginatedCommand extends AutoCraftCommand {
 	
 	int pageArgIndex = 0;
 	
+	@Override
 	public void perform() {
 		int index = 1;
 		if (this.args.length > pageArgIndex) {

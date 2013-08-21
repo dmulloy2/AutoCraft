@@ -39,6 +39,7 @@ public abstract class AutoCraftCommand implements CommandExecutor {
 	
 	public abstract void perform();
 	
+	@Override
 	public final boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 		execute(sender, args);
 		return true;

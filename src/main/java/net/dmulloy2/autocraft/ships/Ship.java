@@ -125,7 +125,7 @@ public class Ship {
 			}
 		} else {
 			sendMessage("&6Cooling down for &b{0} &6more seconds",
-					(int)(Math.round(6 - (System.currentTimeMillis() - this.lastFired) / 1000)));
+					(Math.round(6 - (System.currentTimeMillis() - this.lastFired) / 1000)));
 		}
 	}
 	
@@ -176,7 +176,7 @@ public class Ship {
 			}
 		} else {
 			sendMessage("&6Cooling down for &b{0} &6more seconds!",
-					(int)(Math.round(6 - (System.currentTimeMillis() - this.lastFired) / 1000)));
+					(Math.round(6 - (System.currentTimeMillis() - this.lastFired) / 1000)));
 		}
 	}
 	
@@ -229,7 +229,7 @@ public class Ship {
 			}
 		} else {
 			sendMessage("&6Cooling down for &b{0} &6more seconds!",
-					(int)(Math.round(6 - (System.currentTimeMillis() - this.lastFired) / 1000)));
+					(Math.round(6 - (System.currentTimeMillis() - this.lastFired) / 1000)));
 		}
 	}
 	
@@ -287,7 +287,7 @@ public class Ship {
 			}
 		} else {
 			sendMessage("&6Cooling down for &b{0} &6more seconds!",
-					(int)(Math.round(6 - (System.currentTimeMillis() - this.lastFired) / 1000)));
+					(Math.round(6 - (System.currentTimeMillis() - this.lastFired) / 1000)));
 		}
 	}
 	

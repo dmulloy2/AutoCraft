@@ -32,6 +32,7 @@ public class CommandHandler implements CommandExecutor {
 		plugin.getCommand(commandPrefix).setExecutor(this);
 	}
 
+	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		List<String> argsList = new ArrayList<String>();
 		
