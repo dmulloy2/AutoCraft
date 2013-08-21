@@ -12,13 +12,12 @@ numTntToDropNapalm: 4
 
 # Materials Needed (integer)
 materialsNeededForTorpedo:
-- 57
-- 42
+- 264
+- 259
 
 materialsNeededForNapalm:
 - 341
-- 327
-- 57
+- 259
 
 # Napalm Burn Radius
 napalmBurnRadius: 6
