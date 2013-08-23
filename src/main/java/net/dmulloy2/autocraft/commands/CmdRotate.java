@@ -21,12 +21,12 @@ public class CmdRotate extends AutoCraftCommand {
 
 	@Override
 	public void perform() {
-		if (! plugin.getShipManager().ships.containsKey(player.getName())) {
+		if (! plugin.getShipManager().isPilotingShip(player)) {
 			err("You are not piloting a ship!");
 			return;
 		}
 		
-		Ship ship = plugin.getShipManager().ships.get(player.getName());
+		Ship ship = plugin.getShipManager().getShip(player);
 		
 		String direction = args[0].toLowerCase();
 		if (direction.equals("left") || direction.equals("l") || direction.equals("-90")) {

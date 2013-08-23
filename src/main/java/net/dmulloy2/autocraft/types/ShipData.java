@@ -48,13 +48,12 @@ public class ShipData implements ConfigurationSerializable {
 				for (Field field : getClass().getDeclaredFields()) {
 					if (field.getName().equals(entry.getKey())) {
 						boolean accessible = field.isAccessible();
-						if (!accessible)
-							field.setAccessible(true);
-												
+						
+						field.setAccessible(true);
+						
 						field.set(this, entry.getValue());
-												
-						if (!accessible)
-							field.setAccessible(false);
+						
+						field.setAccessible(accessible);
 					}
 				}
 			} catch (Throwable ex) {
@@ -72,9 +71,8 @@ public class ShipData implements ConfigurationSerializable {
 			
 			try {
 				boolean accessible = field.isAccessible();
-				
-				if (! accessible)
-					field.setAccessible(true);
+
+				field.setAccessible(true);
 				
 				if (field.getType().equals(Integer.TYPE)) {
 					data.put(field.getName(), field.getInt(this));
@@ -91,10 +89,8 @@ public class ShipData implements ConfigurationSerializable {
 				} else {
 					data.put(field.getName(), field.get(this));
 				}
-								
-				if (! accessible)
-					field.setAccessible(false);
-				
+
+				field.setAccessible(accessible);
 			} catch (Throwable ex) {
 			}
 		}

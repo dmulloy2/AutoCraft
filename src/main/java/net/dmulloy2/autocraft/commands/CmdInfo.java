@@ -19,12 +19,12 @@ public class CmdInfo extends AutoCraftCommand {
 	
 	@Override
 	public void perform() {
-		if (! plugin.getShipManager().ships.containsKey(player.getName())) {
+		if (! plugin.getShipManager().isPilotingShip(player)) {
 			err("You are not piloting a ship!");
 			return;
 		}
 		
-		Ship ship = plugin.getShipManager().ships.get(player.getName());
+		Ship ship = plugin.getShipManager().getShip(player);
 		
 		sendMessage("&3====[ &eYour Ship Data &3]====");
 		sendMessage("&bLocation: ");

@@ -16,11 +16,11 @@ public class CmdNapalm extends AutoCraftCommand {
 	
 	@Override
 	public void perform() {
-		if (! plugin.getShipManager().ships.containsKey(player.getName())) {
+		if (! plugin.getShipManager().isPilotingShip(player)) {
 			err("You are not piloting a ship!");
 			return;
 		}
 
-		plugin.getShipManager().ships.get(player.getName()).dropNapalm();
+		plugin.getShipManager().getShip(player).dropNapalm();
 	}
 }

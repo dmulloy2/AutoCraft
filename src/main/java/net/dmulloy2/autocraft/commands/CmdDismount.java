@@ -16,12 +16,12 @@ public class CmdDismount extends AutoCraftCommand {
 	
 	@Override
 	public void perform() {
-		if (! plugin.getShipManager().ships.containsKey(player.getName())) {
+		if (! plugin.getShipManager().isPilotingShip(player)) {
 			err("You are not piloting a ship!");
 			return;
 		}
 		
-		plugin.getShipManager().ships.remove(player.getName());
+		plugin.getShipManager().unpilotShip(player);
 		sendpMessage("&7You have stopped piloting this ship.");
 	}
 }

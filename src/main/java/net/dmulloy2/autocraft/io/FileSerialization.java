@@ -33,7 +33,7 @@ public class FileSerialization {
 	@SuppressWarnings("unchecked")
 	public static <T extends ConfigurationSerializable> T load(File file, Class<T> clazz) {
 		try {
-			if (!file.exists())
+			if (! file.exists())
 				return null;
 			
 			FileConfiguration fc = YamlConfiguration.loadConfiguration(file);

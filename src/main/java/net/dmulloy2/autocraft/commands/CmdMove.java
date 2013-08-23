@@ -18,14 +18,14 @@ public class CmdMove extends AutoCraftCommand {
 	
 	@Override
 	public void perform() {
-		if (! plugin.getShipManager().ships.containsKey(player.getName())) {
+		if (! plugin.getShipManager().isPilotingShip(player)) {
 			err("You are not piloting a ship!");
 			return;
 		}
 
 		Vector dir = player.getLocation().getDirection();
 			
-		plugin.getShipManager().ships.get(player.getName()).move( 
+		plugin.getShipManager().getShip(player).move( 
 				(int) Math.round(dir.getX()),
 				(int) Math.round(dir.getY()),
 				(int) Math.round(dir.getZ()));

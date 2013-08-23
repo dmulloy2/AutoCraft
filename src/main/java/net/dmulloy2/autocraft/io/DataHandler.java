@@ -7,42 +7,59 @@ import java.util.Set;
 import net.dmulloy2.autocraft.AutoCraft;
 import net.dmulloy2.autocraft.types.ShipData;
 
+import org.apache.commons.lang.WordUtils;
+
 public class DataHandler {
-	private HashMap<String, ShipData> data;
-	
 	private final AutoCraft plugin;
+	private final File folder;
+	private final String extension = ".yml";
+	private final String folderName = "ships";
+
+	private HashMap<String, ShipData> data;
 	
 	public DataHandler(AutoCraft plugin) {
 		this.plugin = plugin;
+		this.folder = new File(plugin.getDataFolder(), folderName);
 		
+		if (! folder.exists())
+			folder.mkdir();
+
 		this.data = new HashMap<String, ShipData>();
 		
 		load();
 	}
 	
 	public void load() {
-		File shipsFolder = new File(plugin.getDataFolder(), "ships");
-		if (! shipsFolder.exists()) {
-			shipsFolder.mkdir();
-		}
+		plugin.getLogHandler().log("Loading {0}...", folderName);
 		
-		File[] children = shipsFolder.listFiles();
+		long start = System.currentTimeMillis();
+		
+		File[] children = folder.listFiles();
 		if (children.length == 0) {
 			generateStockShips();
+
+			children = folder.listFiles();
 		}
 		
-		// Refresh
-		children = shipsFolder.listFiles();
-		
-		int loadedShips = 0;
 		for (File file : children) {
 			ShipData shipData = FileSerialization.load(file, ShipData.class);
-			shipData.setShipType(trimFileName(file));
+			shipData.setShipType(trimFileExtension(file));
 			data.put(shipData.getShipType(), shipData);
-			loadedShips++;
 		}
 		
-		plugin.getLogHandler().log("Loaded {0} ships!", loadedShips);
+		plugin.getLogHandler().log("{0} loaded! [{1}ms]", WordUtils.capitalize(folderName), System.currentTimeMillis() - start);
+	}
+	
+	public void save() {
+		plugin.getLogHandler().log("Saving {0} to disk...", folderName);
+		
+		long start = System.currentTimeMillis();
+
+		for (ShipData shipData : data.values()) {
+			saveData(shipData);
+		}
+		
+		plugin.getLogHandler().log("{0} saved! [{1}ms]", WordUtils.capitalize(folderName), System.currentTimeMillis() - start);
 	}
 
 	public void generateStockShips() {
@@ -51,12 +68,28 @@ public class DataHandler {
 		String[] stocks = new String[] { "airship", "base", "battle", "dreadnought", "pirate", "stealth", "titan", "turret" };
 		
 		for (String stock : stocks) {
-			plugin.saveResource("ships/" + stock + ".yml", false);
+			plugin.saveResource(folderName + File.separator + stock + extension, false);
 		}
 	}
 	
-	private String trimFileName(File file) {
-		return file.getName().replaceAll(".yml", "");
+	public void saveData(ShipData shipData) {
+		File file = new File(folder, getFileName(shipData.getShipType()));
+		FileSerialization.save(shipData, file);
+	}
+	
+	public void onDisable() {
+		save();
+		
+		data.clear();
+	}
+	
+	private String trimFileExtension(File file) {
+		int index = file.getName().lastIndexOf(extension);
+		return index > 0 ? file.getName().substring(0, index) : file.getName(); 
+	}
+	
+	private String getFileName(String key) {
+		return key + extension;
 	}
 	
 	public ShipData getData(String key) {
@@ -67,11 +100,7 @@ public class DataHandler {
 		return getData(key) != null;
 	}
 	
-	public void clearMemory() {
-		data.clear();
-	}
-	
-	public Set<String> getAvailableShips() {
+	public Set<String> getShips() {
 		return data.keySet();
 	}
 }

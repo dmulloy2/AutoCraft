@@ -53,8 +53,10 @@ public class AutoCraft extends JavaPlugin {
 	private @Getter CommandHandler commandHandler;
 	private @Getter LogHandler logHandler;
 
+	private @Getter FileConverter fileConverter;
 	private @Getter DataHandler dataHandler;
 	private @Getter ShipManager shipManager;
+	
 	private @Getter boolean factionsEnabled;
 	
 	private @Getter String prefix = FormatUtil.format("&4[&6&lAC&4]&6 ");
@@ -69,8 +71,7 @@ public class AutoCraft extends JavaPlugin {
 		commandHandler = new CommandHandler(this);
 		logHandler = new LogHandler(this);
 		
-		// Converts files to 3.x format
-		new FileConverter(this).run();
+		fileConverter = new FileConverter(this);
 		
 		saveResource("messages.properties", true);
 		resourceHandler = new ResourceHandler(this, getClassLoader());
@@ -116,7 +117,7 @@ public class AutoCraft extends JavaPlugin {
 	public void onDisable() {
 		long start = System.currentTimeMillis();
 		
-		dataHandler.clearMemory();
+		dataHandler.onDisable();
 		shipManager.clearMemory();
 		
 		long finish = System.currentTimeMillis();

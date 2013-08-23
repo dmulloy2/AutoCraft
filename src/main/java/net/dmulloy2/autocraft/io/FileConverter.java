@@ -13,9 +13,18 @@ import com.google.common.io.Files;
 @SuppressWarnings("deprecation")
 public class FileConverter {
 	private final AutoCraft plugin;
+	private final File folder;
+	private final String extension = ".yml";
+	private final String folderName = "ships";
 	
 	public FileConverter(AutoCraft plugin) {
 		this.plugin = plugin;
+		this.folder = new File(plugin.getDataFolder(), folderName);
+		
+		if (! folder.exists())
+			folder.mkdir();
+		
+		run();
 	}
 	
 	public void run() {
@@ -23,9 +32,9 @@ public class FileConverter {
 			return;
 		}
 		
-		long start = System.currentTimeMillis();
-		
 		plugin.getLogHandler().log("Beginning File conversion task.");
+		
+		long start = System.currentTimeMillis();
 		
 		File dataFolder = plugin.getDataFolder();
 		
@@ -33,8 +42,9 @@ public class FileConverter {
 		archiveFile.mkdir();
 		
 		for (File file : dataFolder.listFiles()) {
-			if (file.isDirectory()) // We will handle this later
+			if (file.isDirectory()) {
 				continue;
+			}
 			
 			File to = new File(archiveFile, file.getName());
 			if (! to.exists()) {
@@ -56,10 +66,10 @@ public class FileConverter {
 		File shipArchive = new File(archiveFile, "ships");
 		shipArchive.mkdir();
 		
-		File shipFile = new File(dataFolder, "ships");
-		for (File file : shipFile.listFiles()) {
-			if (file.getName().endsWith(".yml"))
+		for (File file : folder.listFiles()) {
+			if (file.getName().endsWith(extension)) {
 				continue;
+			}
 			
 			File to = new File(shipArchive, file.getName());
 			if (! to.exists()) {
@@ -73,9 +83,7 @@ public class FileConverter {
 			}
 		}
 
-		plugin.saveDefaultConfig();
-		
-		plugin.getLogHandler().log("File conversion task completed. Took {0} ms!", System.currentTimeMillis() - start);
+		plugin.getLogHandler().log("File conversion task completed! [{0} ms]", System.currentTimeMillis() - start);
 	}
 	
 	public void convertShip(ACProperties ship, String name) {
@@ -100,18 +108,28 @@ public class FileConverter {
 		data.setMoveSpeed(ship.MOVE_SPEED);
 		data.setShipType(name);
 
-		File shipsFile = new File(plugin.getDataFolder(), "ships");
-		FileSerialization.save(data, new File(shipsFile, name + ".yml"));
+		saveData(data);
+	}
+
+	public void saveData(ShipData shipData) {
+		File file = new File(folder, getFileName(shipData.getShipType()));
+		FileSerialization.save(shipData, file);
+	}
+
+	private String getFileName(String key) {
+		return key + extension;
 	}
 	
 	public boolean needsConversion() {
 		File dataFolder = plugin.getDataFolder();
 		for (File file : dataFolder.listFiles()) {
-			if (file.isDirectory())
+			if (file.isDirectory()) {
 				continue;
+			}
 			
-			if (! file.getName().endsWith(".yml") && ! file.getName().endsWith(".properties"))
+			if (! file.getName().endsWith(extension) && ! file.getName().endsWith(".properties")) {
 				return true;
+			}
 		}
 		
 		return false;

@@ -35,15 +35,15 @@ public class PlayerListener implements Listener {
 	}
 	
 	public void onPlayerDisconnect(Player player) {
-		plugin.getShipManager().ships.remove(player.getName());
+		plugin.getShipManager().unpilotShip(player);
 	}
 	
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onPlayerMove(PlayerMoveEvent event) {
 		Player player = event.getPlayer();
-		if (plugin.getShipManager().ships.containsKey(player.getName())) {
-			if (! plugin.getShipManager().ships.get(player.getName()).isPassenger(player)) {
-				plugin.getShipManager().ships.remove(player.getName());
+		if (plugin.getShipManager().isPilotingShip(player)) {
+			if (! plugin.getShipManager().getShip(player).isPassenger(player)) {
+				plugin.getShipManager().unpilotShip(player);
 				player.sendMessage(plugin.getPrefix() +
 						FormatUtil.format("&7You have stepped off your ship, you have been unpiloted."));
 			}
@@ -55,7 +55,7 @@ public class PlayerListener implements Listener {
 		Action action = event.getAction();
 		if (action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK) {
 			Player player = event.getPlayer();
-			if (plugin.getShipManager().ships.containsKey(player.getName())) {
+			if (plugin.getShipManager().isPilotingShip(player)) {
 				Vector dir = player.getLocation().getDirection();
 				
 				if (event.hasBlock()) {
@@ -72,7 +72,7 @@ public class PlayerListener implements Listener {
 					}
 				}
 				
-				plugin.getShipManager().ships.get(player.getName()).move(
+				plugin.getShipManager().getShip(player).move(
 						(int) Math.round(dir.getX()), 
 						(int) Math.round(dir.getY()), 
 						(int) Math.round(dir.getZ()));
