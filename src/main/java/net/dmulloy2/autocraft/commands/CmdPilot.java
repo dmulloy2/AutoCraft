@@ -18,7 +18,7 @@ public class CmdPilot extends AutoCraftCommand {
 	
 	@Override
 	public void perform() {
-		if (! plugin.getShipManager().isPilotingShip(player)) {
+		if (plugin.getShipManager().isPilotingShip(player)) {
 			err("You are already piloting a ship!");
 			return;
 		}
