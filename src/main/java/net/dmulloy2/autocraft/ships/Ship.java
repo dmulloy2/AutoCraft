@@ -40,6 +40,7 @@ import org.bukkit.material.Vine;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
+@SuppressWarnings("deprecation")
 public class Ship {
 	private AutoCraft plugin;
 	

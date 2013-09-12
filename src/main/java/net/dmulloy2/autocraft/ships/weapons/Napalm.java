@@ -9,6 +9,7 @@ import org.bukkit.entity.TNTPrimed;
 import com.massivecraft.factions.Board;
 import com.massivecraft.factions.FLocation;
 
+@SuppressWarnings("deprecation")
 public class Napalm extends Projectile {
 	private AutoCraft plugin;
 	

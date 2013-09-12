@@ -20,6 +20,7 @@ public class CmdAllowed extends AutoCraftCommand {
 	}
 	
 	@Override
+	@SuppressWarnings("deprecation")
 	public void perform() {
 		String shipName = args[0].toLowerCase();
 		
@@ -51,6 +52,7 @@ public class CmdAllowed extends AutoCraftCommand {
 		sendMessage(getMessage("allowed_ignore_attachments"), data.isIgnoreAttachments());
 	}
 	
+	@SuppressWarnings("deprecation")
 	public String getAllowedList(ShipData data) {
 		StringBuilder ret = new StringBuilder();
 		

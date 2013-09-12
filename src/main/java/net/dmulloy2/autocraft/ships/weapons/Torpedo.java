@@ -10,6 +10,7 @@ import org.bukkit.entity.TNTPrimed;
 import com.massivecraft.factions.Board;
 import com.massivecraft.factions.FLocation;
 
+@SuppressWarnings("deprecation")
 public class Torpedo extends Projectile {
 	private final AutoCraft plugin;
 	

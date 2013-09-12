@@ -73,7 +73,7 @@
     <dependency>
       <groupId>org.bukkit</groupId>
       <artifactId>bukkit</artifactId>
-      <version>1.6.2-R0.2-SNAPSHOT</version>
+      <version>1.6.2-R1.1-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>com.massivecraft</groupId>
@@ -85,7 +85,7 @@
     <dependency>
  	  <groupId>org.projectlombok</groupId>
       <artifactId>lombok</artifactId>
-      <version>0.11.6</version>
+      <version>0.12.0</version>
       <scope>provided</scope>
     </dependency>
   </dependencies>
