@@ -1,4 +1,4 @@
-package net.dmulloy2.autocraft.permissions;
+package net.dmulloy2.autocraft.types;
 
 public enum Permission {
 	CMD_ALLOWED("allowed"),
@@ -14,8 +14,12 @@ public enum Permission {
 	CMD_ROTATE("rotate"),
 	CMD_TORPEDO("torpedo");
 	
-	final String node;
+	private final String node;
 	Permission(final String node) {
 		this.node = node;
+	}
+	
+	public String getNode() {
+		return node;
 	}
 }

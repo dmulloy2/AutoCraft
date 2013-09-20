@@ -1,8 +1,9 @@
-package net.dmulloy2.autocraft.util;
+package net.dmulloy2.autocraft.handlers;
 
 import java.util.logging.Level;
 
 import net.dmulloy2.autocraft.AutoCraft;
+import net.dmulloy2.autocraft.util.FormatUtil;
 
 public class LogHandler {
 	private final AutoCraft plugin;

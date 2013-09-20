@@ -1,10 +1,11 @@
-package net.dmulloy2.autocraft.io;
+package net.dmulloy2.autocraft.handlers;
 
 import java.io.File;
 import java.util.HashMap;
 import java.util.Set;
 
 import net.dmulloy2.autocraft.AutoCraft;
+import net.dmulloy2.autocraft.io.FileSerialization;
 import net.dmulloy2.autocraft.types.ShipData;
 
 import org.apache.commons.lang.WordUtils;

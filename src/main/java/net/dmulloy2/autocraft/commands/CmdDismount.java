@@ -1,7 +1,7 @@
 package net.dmulloy2.autocraft.commands;
 
 import net.dmulloy2.autocraft.AutoCraft;
-import net.dmulloy2.autocraft.permissions.Permission;
+import net.dmulloy2.autocraft.types.Permission;
 
 public class CmdDismount extends AutoCraftCommand {
 
@@ -10,18 +10,16 @@ public class CmdDismount extends AutoCraftCommand {
 		this.name = "dismount";
 		this.aliases.add("x");
 		this.description = "Dismount your airship.";
-		this.mustBePlayer = true;
 		this.permission = Permission.CMD_DISMOUNT;
+		
+		this.mustBePlayer = true;
+		this.mustBePiloting = true;
 	}
 	
 	@Override
 	public void perform() {
-		if (! plugin.getShipManager().isPilotingShip(player)) {
-			err("You are not piloting a ship!");
-			return;
-		}
+		plugin.getShipHandler().unpilotShip(player);
 		
-		plugin.getShipManager().unpilotShip(player);
 		sendpMessage("&7You have stopped piloting this ship.");
 	}
 }

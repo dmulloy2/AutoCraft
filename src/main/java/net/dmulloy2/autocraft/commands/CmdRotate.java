@@ -1,8 +1,8 @@
 package net.dmulloy2.autocraft.commands;
 
 import net.dmulloy2.autocraft.AutoCraft;
-import net.dmulloy2.autocraft.permissions.Permission;
-import net.dmulloy2.autocraft.ships.Ship;
+import net.dmulloy2.autocraft.types.Permission;
+import net.dmulloy2.autocraft.types.Ship;
 import net.dmulloy2.autocraft.types.TurnDirection;
 
 public class CmdRotate extends AutoCraftCommand {
@@ -21,12 +21,12 @@ public class CmdRotate extends AutoCraftCommand {
 
 	@Override
 	public void perform() {
-		if (! plugin.getShipManager().isPilotingShip(player)) {
+		if (! plugin.getShipHandler().isPilotingShip(player)) {
 			err("You are not piloting a ship!");
 			return;
 		}
 		
-		Ship ship = plugin.getShipManager().getShip(player);
+		Ship ship = plugin.getShipHandler().getShip(player);
 		
 		String direction = args[0].toLowerCase();
 		if (direction.equals("left") || direction.equals("l") || direction.equals("-90")) {

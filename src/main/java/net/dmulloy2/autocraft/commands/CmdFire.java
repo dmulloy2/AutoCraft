@@ -1,7 +1,7 @@
 package net.dmulloy2.autocraft.commands;
 
 import net.dmulloy2.autocraft.AutoCraft;
-import net.dmulloy2.autocraft.permissions.Permission;
+import net.dmulloy2.autocraft.types.Permission;
 
 public class CmdFire extends AutoCraftCommand {
 
@@ -9,18 +9,15 @@ public class CmdFire extends AutoCraftCommand {
 		super(plugin);
 		this.name = "fire";
 		this.aliases.add("f");
-		this.mustBePlayer = true;
-		this.permission = Permission.CMD_FIRE;
 		this.description = "Fire your ship's tnt cannons";
+		this.permission = Permission.CMD_FIRE;
+		
+		this.mustBePlayer = true;
+		this.mustBePiloting = true;
 	}
 	
 	@Override
 	public void perform() {
-		if (! plugin.getShipManager().isPilotingShip(player)) {
-			err("You are not piloting a ship!");
-			return;
-		}
-		
-		plugin.getShipManager().getShip(player).fire();
+		plugin.getShipHandler().getShip(player).fire();
 	}
 }

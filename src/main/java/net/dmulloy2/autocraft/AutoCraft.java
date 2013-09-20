@@ -35,14 +35,13 @@ import net.dmulloy2.autocraft.commands.CmdReload;
 import net.dmulloy2.autocraft.commands.CmdRotate;
 import net.dmulloy2.autocraft.commands.CmdTorpedo;
 import net.dmulloy2.autocraft.commands.CommandHandler;
-import net.dmulloy2.autocraft.io.DataHandler;
-import net.dmulloy2.autocraft.io.FileConverter;
-import net.dmulloy2.autocraft.io.ResourceHandler;
+import net.dmulloy2.autocraft.handlers.DataHandler;
+import net.dmulloy2.autocraft.handlers.LogHandler;
+import net.dmulloy2.autocraft.handlers.PermissionHandler;
+import net.dmulloy2.autocraft.handlers.ResourceHandler;
+import net.dmulloy2.autocraft.handlers.ShipHandler;
 import net.dmulloy2.autocraft.listeners.PlayerListener;
-import net.dmulloy2.autocraft.permissions.PermissionHandler;
-import net.dmulloy2.autocraft.ships.ShipManager;
 import net.dmulloy2.autocraft.util.FormatUtil;
-import net.dmulloy2.autocraft.util.LogHandler;
 
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -53,13 +52,12 @@ public class AutoCraft extends JavaPlugin {
 	private @Getter CommandHandler commandHandler;
 	private @Getter LogHandler logHandler;
 
-	private @Getter FileConverter fileConverter;
 	private @Getter DataHandler dataHandler;
-	private @Getter ShipManager shipManager;
+	private @Getter ShipHandler shipHandler;
 	
 	private @Getter boolean factionsEnabled;
 	
-	private @Getter String prefix = FormatUtil.format("&4[&6&lAC&4]&6 ");
+	private @Getter String prefix = FormatUtil.format("&6[&4&lAC&6] ");
 	
 	@Override
 	public void onEnable() {
@@ -70,13 +68,11 @@ public class AutoCraft extends JavaPlugin {
 		permissionHandler = new PermissionHandler(this);
 		commandHandler = new CommandHandler(this);
 		logHandler = new LogHandler(this);
-		
-		fileConverter = new FileConverter(this);
-		
+
 		saveResource("messages.properties", true);
 		resourceHandler = new ResourceHandler(this, getClassLoader());
 		
-		shipManager = new ShipManager();
+		shipHandler = new ShipHandler();
 		dataHandler = new DataHandler(this);
 		
 		commandHandler.setCommandPrefix("ac");
@@ -118,7 +114,7 @@ public class AutoCraft extends JavaPlugin {
 		long start = System.currentTimeMillis();
 		
 		dataHandler.onDisable();
-		shipManager.clearMemory();
+		shipHandler.clearMemory();
 		
 		long finish = System.currentTimeMillis();
 		

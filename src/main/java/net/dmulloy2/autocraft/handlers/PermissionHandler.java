@@ -1,6 +1,7 @@
-package net.dmulloy2.autocraft.permissions;
+package net.dmulloy2.autocraft.handlers;
 
 import net.dmulloy2.autocraft.AutoCraft;
+import net.dmulloy2.autocraft.types.Permission;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -26,6 +27,6 @@ public class PermissionHandler {
 	}
 	
 	private String getPermissionString(Permission permission) {
-		return plugin.getName().toLowerCase() + "." + permission.node.toLowerCase();
+		return plugin.getName().toLowerCase() + "." + permission.getNode().toLowerCase();
 	}
 }

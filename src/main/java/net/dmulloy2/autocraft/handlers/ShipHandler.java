@@ -1,15 +1,17 @@
-package net.dmulloy2.autocraft.ships;
+package net.dmulloy2.autocraft.handlers;
 
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import net.dmulloy2.autocraft.types.Ship;
+
 import org.bukkit.entity.Player;
 
-public class ShipManager {
+public class ShipHandler {
 	private Map<String, Ship> ships;
 	
-	public ShipManager() {
+	public ShipHandler() {
 		ships = new HashMap<String, Ship>();
 	}
 	

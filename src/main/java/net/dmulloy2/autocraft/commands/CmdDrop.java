@@ -1,7 +1,7 @@
 package net.dmulloy2.autocraft.commands;
 
 import net.dmulloy2.autocraft.AutoCraft;
-import net.dmulloy2.autocraft.permissions.Permission;
+import net.dmulloy2.autocraft.types.Permission;
 
 public class CmdDrop extends AutoCraftCommand {
 
@@ -9,18 +9,15 @@ public class CmdDrop extends AutoCraftCommand {
 		super(plugin);
 		this.name = "drop";
 		this.aliases.add("d");
-		this.mustBePlayer = true;
-		this.permission = Permission.CMD_DROP;
 		this.description = "Drop a bomb";
+		this.permission = Permission.CMD_DROP;
+		
+		this.mustBePlayer = true;
+		this.mustBePiloting = true;
 	}
 	
 	@Override
 	public void perform() {
-		if (! plugin.getShipManager().isPilotingShip(player)) {
-			err("You are not piloting a ship!");
-			return;
-		}
-		
-		plugin.getShipManager().getShip(player).drop();
+		plugin.getShipHandler().getShip(player).drop();
 	}
 }

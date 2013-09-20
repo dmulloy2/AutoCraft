@@ -1,24 +1,25 @@
 package net.dmulloy2.autocraft.commands;
 
 import net.dmulloy2.autocraft.AutoCraft;
-import net.dmulloy2.autocraft.permissions.Permission;
-import net.dmulloy2.autocraft.ships.Ship;
+import net.dmulloy2.autocraft.types.Permission;
+import net.dmulloy2.autocraft.types.Ship;
 
 public class CmdPilot extends AutoCraftCommand {
 
 	public CmdPilot(AutoCraft plugin) {
 		super(plugin);
 		this.name = "pilot";
-		this.description = "Use to pilot ships";
-		this.mustBePlayer = true;
-		this.permission = Permission.CMD_PILOT;
-		this.requiredArgs.add("ship type");
 		this.aliases.add("p");
+		this.requiredArgs.add("ship type");
+		this.description = "Use to pilot ships";
+		this.permission = Permission.CMD_PILOT;
+		
+		this.mustBePlayer = true;
 	}
 	
 	@Override
 	public void perform() {
-		if (plugin.getShipManager().isPilotingShip(player)) {
+		if (plugin.getShipHandler().isPilotingShip(player)) {
 			err("You are already piloting a ship!");
 			return;
 		}

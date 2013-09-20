@@ -1,8 +1,8 @@
 package net.dmulloy2.autocraft.commands;
 
 import net.dmulloy2.autocraft.AutoCraft;
-import net.dmulloy2.autocraft.permissions.Permission;
-import net.dmulloy2.autocraft.ships.Ship;
+import net.dmulloy2.autocraft.types.Permission;
+import net.dmulloy2.autocraft.types.Ship;
 
 import org.bukkit.Location;
 
@@ -13,18 +13,15 @@ public class CmdInfo extends AutoCraftCommand {
 		this.name = "info";
 		this.aliases.add("i");
 		this.description = "View your ship's info.";
-		this.mustBePlayer = true;
 		this.permission = Permission.CMD_INFO;
+		
+		this.mustBePlayer = true;
+		this.mustBePiloting = true;
 	}
 	
 	@Override
 	public void perform() {
-		if (! plugin.getShipManager().isPilotingShip(player)) {
-			err("You are not piloting a ship!");
-			return;
-		}
-		
-		Ship ship = plugin.getShipManager().getShip(player);
+		Ship ship = plugin.getShipHandler().getShip(player);
 		
 		sendMessage("&3====[ &eYour Ship Data &3]====");
 		sendMessage("&bLocation: ");

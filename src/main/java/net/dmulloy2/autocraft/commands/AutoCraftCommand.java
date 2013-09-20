@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.dmulloy2.autocraft.AutoCraft;
-import net.dmulloy2.autocraft.permissions.Permission;
+import net.dmulloy2.autocraft.types.Permission;
 import net.dmulloy2.autocraft.util.FormatUtil;
 
 import org.bukkit.command.Command;
@@ -24,6 +24,8 @@ public abstract class AutoCraftCommand implements CommandExecutor {
 	protected Permission permission;
 	
 	protected boolean mustBePlayer;
+	protected boolean mustBePiloting;
+	
 	protected List<String> requiredArgs;
 	protected List<String> optionalArgs;
 	protected List<String> aliases;
@@ -56,20 +58,30 @@ public abstract class AutoCraftCommand implements CommandExecutor {
 			return;
 		}
 		
+		if (mustBePiloting && ! isPiloting()) {
+			err("You are not piloting a ship!");
+			return;
+		}
+		
 		if (requiredArgs.size() > args.length) {
 			err(plugin.getMessage("error_arg_count"), getUsageTemplate(false));
 			return;
 		}
 		
-		if (hasPermission()) {
-			perform();
-		} else {
+		if (! hasPermission()) {
 			err(plugin.getMessage("error_insufficient_permissions"));
+			return;
 		}
+		
+		perform();
 	}
 	
 	protected final boolean isPlayer() {
 		return (player != null);
+	}
+	
+	protected final boolean isPiloting() {
+		return plugin.getShipHandler().isPilotingShip(player);
 	}
 	
 	private final boolean hasPermission() {

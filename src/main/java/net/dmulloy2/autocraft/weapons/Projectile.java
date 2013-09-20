@@ -1,4 +1,4 @@
-package net.dmulloy2.autocraft.ships.weapons;
+package net.dmulloy2.autocraft.weapons;
 
 import net.dmulloy2.autocraft.AutoCraft;
 

@@ -1,20 +1,14 @@
-package net.dmulloy2.autocraft.ships;
+package net.dmulloy2.autocraft.types;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import net.dmulloy2.autocraft.AutoCraft;
-import net.dmulloy2.autocraft.ships.weapons.Napalm;
-import net.dmulloy2.autocraft.ships.weapons.Torpedo;
-import net.dmulloy2.autocraft.types.ACBlockState;
-import net.dmulloy2.autocraft.types.Direction;
-import net.dmulloy2.autocraft.types.RelativePosition;
-import net.dmulloy2.autocraft.types.ShipData;
-import net.dmulloy2.autocraft.types.TurnDirection;
 import net.dmulloy2.autocraft.util.FactionUtil;
 import net.dmulloy2.autocraft.util.FormatUtil;
+import net.dmulloy2.autocraft.weapons.Napalm;
+import net.dmulloy2.autocraft.weapons.Torpedo;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -376,7 +370,7 @@ public class Ship {
 				if (isShipAlreadyPiloted()) {
 					sendMessage("&cThis ship is already being piloted");
 				} else {
-					plugin.getShipManager().putShip(player, this);
+					plugin.getShipHandler().putShip(player, this);
 					sendMessage("&7You are in control of this ship");
 					sendMessage("&7Use the right mouse to guide the ship");
 				}
@@ -388,7 +382,7 @@ public class Ship {
 	public void move(int dx, int dy, int dz) {
 		// If the airship has been stopped then remove it from the mapping.
 		if (stopped) {
-			plugin.getShipManager().unpilotShip(player);
+			plugin.getShipHandler().unpilotShip(player);
 		} else {
 			// Check that the ship hasn't already moved within the last second.
 			if (System.currentTimeMillis() - lastmove > 1000L) {
@@ -440,7 +434,7 @@ public class Ship {
 	
 	public void rotate(TurnDirection dir) {	
 		if (stopped) {
-			plugin.getShipManager().unpilotShip(player);
+			plugin.getShipHandler().unpilotShip(player);
 		} else {
 			// Check that the ship hasn't moved within the last second.
 			if (System.currentTimeMillis() - this.lastmove > 1000L) {
@@ -756,7 +750,7 @@ public class Ship {
 	
 	// Checks if ship is already being piloted
 	public boolean isShipAlreadyPiloted() {		
-		for (Ship othership : plugin.getShipManager().getShips()) {
+		for (Ship othership : plugin.getShipHandler().getShips()) {
 			for (int i = 0; i < othership.blocks.length; i++) {
 				if (blockBelongsToShip(othership.blocks[i], blocks))
 					return true;
@@ -784,7 +778,7 @@ public class Ship {
 	public List<Player> getPassengers() {
 		List<Player> ret = new ArrayList<Player>();
 		
-		for (Player p : Bukkit.getOnlinePlayers()) {
+		for (Player p : plugin.getServer().getOnlinePlayers()) {
 			if (isPassenger(p))
 				ret.add(p);
 		}
@@ -857,7 +851,7 @@ public class Ship {
 						&& !block.getType().equals(Material.STATIONARY_WATER)
 						&& !data.isIgnoreAttachments()) {
 					
-					plugin.getShipManager().unpilotShip(player);
+					plugin.getShipHandler().unpilotShip(player);
 					sendMessage("&cThis ship needs to be floating!");
 					String str = FormatUtil.format("Problem at ({0}, {1}, {2}) it''s on {3}",
 							block.getX(), block.getY(), block.getZ(), FormatUtil.getFriendlyName(block.getType()));
@@ -869,7 +863,7 @@ public class Ship {
 				}
 			} else {
 				// Ship is too large as defined by built in limit
-				plugin.getShipManager().unpilotShip(player);
+				plugin.getShipHandler().unpilotShip(player);
 				sendMessage("&7This ship has over {0} blocks!", data.getMaxBlocks());
 				this.stopped = true;
 				return null;
@@ -889,7 +883,7 @@ public class Ship {
 						max = bLoc;
 				}
 				if (max - min > data.getMaxShipDimensions()) {
-					plugin.getShipManager().unpilotShip(player);
+					plugin.getShipHandler().unpilotShip(player);
 					sendMessage("&cThis ship is either too long, too tall or too wide!");
 					this.stopped = true;
 					return null;					
