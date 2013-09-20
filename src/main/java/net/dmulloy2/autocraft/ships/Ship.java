@@ -586,11 +586,11 @@ public class Ship {
 				public void run() {
 					if (System.currentTimeMillis() - lastmove > 1500L) {
 						for (int i = 0; i < blocks.length; i++) {
-							setBlock(blocks[i], largeShipBlocks[i], largeShipBlocks[i].state.getData().getData());
+							setBlock(blocks[i], largeShipBlocks[i], largeShipBlocks[i].getData().getData());
 						}
 						
 						for (int i = 0; i < specialBlocks.length; i++) {
-							setBlock(specialBlocks[i], largeShipSpecialBlocks[i], largeShipSpecialBlocks[i].state.getData().getData());
+							setBlock(specialBlocks[i], largeShipSpecialBlocks[i], largeShipSpecialBlocks[i].getData().getData());
 						}
 					}
 				}
@@ -618,13 +618,13 @@ public class Ship {
 			// Make new blocks in their new respective positions		
 			for (int i = 0; i < blocks.length; i++) {
 				blocks[i] = blocks[i].getRelative(dx, dy, dz);
-				setBlock(blocks[i], temp[i], temp[i].state.getData().getData());
+				setBlock(blocks[i], temp[i], temp[i].getState().getData().getData());
 			}
 			
 			// Make special blocks
 			for (int i = 0; i < specialBlocks.length; i++) {
 				specialBlocks[i] = specialBlocks[i].getRelative(dx, dy, dz);
-				setBlock(specialBlocks[i], special[i], special[i].state.getData().getData());
+				setBlock(specialBlocks[i], special[i], special[i].getState().getData().getData());
 			}
 		}
 		
@@ -646,7 +646,7 @@ public class Ship {
 	}
 	
 	public void setBlock(Block to, ACBlockState from, TurnDirection dir) {
-		MaterialData data = from.state.getData();
+		MaterialData data = from.getData();
 		if (data instanceof Directional) {
 			Directional directional = (Directional) data; 
 			directional.setFacingDirection(getRotatedBlockFace(dir, (Directional) data));
@@ -694,18 +694,25 @@ public class Ship {
 	}
 	
 	public void setBlock(Block to, ACBlockState from, byte data) {
-		to.setType(from.data.getItemType());
+		to.setType(from.getData().getItemType());
 		to.setData(data);
 		// Check if have to update block states.
-		if (from.inv != null) {
-			for (ItemStack item : from.inv)
-				if (item != null)
+		if (from.getInventory() != null) {
+			((InventoryHolder) to.getState()).getInventory().setContents(from.getInventory());
+
+/*			for (ItemStack item : from.getInventory()) {
+				if (item != null) {
 					((InventoryHolder) to.getState()).getInventory().addItem(item);
+				}
+			}
+*/			
 			to.getState().update(true);
-		} else if (from.state instanceof Sign) {
+		} else if (from.getState() instanceof Sign) {
 			BlockState state = to.getState();
-			for (int j = 0; j < 4; j++)
-				((Sign) state).setLine(j, ((Sign) from.state).getLine(j));
+			for (int j = 0; j < 4; j++) {
+				((Sign) state).setLine(j, ((Sign) from.getState()).getLine(j));
+			}
+			
 			state.update(true);
 		}
 	}
@@ -826,7 +833,7 @@ public class Ship {
 	public List<Block> recurse(Block block, List<Block> blockList) {
 		boolean original = ((blockList != null) ? blockList.isEmpty() : false);
 		
-		if (!this.stopped) {
+		if (! stopped) {
 			if (blockList.size() <= data.getMaxBlocks()) {
 				// If this new block to be checked doesn't already belong to the ship and is a valid material, accept it.
 				if (!blockBelongsToShip(block, blockList.toArray(new Block[0])) && isValidMaterial(block)) {
@@ -840,7 +847,7 @@ public class Ship {
 					// Recurse for each block around this block and in turn each block around them before eventually returning to
 					// this method instance.
 					for (RelativePosition dir : RelativePosition.values()) {
-						blockList = recurse(block.getRelative(dir.x, dir.y, dir.z), blockList);
+						blockList = recurse(block.getRelative(dir.getX(), dir.getY(), dir.getZ()), blockList);
 					}
 				// Otherwise if the block isn't a block that the ship is allowed to touch then stop creating the ship.
 				} else if (!isValidMaterial(block) && !block.getType().equals(Material.AIR) 
@@ -872,10 +879,10 @@ public class Ship {
 		if (original && blockList != null) {
 			// Check each direction for if the ship is larger than specified ship dimensions.
 			for (Direction dir : Direction.values()) {
-				double min = block.getLocation().toVector().dot(dir.v);
+				double min = block.getLocation().toVector().dot(dir.getVector());
 				double max = min;
 				for (Block b : blockList) {
-					double bLoc = b.getLocation().toVector().dot(dir.v);
+					double bLoc = b.getLocation().toVector().dot(dir.getVector());
 					if (bLoc < min)
 						min = bLoc;
 					if (bLoc > max)

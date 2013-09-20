@@ -18,7 +18,5 @@ public abstract class Projectile {
 		return exploded;
 	}
 	
-	public void move() {
-		
-	}
+	public abstract void move();
 }

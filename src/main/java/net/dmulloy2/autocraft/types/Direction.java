@@ -1,12 +1,17 @@
 package net.dmulloy2.autocraft.types;
 
+import lombok.Getter;
+
 import org.bukkit.util.Vector;
 
+@Getter
 public enum Direction {
-	X(1, 0, 0), Y(0, 1, 0), Z(0, 0, 1);
+	X(1, 0, 0), 
+	Y(0, 1, 0),
+	Z(0, 0, 1);
 	
-	public Vector v;
+	private Vector vector;
 	Direction(int x, int y, int z) {
-		v = new Vector(x, y, z);
+		vector = new Vector(x, y, z);
 	}
 }
