@@ -6,6 +6,7 @@ import java.util.List;
 import net.dmulloy2.autocraft.AutoCraft;
 import net.dmulloy2.autocraft.util.FactionUtil;
 import net.dmulloy2.autocraft.util.FormatUtil;
+import net.dmulloy2.autocraft.util.Util;
 import net.dmulloy2.autocraft.weapons.Napalm;
 import net.dmulloy2.autocraft.weapons.Torpedo;
 
@@ -34,7 +35,6 @@ import org.bukkit.material.Vine;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
-@SuppressWarnings("deprecation")
 public class Ship {
 	private AutoCraft plugin;
 	
@@ -196,7 +196,7 @@ public class Ship {
 							&& cannonHasTnt(cannons[i], plugin.getConfig().getInt("numTntToDropNapalm"))) {
 						boolean missingMaterial = false;
 						for (int id : plugin.getConfig().getIntegerList("materialsNeededForNapalm")) {
-							if (!cannonHasItem(cannons[i], id, 1))
+							if (!cannonHasItem(cannons[i], Util.getMaterial(id), 1))
 								missingMaterial = true;
 						}
 						
@@ -205,7 +205,7 @@ public class Ship {
 							lastFired = System.currentTimeMillis();
 							withdrawTnt(cannons[i], plugin.getConfig().getInt("numTntToDropNapalm"));
 							for (int id : plugin.getConfig().getIntegerList("materialsNeededForNapalm")) {
-								withdrawItem(cannons[i], id, 1);
+								withdrawItem(cannons[i], Util.getMaterial(id), 1);
 							}
 							
 							// Fire some napalms
@@ -249,7 +249,7 @@ public class Ship {
 						boolean missingMaterial = false;
 						
 						for (int id : plugin.getConfig().getIntegerList("materialsNeededForTorpedo")) {
-							if (!cannonHasItem(cannons[i], id, 1)) {
+							if (!cannonHasItem(cannons[i], Util.getMaterial(id), 1)) {
 								missingMaterial = true;
 							}
 						}
@@ -262,7 +262,7 @@ public class Ship {
 							lastFired = System.currentTimeMillis();
 							withdrawTnt(cannons[i], plugin.getConfig().getInt("numTntToFireTorpedo"));
 							for (int id : plugin.getConfig().getIntegerList("materialsNeededForTorpedo")) {
-								withdrawItem(cannons[i], id, 1);
+								withdrawItem(cannons[i], Util.getMaterial(id), 1);
 							}
 							
 							// Fire some torpedoes
@@ -291,7 +291,7 @@ public class Ship {
 		double ret = 1.0;
 		for (int i = 1; i <= data.getMaxCannonLength(); i++) {
 			Block bnext = b.getRelative(x * i, 0, z * i);
-			if (bnext.getType().equals(Material.getMaterial(data.getCannonMaterial())))
+			if (bnext.getType() == Util.getMaterial(data.getCannonMaterial()))
 				ret++;
 			else
 				break;
@@ -301,15 +301,15 @@ public class Ship {
 	}
 	
 	public boolean cannonHasTnt(Block b, int numtnt) {
-		return cannonHasItem(b, 46, numtnt);
+		return cannonHasItem(b, Material.TNT, numtnt);
 	}
 	
 	// Check if dispenser has any number of item. Only send dispenser block types here.
-	public boolean cannonHasItem(Block b, int id, int num) {
+	public boolean cannonHasItem(Block b, Material mat, int num) {
 		Dispenser dispenser = (Dispenser) b.getState();
 		if (dispenser.getInventory() != null) {
 			for (ItemStack item : dispenser.getInventory().getContents()) {
-				if (item != null && item.getTypeId() == id)
+				if (item != null && item.getType() == mat)
 					if (item.getAmount() >= num)
 						num = 0;
 					else
@@ -323,16 +323,16 @@ public class Ship {
 	}
 	
 	public void withdrawTnt(Block b, int numtnt) {
-		withdrawItem(b, 46, numtnt);
+		withdrawItem(b, Material.TNT, numtnt);
 	}
 	
 	// Withdraw any item out of a dispenser. Check if dispenser has enough of item first and only send Dispenser blocks here.
-	public void withdrawItem(Block b, int id, int num) {
+	public void withdrawItem(Block b, Material mat, int num) {
 		Dispenser dispenser = (Dispenser) b.getState();
 		if (dispenser.getInventory() != null) {
 			for (int i = 0; i < dispenser.getInventory().getSize(); i++) {
 				ItemStack item = dispenser.getInventory().getItem(i);
-				if (item != null && item.getTypeId() == id) {
+				if (item != null && item.getType() == mat) {
 					if (item.getAmount() >= num) {
 						if (item.getAmount() - num > 0) {
 							item.setAmount(item.getAmount() - num);
@@ -580,11 +580,11 @@ public class Ship {
 				public void run() {
 					if (System.currentTimeMillis() - lastmove > 1500L) {
 						for (int i = 0; i < blocks.length; i++) {
-							setBlock(blocks[i], largeShipBlocks[i], largeShipBlocks[i].getData().getData());
+							setBlock(blocks[i], largeShipBlocks[i], largeShipBlocks[i].getData());
 						}
 						
 						for (int i = 0; i < specialBlocks.length; i++) {
-							setBlock(specialBlocks[i], largeShipSpecialBlocks[i], largeShipSpecialBlocks[i].getData().getData());
+							setBlock(specialBlocks[i], largeShipSpecialBlocks[i], largeShipSpecialBlocks[i].getData());
 						}
 					}
 				}
@@ -612,13 +612,13 @@ public class Ship {
 			// Make new blocks in their new respective positions		
 			for (int i = 0; i < blocks.length; i++) {
 				blocks[i] = blocks[i].getRelative(dx, dy, dz);
-				setBlock(blocks[i], temp[i], temp[i].getState().getData().getData());
+				setBlock(blocks[i], temp[i], temp[i].getState().getData());
 			}
 			
 			// Make special blocks
 			for (int i = 0; i < specialBlocks.length; i++) {
 				specialBlocks[i] = specialBlocks[i].getRelative(dx, dy, dz);
-				setBlock(specialBlocks[i], special[i], special[i].getState().getData().getData());
+				setBlock(specialBlocks[i], special[i], special[i].getState().getData());
 			}
 		}
 		
@@ -647,7 +647,7 @@ public class Ship {
 		}
 		
 		// Wood isn't a directional material in bukkit >>
-		if (data.getItemTypeId() == 17) {
+/*		if (data.getItemTypeId() == 17) {
 			byte d = data.getData();
 			
 			if ((d & 0x4) != 0) {
@@ -659,8 +659,8 @@ public class Ship {
 			}
 			// else directionless, we don't need to do anything.
 		}
-		
-		setBlock(to, from, data.getData());
+*/		
+		setBlock(to, from, data);
 	}
 	
 	public BlockFace getRotatedBlockFace(TurnDirection dir, Directional data) {
@@ -687,9 +687,9 @@ public class Ship {
 		
 	}
 	
-	public void setBlock(Block to, ACBlockState from, byte data) {
+	public void setBlock(Block to, ACBlockState from, MaterialData data) {
 		to.setType(from.getData().getItemType());
-		to.setData(data);
+		to.getState().setData(data);
 		// Check if have to update block states.
 		if (from.getInventory() != null) {
 			((InventoryHolder) to.getState()).getInventory().setContents(from.getInventory());
@@ -700,7 +700,7 @@ public class Ship {
 				}
 			}
 */			
-			to.getState().update(true);
+			to.getState().update();
 		} else if (from.getState() instanceof Sign) {
 			BlockState state = to.getState();
 			for (int j = 0; j < 4; j++) {
@@ -715,18 +715,10 @@ public class Ship {
 	public void updateMainBlock() {
 		this.mainblock = player.getWorld().getBlockAt(player.getLocation().add(0, -1, 0));
 	}
-	
-	// Checks the block material against the AC properties for this ship
-	public boolean isValidMaterial(Block block) {
-		return (data.getMainType() == block.getTypeId() 
-				|| data.getAllowedBlocks().contains(block.getTypeId()) 
-				|| data.getCannonMaterial() == block.getTypeId() 
-				|| block.getType().equals(Material.DISPENSER));
-	}
-	
+
 	// Checks that the ship is within its size restraints as defined by its AC data.
 	public boolean areBlocksValid() {
-		if (! isValidMaterial(mainblock)) {
+		if (! data.isValidMaterial(mainblock)) {
 			sendMessage("&cPlease stand on a valid block for this type of ship");
 		} else {
 			if (blocks.length > data.getMaxBlocks()) {
@@ -745,7 +737,7 @@ public class Ship {
 	
 	// Returns a string name for the main material of this ship.
 	public String getMainType() {
-		return FormatUtil.getFriendlyName(Material.getMaterial(data.getMainType()));
+		return FormatUtil.getFriendlyName(Util.getMaterial(data.getMainType()));
 	}
 	
 	// Checks if ship is already being piloted
@@ -830,9 +822,9 @@ public class Ship {
 		if (! stopped) {
 			if (blockList.size() <= data.getMaxBlocks()) {
 				// If this new block to be checked doesn't already belong to the ship and is a valid material, accept it.
-				if (!blockBelongsToShip(block, blockList.toArray(new Block[0])) && isValidMaterial(block)) {
+				if (!blockBelongsToShip(block, blockList.toArray(new Block[0])) && data.isValidMaterial(block)) {
 					// If its material is same as main type than add to number of main block count.
-					if (block.getTypeId() == data.getMainType())
+					if (block.getType() == Util.getMaterial(data.getMainType()))
 						this.numMainBlocks++;				
 					
 					// Add current block to recursing block list.
@@ -844,12 +836,12 @@ public class Ship {
 						blockList = recurse(block.getRelative(dir.getX(), dir.getY(), dir.getZ()), blockList);
 					}
 				// Otherwise if the block isn't a block that the ship is allowed to touch then stop creating the ship.
-				} else if (!isValidMaterial(block) && !block.getType().equals(Material.AIR) 
-						&& !block.getType().equals(Material.SNOW)
-						&& !block.getType().equals(Material.BEDROCK) 
-						&& !block.getType().equals(Material.WATER) 
-						&& !block.getType().equals(Material.STATIONARY_WATER)
-						&& !data.isIgnoreAttachments()) {
+				} else if (! data.isValidMaterial(block) && !block.getType().equals(Material.AIR) 
+						&& ! block.getType().equals(Material.SNOW)
+						&& ! block.getType().equals(Material.BEDROCK) 
+						&& ! block.getType().equals(Material.WATER) 
+						&& ! block.getType().equals(Material.STATIONARY_WATER)
+						&& ! data.isIgnoreAttachments()) {
 					
 					plugin.getShipHandler().unpilotShip(player);
 					sendMessage("&cThis ship needs to be floating!");

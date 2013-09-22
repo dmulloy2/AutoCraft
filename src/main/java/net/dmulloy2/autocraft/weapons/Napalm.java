@@ -2,14 +2,15 @@ package net.dmulloy2.autocraft.weapons;
 
 import net.dmulloy2.autocraft.AutoCraft;
 
+import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.TNTPrimed;
+import org.bukkit.material.Wool;
 
 import com.massivecraft.factions.Board;
 import com.massivecraft.factions.FLocation;
 
-@SuppressWarnings("deprecation")
 public class Napalm extends Projectile {
 	private AutoCraft plugin;
 	
@@ -22,7 +23,8 @@ public class Napalm extends Projectile {
 		
 		napalm = dispenser.getRelative(0, -1, 0);
 		napalm.setType(Material.WOOL);
-		napalm.setData((byte) 14);
+		
+		((Wool) napalm.getState().getData()).setColor(DyeColor.GREEN);
 	}
 
 	public void explode() {
@@ -66,7 +68,7 @@ public class Napalm extends Projectile {
 				b.getType().equals(Material.ENDER_PORTAL_FRAME)) {
 				b.setType(Material.WOOL);
 				napalm.setType(Material.AIR);
-				b.setData((byte) 13);
+				((Wool) b.getState().getData()).setColor(DyeColor.GREEN);
 				napalm = b;
 			} else {
 				if (plugin.isFactionsEnabled() 

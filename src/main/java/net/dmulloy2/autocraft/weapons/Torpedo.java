@@ -2,15 +2,16 @@ package net.dmulloy2.autocraft.weapons;
 
 import net.dmulloy2.autocraft.AutoCraft;
 
+import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.TNTPrimed;
+import org.bukkit.material.Wool;
 
 import com.massivecraft.factions.Board;
 import com.massivecraft.factions.FLocation;
 
-@SuppressWarnings("deprecation")
 public class Torpedo extends Projectile {
 	private final AutoCraft plugin;
 	
@@ -33,7 +34,7 @@ public class Torpedo extends Projectile {
 			torpedo[1].getType().equals(Material.AIR)) {
 			torpedo[0].setType(Material.DIAMOND_BLOCK);
 			torpedo[1].setType(Material.WOOL);
-			torpedo[1].setData((byte) 14);
+			((Wool) torpedo[1].getState().getData()).setColor(DyeColor.RED);
 		} else {
 			this.exploded = true;
 			explode();
@@ -51,7 +52,7 @@ public class Torpedo extends Projectile {
 			Block b = torpedo[0].getRelative(dir.getModX(), (int) -this.yvelo, dir.getModZ());
 			if (b.getType().equals(Material.AIR) || b.getType().equals(Material.WATER) || b.getType().equals(Material.STATIONARY_WATER)) {
 				torpedo[0].setType(Material.WOOL);
-				torpedo[0].setData((byte) 14);
+				((Wool) torpedo[0].getState().getData()).setColor(DyeColor.RED);
 				torpedo[1].setType(Material.AIR);
 				torpedo[1] = torpedo[0];
 				torpedo[0] = b;

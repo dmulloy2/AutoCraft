@@ -17,6 +17,8 @@
 */
 package net.dmulloy2.autocraft;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.MissingResourceException;
 import java.util.logging.Level;
 
@@ -41,8 +43,11 @@ import net.dmulloy2.autocraft.handlers.PermissionHandler;
 import net.dmulloy2.autocraft.handlers.ResourceHandler;
 import net.dmulloy2.autocraft.handlers.ShipHandler;
 import net.dmulloy2.autocraft.listeners.PlayerListener;
+import net.dmulloy2.autocraft.types.ShipData;
 import net.dmulloy2.autocraft.util.FormatUtil;
 
+import org.bukkit.permissions.Permission;
+import org.bukkit.permissions.PermissionDefault;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -101,6 +106,8 @@ public class AutoCraft extends JavaPlugin {
 				logHandler.log(getMessage("log_factions_notfound"));
 			}
 		}
+		
+		registerPermissions();
 
 		getServer().getPluginManager().registerEvents(new PlayerListener(this), this);
 		
@@ -127,6 +134,22 @@ public class AutoCraft extends JavaPlugin {
 		} catch (MissingResourceException ex) {
 			logHandler.log(Level.WARNING, getMessage("log_message_missing"), string);
 			return null;
+		}
+	}
+	
+	private List<Permission> permissions;
+
+	public void registerPermissions() {
+		this.permissions = new ArrayList<Permission>();
+		
+		for (ShipData data : dataHandler.getData()) {
+			PermissionDefault def = data.isNeedsPermission() ? PermissionDefault.FALSE : PermissionDefault.TRUE;
+			
+			Permission perm = new Permission("autocraft." + data.getShipType().toLowerCase(), def);
+			
+			getServer().getPluginManager().addPermission(perm);
+			
+			permissions.add(perm);
 		}
 	}
 }

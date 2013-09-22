@@ -1,6 +1,7 @@
 package net.dmulloy2.autocraft.handlers;
 
 import java.io.File;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Set;
 
@@ -43,6 +44,10 @@ public class DataHandler {
 		}
 		
 		for (File file : children) {
+			if (file.getName().contains(".DS_Store")) { // Mac Crap
+				continue;
+			}
+			
 			ShipData shipData = FileSerialization.load(file, ShipData.class);
 			shipData.setShipType(trimFileExtension(file));
 			data.put(shipData.getShipType(), shipData);
@@ -94,7 +99,12 @@ public class DataHandler {
 	}
 	
 	public ShipData getData(String key) {
-		return data.get(key);
+		for (ShipData dat : data.values()) {
+			if (dat.getShipType().equalsIgnoreCase(key))
+				return dat;
+		}
+		
+		return null;
 	}
 	
 	public boolean isValidShip(String key) {
@@ -103,5 +113,9 @@ public class DataHandler {
 	
 	public Set<String> getShips() {
 		return data.keySet();
+	}
+	
+	public Collection<ShipData> getData() {
+		return data.values();
 	}
 }

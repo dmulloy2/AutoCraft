@@ -11,6 +11,10 @@ import java.util.Map.Entry;
 
 import lombok.Data;
 
+import net.dmulloy2.autocraft.util.Util;
+
+import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 
 @Data
@@ -34,6 +38,7 @@ public class ShipData implements ConfigurationSerializable {
 	private boolean dropsBomb;
 	private boolean dropsNapalm;
 	private boolean firesTorpedo;
+	private boolean needsPermission;
 	private boolean ignoreAttachments;
 	
 	private List<Integer> allowedBlocks = new ArrayList<Integer>();
@@ -96,5 +101,16 @@ public class ShipData implements ConfigurationSerializable {
 		}
 		
 		return data;
+	}
+	
+	public boolean isValidMaterial(Block block) {
+		for (int allowedBlock : allowedBlocks) {
+			if (Util.getMaterial(allowedBlock) == block.getType())
+				return true;
+		}
+		
+		return Util.getMaterial(mainType) == block.getType()
+				|| Util.getMaterial(cannonMaterial) == block.getType()
+				|| block.getType() == Material.DISPENSER;
 	}
 }
