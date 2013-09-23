@@ -1,10 +1,10 @@
 package net.dmulloy2.autocraft.commands;
 
 import net.dmulloy2.autocraft.AutoCraft;
-import net.dmulloy2.autocraft.types.Material;
 import net.dmulloy2.autocraft.types.Permission;
 import net.dmulloy2.autocraft.types.ShipData;
 import net.dmulloy2.autocraft.util.FormatUtil;
+import net.dmulloy2.autocraft.util.MaterialUtil;
 
 import org.apache.commons.lang.WordUtils;
 
@@ -39,14 +39,14 @@ public class CmdAllowed extends AutoCraftCommand {
 		if (data.isFiresTnt() || data.isFiresTorpedo()) {
 			sendMessage(getMessage("allowed_max_cannon_length"), data.getMaxCannonLength());
 			sendMessage(getMessage("allowed_cannon_material"), 
-					FormatUtil.getFriendlyName(Material.getMaterial(data.getCannonMaterial()).getMaterial()));
+					FormatUtil.getFriendlyName(MaterialUtil.getMaterial(data.getCannonMaterial())));
 		}
 		
 		sendMessage(getMessage("allowed_max_number_cannons"), data.getMaxNumberOfCannons());
 		sendMessage(getMessage("allowed_min_blocks"), data.getMinBlocks());
 		sendMessage(getMessage("allowed_max_blocks"), data.getMaxBlocks());
 		sendMessage(getMessage("allowed_main_block"),
-				FormatUtil.getFriendlyName(Material.getMaterial(data.getMainType()).getMaterial()));
+				FormatUtil.getFriendlyName(MaterialUtil.getMaterial(data.getCannonMaterial())));
 		sendMessage(getMessage("allowed_blocks"), getAllowedList(data));
 		sendMessage(getMessage("allowed_ignore_attachments"), data.isIgnoreAttachments());
 	}
@@ -55,7 +55,7 @@ public class CmdAllowed extends AutoCraftCommand {
 		StringBuilder ret = new StringBuilder();
 		
 		for (int id : data.getAllowedBlocks()) {
-			ret.append("&e" + FormatUtil.getFriendlyName(Material.getMaterial(id).getMaterial()) + "&b, ");
+			ret.append("&e" + FormatUtil.getFriendlyName(MaterialUtil.getMaterial(id)) + "&b, ");
 		}
 		
 		ret.delete(ret.lastIndexOf("&b,"), ret.lastIndexOf(" "));

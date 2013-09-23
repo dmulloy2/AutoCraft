@@ -6,7 +6,7 @@ import java.util.List;
 import net.dmulloy2.autocraft.AutoCraft;
 import net.dmulloy2.autocraft.util.FactionUtil;
 import net.dmulloy2.autocraft.util.FormatUtil;
-import net.dmulloy2.autocraft.util.Util;
+import net.dmulloy2.autocraft.util.MaterialUtil;
 import net.dmulloy2.autocraft.weapons.Napalm;
 import net.dmulloy2.autocraft.weapons.Torpedo;
 
@@ -15,11 +15,11 @@ import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
-import org.bukkit.block.BlockState;
 import org.bukkit.block.Dispenser;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.TNTPrimed;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.Bed;
@@ -86,7 +86,7 @@ public class Ship {
 			
 			// Can this airship drop bombs?
 			if (data.isDropsBomb()) {
-				if (plugin.isFactionsEnabled() && !FactionUtil.canPlayerUseWeapon(player)) {
+				if (plugin.isFactionsEnabled() && ! FactionUtil.canPlayerUseWeapon(player)) {
 					return;
 				}
 				
@@ -131,7 +131,7 @@ public class Ship {
 			log("{0} is attempting to fire TNT.", player.getName());
 			// Can this airship drop bombs?
 			if (data.isFiresTnt()) {
-				if (plugin.isFactionsEnabled() && !FactionUtil.canPlayerUseWeapon(player)) {
+				if (plugin.isFactionsEnabled() && ! FactionUtil.canPlayerUseWeapon(player)) {
 					return;
 				}
 				
@@ -182,7 +182,7 @@ public class Ship {
 			log("{0} is attempting to drop napalm.", player.getName());
 			// Can this airship drop napalm?
 			if (data.isDropsNapalm()) {
-				if (plugin.isFactionsEnabled() && !FactionUtil.canPlayerUseWeapon(player)) {
+				if (plugin.isFactionsEnabled() && ! FactionUtil.canPlayerUseWeapon(player)) {
 					return;
 				}
 				
@@ -196,7 +196,7 @@ public class Ship {
 							&& cannonHasTnt(cannons[i], plugin.getConfig().getInt("numTntToDropNapalm"))) {
 						boolean missingMaterial = false;
 						for (int id : plugin.getConfig().getIntegerList("materialsNeededForNapalm")) {
-							if (!cannonHasItem(cannons[i], Util.getMaterial(id), 1))
+							if (!cannonHasItem(cannons[i], MaterialUtil.getMaterial(id), 1))
 								missingMaterial = true;
 						}
 						
@@ -205,7 +205,7 @@ public class Ship {
 							lastFired = System.currentTimeMillis();
 							withdrawTnt(cannons[i], plugin.getConfig().getInt("numTntToDropNapalm"));
 							for (int id : plugin.getConfig().getIntegerList("materialsNeededForNapalm")) {
-								withdrawItem(cannons[i], Util.getMaterial(id), 1);
+								withdrawItem(cannons[i], MaterialUtil.getMaterial(id), 1);
 							}
 							
 							// Fire some napalms
@@ -235,7 +235,7 @@ public class Ship {
 			log("{0} is attempting to fire a torpedo", player.getName());
 			// Can this airship fire torpedoes?
 			if (data.isFiresTorpedo()) {
-				if (plugin.isFactionsEnabled() && !FactionUtil.canPlayerUseWeapon(player)) {
+				if (plugin.isFactionsEnabled() && ! FactionUtil.canPlayerUseWeapon(player)) {
 					return;
 				}
 				
@@ -249,7 +249,7 @@ public class Ship {
 						boolean missingMaterial = false;
 						
 						for (int id : plugin.getConfig().getIntegerList("materialsNeededForTorpedo")) {
-							if (!cannonHasItem(cannons[i], Util.getMaterial(id), 1)) {
+							if (!cannonHasItem(cannons[i], MaterialUtil.getMaterial(id), 1)) {
 								missingMaterial = true;
 							}
 						}
@@ -262,7 +262,7 @@ public class Ship {
 							lastFired = System.currentTimeMillis();
 							withdrawTnt(cannons[i], plugin.getConfig().getInt("numTntToFireTorpedo"));
 							for (int id : plugin.getConfig().getIntegerList("materialsNeededForTorpedo")) {
-								withdrawItem(cannons[i], Util.getMaterial(id), 1);
+								withdrawItem(cannons[i], MaterialUtil.getMaterial(id), 1);
 							}
 							
 							// Fire some torpedoes
@@ -291,7 +291,7 @@ public class Ship {
 		double ret = 1.0;
 		for (int i = 1; i <= data.getMaxCannonLength(); i++) {
 			Block bnext = b.getRelative(x * i, 0, z * i);
-			if (bnext.getType() == Util.getMaterial(data.getCannonMaterial()))
+			if (bnext.getType() == MaterialUtil.getMaterial(data.getCannonMaterial()))
 				ret++;
 			else
 				break;
@@ -431,19 +431,19 @@ public class Ship {
 			}
 		}
 	}
-	
+
 	public void rotate(TurnDirection dir) {	
 		if (stopped) {
 			plugin.getShipHandler().unpilotShip(player);
 		} else {
 			// Check that the ship hasn't moved within the last second.
-			if (System.currentTimeMillis() - this.lastmove > 1000L) {
+			if (System.currentTimeMillis() - lastmove > 1000L) {
 				this.lastmove = System.currentTimeMillis();
 				boolean obstruction = false;
-				
+		
 				Block[] blocks = this.blocks.clone();
 				Block[] specialBlocks = this.specialBlocks.clone();
-				
+
 				updateMainBlock();
 				// Check each block's new position for obstructions
 				for (int i = 0; i < blocks.length; i++) {
@@ -456,7 +456,7 @@ public class Ship {
 						continue;
 					obstruction = true;
 				}
-				
+
 				// Can't move :/
 				if (obstruction) {
 					sendMessage("&eObstruction - &cCannot move any further in this direction.");
@@ -466,7 +466,7 @@ public class Ship {
 			}
 		}
 	}
-	
+
 	// Rotate the ship and all passengers in the specified direction
 	public void dorotate(TurnDirection dir) {
 		List<Player> passengers = getPassengers();
@@ -590,7 +590,6 @@ public class Ship {
 				}
 				
 			}.runTaskLater(plugin, 40L);
-			
 		} else {
 			ACBlockState[] temp = new ACBlockState[blocks.length];
 			ACBlockState[] special = new ACBlockState[specialBlocks.length];
@@ -627,7 +626,7 @@ public class Ship {
 			p.teleport(p.getLocation().clone().add(dx, dy, dz));
 		}
 	}
-	
+
 	public boolean isSpecial(MaterialData data) {
 		return (data instanceof SimpleAttachableMaterialData || 
 				data instanceof org.bukkit.material.Sign || 
@@ -638,31 +637,17 @@ public class Ship {
 				data instanceof Diode ||
 				data instanceof Vine);
 	}
-	
+
 	public void setBlock(Block to, ACBlockState from, TurnDirection dir) {
 		MaterialData data = from.getData();
 		if (data instanceof Directional) {
 			Directional directional = (Directional) data; 
 			directional.setFacingDirection(getRotatedBlockFace(dir, (Directional) data));
 		}
-		
-		// Wood isn't a directional material in bukkit >>
-/*		if (data.getItemTypeId() == 17) {
-			byte d = data.getData();
-			
-			if ((d & 0x4) != 0) {
-				// Currently East-West - Change to North-South
-				data.setData((byte) ((d & 0x3) | 0x8));
-			} else if ((d & 0x8) != 0) {
-				// Currently North-South - Change to East-West
-				data.setData((byte) ((d & 0x3) | 0x4));
-			}
-			// else directionless, we don't need to do anything.
-		}
-*/		
+
 		setBlock(to, from, data);
 	}
-	
+
 	public BlockFace getRotatedBlockFace(TurnDirection dir, Directional data) {
 		BlockFace face;
 		
@@ -686,31 +671,27 @@ public class Ship {
 		}
 		
 	}
-	
+
 	public void setBlock(Block to, ACBlockState from, MaterialData data) {
 		to.setType(from.getData().getItemType());
 		to.getState().setData(data);
-		// Check if have to update block states.
+		
+		// Handle inventory
 		if (from.getInventory() != null) {
-			((InventoryHolder) to.getState()).getInventory().setContents(from.getInventory());
-
-/*			for (ItemStack item : from.getInventory()) {
-				if (item != null) {
-					((InventoryHolder) to.getState()).getInventory().addItem(item);
-				}
-			}
-*/			
-			to.getState().update();
-		} else if (from.getState() instanceof Sign) {
-			BlockState state = to.getState();
-			for (int j = 0; j < 4; j++) {
-				((Sign) state).setLine(j, ((Sign) from.getState()).getLine(j));
-			}
+			Inventory inv = ((InventoryHolder) to.getState()).getInventory();
 			
-			state.update(true);
+			inv.clear();
+			inv.setContents(from.getInventory());
+		// Signs
+		} else if (from.getState() instanceof Sign) {
+			for (int j = 0; j < 4; j++) {
+				((Sign) to.getState()).setLine(j, ((Sign) from.getState()).getLine(j));
+			}
 		}
+
+		to.getState().update();
 	}
-	
+
 	// Update main block with which block the player is standing on.
 	public void updateMainBlock() {
 		this.mainblock = player.getWorld().getBlockAt(player.getLocation().add(0, -1, 0));
@@ -737,7 +718,7 @@ public class Ship {
 	
 	// Returns a string name for the main material of this ship.
 	public String getMainType() {
-		return FormatUtil.getFriendlyName(Util.getMaterial(data.getMainType()));
+		return FormatUtil.getFriendlyName(MaterialUtil.getMaterial(data.getMainType()));
 	}
 	
 	// Checks if ship is already being piloted
@@ -824,7 +805,7 @@ public class Ship {
 				// If this new block to be checked doesn't already belong to the ship and is a valid material, accept it.
 				if (!blockBelongsToShip(block, blockList.toArray(new Block[0])) && data.isValidMaterial(block)) {
 					// If its material is same as main type than add to number of main block count.
-					if (block.getType() == Util.getMaterial(data.getMainType()))
+					if (block.getType() == MaterialUtil.getMaterial(data.getMainType()))
 						this.numMainBlocks++;				
 					
 					// Add current block to recursing block list.
