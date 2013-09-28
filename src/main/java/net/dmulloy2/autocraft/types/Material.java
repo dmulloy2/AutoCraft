@@ -536,11 +536,6 @@ public enum Material
     {
     	return org.bukkit.Material.getMaterial(toString().toUpperCase());
     }
-    
-    public static int getTypeId(org.bukkit.Material mat)
-    {
-    	return getMaterial(mat.toString().toUpperCase()).getId();
-    }
 
     /**
      * Attempts to get the Material with the given ID
