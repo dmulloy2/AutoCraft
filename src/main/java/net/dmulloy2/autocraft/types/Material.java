@@ -59,7 +59,10 @@ import com.google.common.collect.Maps;
 
 /**
  * A static enum for configuration compatiblity
+ * 
+ * @author dmulloy2
  */
+
 public enum Material
 {
     AIR(0, 0),
@@ -526,6 +529,16 @@ public enum Material
             throw new AssertionError(t);
         }
     }
+
+    /**
+     * Checks if this Material is a placable block
+     *
+     * @return true if this material is a block
+     */
+    public boolean isBlock() 
+    {
+        return id < 256;
+    }
     
     /**
      * Returns the Bukkit {@link org.bukkit.Material} associated with this
@@ -534,7 +547,12 @@ public enum Material
      */
     public org.bukkit.Material getMaterial() 
     {
-    	return org.bukkit.Material.getMaterial(toString().toUpperCase());
+    	return org.bukkit.Material.matchMaterial(toString().toUpperCase());
+    }
+    
+    public static int getTypeId(org.bukkit.Material mat)
+    {
+    	return getMaterial(mat.toString().toUpperCase()).getId();
     }
 
     /**
