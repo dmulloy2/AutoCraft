@@ -15,8 +15,12 @@ import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.block.CommandBlock;
 import org.bukkit.block.Dispenser;
+import org.bukkit.block.Jukebox;
+import org.bukkit.block.NoteBlock;
 import org.bukkit.block.Sign;
+import org.bukkit.block.Skull;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.TNTPrimed;
 import org.bukkit.inventory.Inventory;
@@ -580,11 +584,11 @@ public class Ship {
 				public void run() {
 					if (System.currentTimeMillis() - lastmove > 1500L) {
 						for (int i = 0; i < blocks.length; i++) {
-							setBlock(blocks[i], largeShipBlocks[i], largeShipBlocks[i].getData());
+							setBlock(blocks[i], largeShipBlocks[i]);
 						}
-						
+
 						for (int i = 0; i < specialBlocks.length; i++) {
-							setBlock(specialBlocks[i], largeShipSpecialBlocks[i], largeShipSpecialBlocks[i].getData());
+							setBlock(specialBlocks[i], largeShipSpecialBlocks[i]);
 						}
 					}
 				}
@@ -611,13 +615,13 @@ public class Ship {
 			// Make new blocks in their new respective positions		
 			for (int i = 0; i < blocks.length; i++) {
 				blocks[i] = blocks[i].getRelative(dx, dy, dz);
-				setBlock(blocks[i], temp[i], temp[i].getState().getData());
+				setBlock(blocks[i], temp[i]);
 			}
 			
 			// Make special blocks
 			for (int i = 0; i < specialBlocks.length; i++) {
 				specialBlocks[i] = specialBlocks[i].getRelative(dx, dy, dz);
-				setBlock(specialBlocks[i], special[i], special[i].getState().getData());
+				setBlock(specialBlocks[i], special[i]);
 			}
 		}
 		
@@ -642,10 +646,15 @@ public class Ship {
 		MaterialData data = from.getData();
 		if (data instanceof Directional) {
 			Directional directional = (Directional) data; 
-			directional.setFacingDirection(getRotatedBlockFace(dir, (Directional) data));
+			directional.setFacingDirection(getRotatedBlockFace(dir, directional));
+		}
+		
+		if (data instanceof SimpleAttachableMaterialData) {
+			SimpleAttachableMaterialData samd = (SimpleAttachableMaterialData) data;
+			samd.setFacingDirection(getRotatedBlockFace(dir, samd));
 		}
 
-		setBlock(to, from, data);
+		setBlock(to, from);
 	}
 
 	public BlockFace getRotatedBlockFace(TurnDirection dir, Directional data) {
@@ -672,21 +681,45 @@ public class Ship {
 		
 	}
 
-	public void setBlock(Block to, ACBlockState from, MaterialData data) {
+	public void setBlock(Block to, ACBlockState from) {
 		to.setType(from.getData().getItemType());
-		to.getState().setData(data);
-		
-		// Handle inventory
+		to.getState().setData(from.getData());
+
+		// Basically, there isn't an api for Block.setState(BlockState)
 		if (from.getInventory() != null) {
 			Inventory inv = ((InventoryHolder) to.getState()).getInventory();
 			
 			inv.clear();
 			inv.setContents(from.getInventory());
-		// Signs
 		} else if (from.getState() instanceof Sign) {
-			for (int j = 0; j < 4; j++) {
-				((Sign) to.getState()).setLine(j, ((Sign) from.getState()).getLine(j));
+			Sign fromSign = (Sign) from.getState();
+			Sign toSign = (Sign) to.getState();
+
+			for (int l = 0; l < 4; l++) {
+				toSign.setLine(l, fromSign.getLine(l));
 			}
+		} else if (from.getState() instanceof CommandBlock) {
+			CommandBlock fromCmd = (CommandBlock) from.getState();
+			CommandBlock toCmd = (CommandBlock) to.getState();
+			
+			toCmd.setCommand(fromCmd.getCommand());
+			toCmd.setName(fromCmd.getName());
+		} else if (from.getState() instanceof Jukebox) {
+			Jukebox fromBox = (Jukebox) from.getState();
+			Jukebox toBox = (Jukebox) to.getState();
+			
+			toBox.setPlaying(fromBox.getPlaying());
+		} else if (from.getState() instanceof NoteBlock) {
+			NoteBlock fromBlock = (NoteBlock) from.getState();
+			NoteBlock toBlock = (NoteBlock) to.getState();
+			
+			toBlock.setNote(fromBlock.getNote());
+		} else if (from.getState() instanceof Skull) {
+			Skull fromSkull = (Skull) from.getState();
+			Skull toSkull = (Skull) to.getState();
+			
+			toSkull.setSkullType(fromSkull.getSkullType());
+			toSkull.setOwner(fromSkull.getOwner());
 		}
 
 		to.getState().update();

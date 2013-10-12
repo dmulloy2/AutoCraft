@@ -20,7 +20,5 @@ public class ACBlockState {
 		if (s instanceof InventoryHolder) {
 			this.inventory = ((InventoryHolder) s).getInventory().getContents();
 		}
-	}
-	
-	
+	}	
 }
