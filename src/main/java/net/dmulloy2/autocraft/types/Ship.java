@@ -682,47 +682,51 @@ public class Ship {
 	}
 
 	public void setBlock(Block to, ACBlockState from) {
-		to.setType(from.getData().getItemType());
-		to.getState().setData(from.getData());
-
-		// Basically, there isn't an api for Block.setState(BlockState)
-		if (from.getInventory() != null) {
-			Inventory inv = ((InventoryHolder) to.getState()).getInventory();
-			
-			inv.clear();
-			inv.setContents(from.getInventory());
-		} else if (from.getState() instanceof Sign) {
-			Sign fromSign = (Sign) from.getState();
-			Sign toSign = (Sign) to.getState();
-
-			for (int l = 0; l < 4; l++) {
-				toSign.setLine(l, fromSign.getLine(l));
+		try {
+			to.setType(from.getData().getItemType());
+			to.getState().setData(from.getData());
+	
+			// Basically, there isn't an api for Block.setState(BlockState)
+			if (from.getInventory() != null) {
+				Inventory inv = ((InventoryHolder) to.getState()).getInventory();
+				
+				inv.clear();
+				inv.setContents(from.getInventory());
+			} else if (from.getState() instanceof Sign) {
+				Sign fromSign = (Sign) from.getState();
+				Sign toSign = (Sign) to.getState();
+	
+				for (int l = 0; l < 4; l++) {
+					toSign.setLine(l, fromSign.getLine(l));
+				}
+			} else if (from.getState() instanceof CommandBlock) {
+				CommandBlock fromCmd = (CommandBlock) from.getState();
+				CommandBlock toCmd = (CommandBlock) to.getState();
+				
+				toCmd.setCommand(fromCmd.getCommand());
+				toCmd.setName(fromCmd.getName());
+			} else if (from.getState() instanceof Jukebox) {
+				Jukebox fromBox = (Jukebox) from.getState();
+				Jukebox toBox = (Jukebox) to.getState();
+				
+				toBox.setPlaying(fromBox.getPlaying());
+			} else if (from.getState() instanceof NoteBlock) {
+				NoteBlock fromBlock = (NoteBlock) from.getState();
+				NoteBlock toBlock = (NoteBlock) to.getState();
+				
+				toBlock.setNote(fromBlock.getNote());
+			} else if (from.getState() instanceof Skull) {
+				Skull fromSkull = (Skull) from.getState();
+				Skull toSkull = (Skull) to.getState();
+				
+				toSkull.setSkullType(fromSkull.getSkullType());
+				toSkull.setOwner(fromSkull.getOwner());
 			}
-		} else if (from.getState() instanceof CommandBlock) {
-			CommandBlock fromCmd = (CommandBlock) from.getState();
-			CommandBlock toCmd = (CommandBlock) to.getState();
-			
-			toCmd.setCommand(fromCmd.getCommand());
-			toCmd.setName(fromCmd.getName());
-		} else if (from.getState() instanceof Jukebox) {
-			Jukebox fromBox = (Jukebox) from.getState();
-			Jukebox toBox = (Jukebox) to.getState();
-			
-			toBox.setPlaying(fromBox.getPlaying());
-		} else if (from.getState() instanceof NoteBlock) {
-			NoteBlock fromBlock = (NoteBlock) from.getState();
-			NoteBlock toBlock = (NoteBlock) to.getState();
-			
-			toBlock.setNote(fromBlock.getNote());
-		} else if (from.getState() instanceof Skull) {
-			Skull fromSkull = (Skull) from.getState();
-			Skull toSkull = (Skull) to.getState();
-			
-			toSkull.setSkullType(fromSkull.getSkullType());
-			toSkull.setOwner(fromSkull.getOwner());
+	
+			to.getState().update();
+		} catch (Throwable ex) {
+			// There's not a real good way to check for this...
 		}
-
-		to.getState().update();
 	}
 
 	// Update main block with which block the player is standing on.
