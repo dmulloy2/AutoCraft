@@ -26,7 +26,7 @@ public class LogHandler {
 
 	public final void debug(String msg, Object... objects) {
 		if (plugin.getConfig().getBoolean("debug", false)) {
-			log(msg, objects);
+			log("[Debug] " + msg, objects);
 		}
 	}
 }
