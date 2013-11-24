@@ -24,3 +24,6 @@ napalmBurnRadius: 6
 
 # Factions Protection Enabled
 factionsProtectionsEnabled: true
+
+# Debug
+debug: false

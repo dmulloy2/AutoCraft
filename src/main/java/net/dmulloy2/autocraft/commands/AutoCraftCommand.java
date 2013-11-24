@@ -6,6 +6,7 @@ import java.util.List;
 import net.dmulloy2.autocraft.AutoCraft;
 import net.dmulloy2.autocraft.types.Permission;
 import net.dmulloy2.autocraft.util.FormatUtil;
+import net.dmulloy2.autocraft.util.Util;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -81,6 +82,7 @@ public abstract class AutoCraftCommand implements CommandExecutor {
 			perform();
 		} catch (Throwable e) {
 			err("Error executing command: {0}", e.getMessage());
+			plugin.getLogHandler().debug(Util.getUsefulStack(e, "executing command " + name));
 		}
 	}
 	
