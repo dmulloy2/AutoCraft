@@ -177,6 +177,7 @@ public class Util {
 		return ret.toString();
 	}
 
+
 	/**
 	 * Constructs a new list from an existing {@link List}
 	 * <p>
@@ -193,6 +194,24 @@ public class Util {
 
 		for (int i = 0; i < list.size(); i++) {
 			ret.add(list.get(i));
+		}
+
+		return ret;
+	}
+
+	/**
+	 * Constructs a new {@link List} paramaterized with <code>T</code>
+	 * 
+	 * @param objects
+	 *        - Array of <code>T</code> to create the list with
+	 * @return a new {@link List} from the given objects
+	 */
+	@SafeVarargs
+	public static <T> List<T> toList(T... objects) {
+		List<T> ret = new ArrayList<T>();
+
+		for (T t : objects) {
+			ret.add(t);
 		}
 
 		return ret;
