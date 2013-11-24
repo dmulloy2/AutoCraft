@@ -1,20 +1,20 @@
 /**
-* AutoCraft - a Bukkit plugin
-* Copyright (C) 2011-2013 MineSworn
-*
-* This program is free software: you can redistribute it and/or modify
-* it under the terms of the GNU General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
+ * AutoCraft - a Bukkit plugin 
+ * Copyright (C) 2011-2013 MineSworn
+ * 
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
+ */
 package net.dmulloy2.autocraft;
 
 import java.util.ArrayList;
@@ -43,6 +43,7 @@ import net.dmulloy2.autocraft.handlers.PermissionHandler;
 import net.dmulloy2.autocraft.handlers.ResourceHandler;
 import net.dmulloy2.autocraft.handlers.ShipHandler;
 import net.dmulloy2.autocraft.listeners.PlayerListener;
+import net.dmulloy2.autocraft.types.Reloadable;
 import net.dmulloy2.autocraft.types.ShipData;
 import net.dmulloy2.autocraft.util.FormatUtil;
 
@@ -51,7 +52,11 @@ import org.bukkit.permissions.PermissionDefault;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
-public class AutoCraft extends JavaPlugin {
+/**
+ * @author dmulloy2
+ */
+
+public class AutoCraft extends JavaPlugin implements Reloadable {
 	private @Getter PermissionHandler permissionHandler;
 	private @Getter ResourceHandler resourceHandler;
 	private @Getter CommandHandler commandHandler;
@@ -69,6 +74,7 @@ public class AutoCraft extends JavaPlugin {
 		long start = System.currentTimeMillis();
 		
 		saveDefaultConfig();
+		reloadConfig();
 		
 		permissionHandler = new PermissionHandler(this);
 		commandHandler = new CommandHandler(this);
@@ -151,5 +157,10 @@ public class AutoCraft extends JavaPlugin {
 			
 			permissions.add(perm);
 		}
+	}
+
+	@Override
+	public void reload() {
+		reloadConfig();
 	}
 }

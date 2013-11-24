@@ -2,8 +2,13 @@ package net.dmulloy2.autocraft.commands;
 
 import net.dmulloy2.autocraft.AutoCraft;
 import net.dmulloy2.autocraft.types.Permission;
+import net.dmulloy2.autocraft.types.Reloadable;
 
-public class CmdReload extends AutoCraftCommand {
+/**
+ * @author dmulloy2
+ */
+
+public class CmdReload extends AutoCraftCommand implements Reloadable {
 
 	public CmdReload(AutoCraft plugin) {
 		super(plugin);
@@ -16,8 +21,12 @@ public class CmdReload extends AutoCraftCommand {
 	
 	@Override
 	public void perform() {
-		plugin.onDisable();
-		plugin.onEnable();
+		reload();
+	}
+
+	@Override
+	public void reload() {
+		plugin.reload();
 		
 		sendpMessage("&aReload complete!");
 		

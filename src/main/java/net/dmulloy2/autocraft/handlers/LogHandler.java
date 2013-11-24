@@ -5,6 +5,10 @@ import java.util.logging.Level;
 import net.dmulloy2.autocraft.AutoCraft;
 import net.dmulloy2.autocraft.util.FormatUtil;
 
+/**
+ * @author dmulloy2
+ */
+
 public class LogHandler {
 	private final AutoCraft plugin;
 	

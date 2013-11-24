@@ -12,6 +12,10 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+/**
+ * @author dmulloy2
+ */
+
 public abstract class AutoCraftCommand implements CommandExecutor {
 	protected final AutoCraft plugin;
 	
@@ -72,12 +76,16 @@ public abstract class AutoCraftCommand implements CommandExecutor {
 			err(plugin.getMessage("error_insufficient_permissions"));
 			return;
 		}
-		
-		perform();
+
+		try {
+			perform();
+		} catch (Throwable e) {
+			err("Error executing command: {0}", e.getMessage());
+		}
 	}
 	
 	protected final boolean isPlayer() {
-		return (player != null);
+		return player != null;
 	}
 	
 	protected final boolean isPiloting() {
@@ -85,7 +93,7 @@ public abstract class AutoCraftCommand implements CommandExecutor {
 	}
 	
 	private final boolean hasPermission() {
-		return (plugin.getPermissionHandler().hasPermission(sender, permission));
+		return plugin.getPermissionHandler().hasPermission(sender, permission);
 	}
 	
 	protected final boolean argMatchesAlias(String arg, String... aliases) {

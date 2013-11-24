@@ -1,13 +1,17 @@
 package net.dmulloy2.autocraft.types;
 
-import lombok.Getter;
+import lombok.Data;
 
 import org.bukkit.block.BlockState;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.MaterialData;
 
-@Getter
+/**
+ * @author dmulloy2
+ */
+
+@Data
 public class ACBlockState {
 	private BlockState state;
 	private MaterialData data;

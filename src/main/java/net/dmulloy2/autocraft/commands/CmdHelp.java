@@ -9,7 +9,10 @@ import net.dmulloy2.autocraft.util.FormatUtil;
 /**
  * Help command that shows descriptions of other commands. 
  * Has pagination.
+ * 
+ * @author dmulloy2
  */
+
 public class CmdHelp extends PaginatedCommand {
 
 	public CmdHelp(AutoCraft plugin) {

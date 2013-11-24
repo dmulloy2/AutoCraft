@@ -9,14 +9,12 @@ import net.dmulloy2.autocraft.AutoCraft;
  * Represents a command that can have pages
  */
 public abstract class PaginatedCommand extends AutoCraftCommand {
+	protected int pageArgIndex = 0;
+	protected int linesPerPage = 10;
 	
 	public PaginatedCommand(AutoCraft plugin) {
 		super(plugin);
 	}
-
-	protected int linesPerPage = 10;
-	
-	int pageArgIndex = 0;
 	
 	@Override
 	public void perform() {

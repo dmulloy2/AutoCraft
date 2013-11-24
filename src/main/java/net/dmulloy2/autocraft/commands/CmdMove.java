@@ -5,6 +5,10 @@ import net.dmulloy2.autocraft.types.Permission;
 
 import org.bukkit.util.Vector;
 
+/**
+ * @author dmulloy2
+ */
+
 public class CmdMove extends AutoCraftCommand {
 
 	public CmdMove(AutoCraft plugin) {

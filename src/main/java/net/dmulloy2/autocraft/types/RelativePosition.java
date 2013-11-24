@@ -2,6 +2,10 @@ package net.dmulloy2.autocraft.types;
 
 import lombok.Getter;
 
+/**
+ * @author dmulloy2
+ */
+
 @Getter
 public enum RelativePosition {
 	TOP(0, 1, 0),

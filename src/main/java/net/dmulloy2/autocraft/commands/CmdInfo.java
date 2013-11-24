@@ -6,6 +6,10 @@ import net.dmulloy2.autocraft.types.Ship;
 
 import org.bukkit.Location;
 
+/**
+ * @author dmulloy2
+ */
+
 public class CmdInfo extends AutoCraftCommand {
 
 	public CmdInfo(AutoCraft plugin) {

@@ -8,6 +8,10 @@ import net.dmulloy2.autocraft.types.Ship;
 
 import org.bukkit.entity.Player;
 
+/**
+ * @author dmulloy2
+ */
+
 public class ShipHandler {
 	private Map<String, Ship> ships;
 	

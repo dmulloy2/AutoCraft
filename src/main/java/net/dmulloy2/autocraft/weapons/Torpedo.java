@@ -12,12 +12,14 @@ import org.bukkit.material.Wool;
 import com.massivecraft.factions.Board;
 import com.massivecraft.factions.FLocation;
 
+/**
+ * @author dmulloy2
+ */
+
 public class Torpedo extends Projectile {
 	private final AutoCraft plugin;
-	
 	private Block[] torpedo = new Block[2];
 	private BlockFace dir;
-	
 	private double yvelo;
 	private double gravity;
 	

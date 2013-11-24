@@ -9,6 +9,10 @@ import java.net.URL;
 
 import org.bukkit.plugin.java.JavaPlugin;
 
+/**
+ * @author dmulloy2
+ */
+
 public class FileResourceLoader extends ClassLoader {
 	private final transient File dataFolder;
 	

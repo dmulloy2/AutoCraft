@@ -6,6 +6,10 @@ import net.dmulloy2.autocraft.types.Permission;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+/**
+ * @author dmulloy2
+ */
+
 public class PermissionHandler {
 	private final AutoCraft plugin;
 	

@@ -12,12 +12,11 @@ import org.bukkit.command.CommandSender;
 
 public class CommandHandler implements CommandExecutor {
 	private final AutoCraft plugin;
-
 	private List<AutoCraftCommand> registeredCommands;
 	
 	public CommandHandler(AutoCraft plugin) {
 		this.plugin = plugin;
-		registeredCommands = new ArrayList<AutoCraftCommand>();
+		this.registeredCommands = new ArrayList<AutoCraftCommand>();
 	}
 	
 	public void registerCommand(AutoCraftCommand command) {

@@ -11,9 +11,12 @@ import org.bukkit.material.Wool;
 import com.massivecraft.factions.Board;
 import com.massivecraft.factions.FLocation;
 
+/**
+ * @author dmulloy2
+ */
+
 public class Napalm extends Projectile {
-	private AutoCraft plugin;
-	
+	private final AutoCraft plugin;
 	private Block napalm;
 	
 	public Napalm(AutoCraft plugin, Block dispenser) {

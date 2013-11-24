@@ -39,6 +39,10 @@ import org.bukkit.material.Vine;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
+/**
+ * @author dmulloy2
+ */
+
 public class Ship {
 	private AutoCraft plugin;
 	

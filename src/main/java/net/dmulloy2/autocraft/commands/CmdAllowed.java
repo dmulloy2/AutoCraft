@@ -7,6 +7,10 @@ import net.dmulloy2.autocraft.util.MaterialUtil;
 
 import org.apache.commons.lang.WordUtils;
 
+/**
+ * @author dmulloy2
+ */
+
 public class CmdAllowed extends AutoCraftCommand {
 
 	public CmdAllowed(AutoCraft plugin) {

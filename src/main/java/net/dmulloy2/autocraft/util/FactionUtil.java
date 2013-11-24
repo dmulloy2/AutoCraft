@@ -11,6 +11,10 @@ import com.massivecraft.factions.FPlayers;
 import com.massivecraft.factions.Faction;
 import com.massivecraft.factions.struct.Relation;
 
+/**
+ * @author dmulloy2
+ */
+
 public class FactionUtil {
 
 	public static boolean canPlayerUseWeapon(Player player) {
@@ -27,7 +31,7 @@ public class FactionUtil {
 			return true;
 		
 		// Deny in war/safe zones
-		if (!them.isNormal()) {
+		if (! them.isNormal()) {
 			fme.msg("<i>You cannot use weapons in %s.", them.getTag(fme));
 			return false;
 		}

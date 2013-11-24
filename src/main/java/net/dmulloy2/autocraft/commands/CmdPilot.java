@@ -4,6 +4,10 @@ import net.dmulloy2.autocraft.AutoCraft;
 import net.dmulloy2.autocraft.types.Permission;
 import net.dmulloy2.autocraft.types.Ship;
 
+/**
+ * @author dmulloy2
+ */
+
 public class CmdPilot extends AutoCraftCommand {
 
 	public CmdPilot(AutoCraft plugin) {

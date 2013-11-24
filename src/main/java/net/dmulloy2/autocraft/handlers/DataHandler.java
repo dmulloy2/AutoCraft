@@ -1,6 +1,7 @@
 package net.dmulloy2.autocraft.handlers;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Set;
@@ -10,6 +11,10 @@ import net.dmulloy2.autocraft.io.FileSerialization;
 import net.dmulloy2.autocraft.types.ShipData;
 
 import org.apache.commons.lang.WordUtils;
+
+/**
+ * @author dmulloy2
+ */
 
 public class DataHandler {
 	private final AutoCraft plugin;
@@ -33,26 +38,30 @@ public class DataHandler {
 	
 	public void load() {
 		plugin.getLogHandler().log("Loading {0}...", folderName);
-		
+
 		long start = System.currentTimeMillis();
-		
-		File[] children = folder.listFiles();
+
+		File[] children = folder.listFiles(new FileFilter() {
+
+			@Override
+			public boolean accept(File file) {
+				return file.getName().contains(extension);
+			}
+			
+		});
+
 		if (children.length == 0) {
 			generateStockShips();
 
 			children = folder.listFiles();
 		}
-		
+
 		for (File file : children) {
-			if (file.getName().contains(".DS_Store")) { // Mac Crap
-				continue;
-			}
-			
 			ShipData shipData = FileSerialization.load(file, ShipData.class);
 			shipData.setShipType(trimFileExtension(file));
 			data.put(shipData.getShipType(), shipData);
 		}
-		
+
 		plugin.getLogHandler().log("{0} loaded! [{1}ms]", WordUtils.capitalize(folderName), System.currentTimeMillis() - start);
 	}
 	

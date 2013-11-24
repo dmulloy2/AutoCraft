@@ -1,5 +1,9 @@
 package net.dmulloy2.autocraft.types;
 
+/**
+ * @author dmulloy2
+ */
+
 public enum Permission {
 	CMD_ALLOWED("allowed"),
 	CMD_DISMOUNT("dismount"),

@@ -3,6 +3,10 @@ package net.dmulloy2.autocraft.commands;
 import net.dmulloy2.autocraft.AutoCraft;
 import net.dmulloy2.autocraft.types.Permission;
 
+/**
+ * @author dmulloy2
+ */
+
 public class CmdTorpedo extends AutoCraftCommand {
 
 	public CmdTorpedo(AutoCraft plugin) {

@@ -15,6 +15,10 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.util.Vector;
 
+/**
+ * @author dmulloy2
+ */
+
 public class PlayerListener implements Listener {
 	private final AutoCraft plugin;
 	

@@ -9,6 +9,10 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
 
+/**
+ * @author dmulloy2
+ */
+
 public class FileSerialization {
 
 	public static <T extends ConfigurationSerializable> void save(T instance, File file) {
@@ -45,6 +49,7 @@ public class FileSerialization {
 			if (file.renameTo(new File(file.getParent(), file.getName() + "_bad"))) {
 				System.out.println("Renamed bad file: " + file.getName() + " to: " + file.getName() + "_bad");
 			}
+
 			return null;
 		}
 	}	

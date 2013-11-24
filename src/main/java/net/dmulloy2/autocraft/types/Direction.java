@@ -4,6 +4,10 @@ import lombok.Getter;
 
 import org.bukkit.util.Vector;
 
+/**
+ * @author dmulloy2
+ */
+
 @Getter
 public enum Direction {
 	X(1, 0, 0), 

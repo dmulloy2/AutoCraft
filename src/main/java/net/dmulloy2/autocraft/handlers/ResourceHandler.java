@@ -8,6 +8,10 @@ import java.util.logging.Level;
 import net.dmulloy2.autocraft.AutoCraft;
 import net.dmulloy2.autocraft.io.FileResourceLoader;
 
+/**
+ * @author dmulloy2
+ */
+
 public class ResourceHandler {
 	private ResourceBundle messages;
 	

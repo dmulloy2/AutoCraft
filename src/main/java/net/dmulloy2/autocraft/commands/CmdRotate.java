@@ -5,6 +5,10 @@ import net.dmulloy2.autocraft.types.Permission;
 import net.dmulloy2.autocraft.types.Ship;
 import net.dmulloy2.autocraft.types.TurnDirection;
 
+/**
+ * @author dmulloy2
+ */
+
 public class CmdRotate extends AutoCraftCommand {
 
 	public CmdRotate(AutoCraft plugin) {

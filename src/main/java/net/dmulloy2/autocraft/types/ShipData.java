@@ -16,6 +16,10 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 
+/**
+ * @author dmulloy2
+ */
+
 @Data
 public class ShipData implements ConfigurationSerializable {
 	private transient int fastFlyAtSize = 1000;
