@@ -75,14 +75,16 @@ public class Napalm extends Projectile {
 				napalm = b;
 			} else {
 				if (plugin.isFactionsEnabled() 
-						&& !Board.getFactionAt(new FLocation(b.getLocation())).isNone() 
-						&& !Board.getFactionAt(new FLocation(b.getLocation())).hasPlayersOnline()) {
+						&& ! Board.getFactionAt(new FLocation(b.getLocation())).isNone() 
+						&& ! Board.getFactionAt(new FLocation(b.getLocation())).hasPlayersOnline()) {
 					this.exploded = true;
 					return;
 				}
 				
-				if (b.getType() != Material.BEDROCK)
+				if (b.getType() != Material.BEDROCK) {
 					b.setType(Material.AIR);
+				}
+
 				explode();
 			}
 		}

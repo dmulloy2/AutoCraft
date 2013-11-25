@@ -14,8 +14,8 @@ public class CmdReload extends AutoCraftCommand implements Reloadable {
 		super(plugin);
 		this.name = "reload";
 		this.aliases.add("rl");
+		this.optionalArgs.add("force");
 		this.description = "Reloads AutoCraft plugin.";
-		this.mustBePlayer = false;
 		this.permission = Permission.CMD_RELOAD;
 	}
 	
@@ -27,6 +27,11 @@ public class CmdReload extends AutoCraftCommand implements Reloadable {
 	@Override
 	public void reload() {
 		plugin.reload();
+
+		// Forces the reloading of ship data
+		if (args[0].equalsIgnoreCase("true")) {
+			plugin.getDataHandler().reload();
+		}
 		
 		sendpMessage("&aReload complete!");
 		

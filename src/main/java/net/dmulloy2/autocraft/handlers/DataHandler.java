@@ -8,6 +8,7 @@ import java.util.Set;
 
 import net.dmulloy2.autocraft.AutoCraft;
 import net.dmulloy2.autocraft.io.FileSerialization;
+import net.dmulloy2.autocraft.types.Reloadable;
 import net.dmulloy2.autocraft.types.ShipData;
 
 import org.apache.commons.lang.WordUtils;
@@ -16,7 +17,7 @@ import org.apache.commons.lang.WordUtils;
  * @author dmulloy2
  */
 
-public class DataHandler {
+public class DataHandler implements Reloadable {
 	private final AutoCraft plugin;
 	private final File folder;
 	private final String extension = ".yml";
@@ -126,5 +127,12 @@ public class DataHandler {
 	
 	public Collection<ShipData> getData() {
 		return data.values();
+	}
+
+	@Override
+	public void reload() {
+		// Clear data, then load fresh files
+		data.clear();
+		load();
 	}
 }

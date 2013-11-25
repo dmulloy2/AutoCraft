@@ -299,10 +299,11 @@ public class Ship {
 		double ret = 1.0;
 		for (int i = 1; i <= data.getMaxCannonLength(); i++) {
 			Block bnext = b.getRelative(x * i, 0, z * i);
-			if (bnext.getType() == MaterialUtil.getMaterial(data.getCannonMaterial()))
+			if (bnext.getType() == MaterialUtil.getMaterial(data.getCannonMaterial())) {
 				ret++;
-			else
+			} else {
 				break;
+			}
 		}
 		
 		return ret;
@@ -317,13 +318,17 @@ public class Ship {
 		Dispenser dispenser = (Dispenser) b.getState();
 		if (dispenser.getInventory() != null) {
 			for (ItemStack item : dispenser.getInventory().getContents()) {
-				if (item != null && item.getType() == mat)
-					if (item.getAmount() >= num)
+				if (item != null && item.getType() == mat) {
+					if (item.getAmount() >= num) {
 						num = 0;
-					else
+					} else {
 						num = num - item.getAmount();
-				if (num <= 0)
+					}
+				}
+
+				if (num <= 0) {
 					return true;
+				}
 			}
 		}
 		
@@ -347,6 +352,7 @@ public class Ship {
 						} else {
 							dispenser.getInventory().setItem(i, null);
 						}
+						
 						num = 0;
 					} else {
 						num = num - item.getAmount();
@@ -354,8 +360,9 @@ public class Ship {
 					}
 				}
 				
-				if (num <= 0)
+				if (num <= 0) {
 					return;
+				}
 			}
 		} 
 	}
