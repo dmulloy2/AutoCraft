@@ -65,12 +65,12 @@ public class PlayerListener implements Listener {
 				if (event.hasBlock()) {
 					Material clickedType = event.getClickedBlock().getType();
 					if (action == Action.RIGHT_CLICK_BLOCK
-							&& (clickedType == Material.DISPENSER 
-							|| clickedType == Material.CHEST 
+							&& (clickedType == Material.DISPENSER
+							|| clickedType == Material.CHEST
 							|| clickedType == Material.FURNACE
-							|| clickedType == Material.LEVER 
+							|| clickedType == Material.LEVER
 							|| clickedType == Material.STONE_BUTTON
-							|| clickedType == Material.WOOD_BUTTON 
+							|| clickedType == Material.WOOD_BUTTON
 							|| clickedType == Material.WORKBENCH)) {
 						return;
 					}

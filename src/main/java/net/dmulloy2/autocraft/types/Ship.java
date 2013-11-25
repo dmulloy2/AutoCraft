@@ -7,6 +7,7 @@ import net.dmulloy2.autocraft.AutoCraft;
 import net.dmulloy2.autocraft.util.FactionUtil;
 import net.dmulloy2.autocraft.util.FormatUtil;
 import net.dmulloy2.autocraft.util.MaterialUtil;
+import net.dmulloy2.autocraft.util.Util;
 import net.dmulloy2.autocraft.weapons.Napalm;
 import net.dmulloy2.autocraft.weapons.Torpedo;
 
@@ -76,14 +77,8 @@ public class Ship {
 		this.data = data;
 		this.plugin = plugin;
 
-		log("{0} has started flying {1} at: {2}, {3}, {4} in world {5}", 
-				player.getName(),
-				data.getShipType(), 
-				player.getLocation().getBlockX(),
-				player.getLocation().getBlockY(), 
-				player.getLocation().getBlockZ(), 
-				player.getWorld().getName());
-
+		plugin.getLogHandler().debug("{0} is attempting to fly {1} at: {2}", player.getName(), data.getShipType(),
+				Util.locationToString(player.getLocation()));
 		startship();
 	}
 
@@ -127,7 +122,7 @@ public class Ship {
 				sendMessage("&b{0} &6cannot drop TNT bombs!", data.getShipType());
 			}
 		} else {
-			sendMessage("&6Cooling down for &b{0} &6more seconds", (Math.round(6 - (System.currentTimeMillis() - this.lastFired) / 1000)));
+			sendMessage("&6Cooling down for &b{0} &6more seconds", (Math.round(6 - (System.currentTimeMillis() - lastFired) / 1000)));
 		}
 	}
 
@@ -135,7 +130,7 @@ public class Ship {
 	public void fire() {
 		// Has player waited cooldown before trying to fire again?
 		if ((System.currentTimeMillis() - lastFired) > (plugin.getConfig().getInt("weaponCooldownTime") * 1000)) {
-			log("{0} is attempting to fire TNT.", player.getName());
+			plugin.getLogHandler().log("{0} is attempting to fire TNT.", player.getName());
 			// Can this airship drop bombs?
 			if (data.isFiresTnt()) {
 				if (plugin.isFactionsEnabled() && !FactionUtil.canPlayerUseWeapon(player)) {
@@ -187,7 +182,7 @@ public class Ship {
 	public void dropNapalm() {
 		// Has player waited cooldown before trying to fire again?
 		if ((System.currentTimeMillis() - lastFired) > (plugin.getConfig().getInt("weaponCooldownTime") * 1000)) {
-			log("{0} is attempting to drop napalm.", player.getName());
+			plugin.getLogHandler().log("{0} is attempting to drop napalm.", player.getName());
 			// Can this airship drop napalm?
 			if (data.isDropsNapalm()) {
 				if (plugin.isFactionsEnabled() && ! FactionUtil.canPlayerUseWeapon(player)) {
@@ -231,7 +226,7 @@ public class Ship {
 				sendMessage("&b{0} &6cannot drop napalm!", data.getShipType());
 			}
 		} else {
-			sendMessage("&6Cooling down for &b{0} &6more seconds!", (Math.round(6 - (System.currentTimeMillis() - this.lastFired) / 1000)));
+			sendMessage("&6Cooling down for &b{0} &6more seconds!", (Math.round(6 - (System.currentTimeMillis() - lastFired) / 1000)));
 		}
 	}
 
@@ -239,7 +234,7 @@ public class Ship {
 	public void fireTorpedo() {
 		// Has player waited cooldown before trying to fire again?
 		if ((System.currentTimeMillis() - lastFired) > (plugin.getConfig().getInt("weaponCooldownTime") * 1000)) {
-			log("{0} is attempting to fire a torpedo", player.getName());
+			plugin.getLogHandler().log("{0} is attempting to fire a torpedo", player.getName());
 			// Can this airship fire torpedoes?
 			if (data.isFiresTorpedo()) {
 				if (plugin.isFactionsEnabled() && ! FactionUtil.canPlayerUseWeapon(player)) {
@@ -371,7 +366,7 @@ public class Ship {
 	// Returns all dispensers on the ship.
 	public Block[] getCannons() {
 		List<Block> cannons = new ArrayList<Block>();
-		for (int i = 0; i < this.blocks.length; i++) {
+		for (int i = 0; i < blocks.length; i++) {
 			if (blocks[i].getType().equals(Material.DISPENSER))
 				cannons.add(blocks[i]);
 		}
@@ -381,14 +376,22 @@ public class Ship {
 
 	public void startship() {
 		updateMainBlock();
-		if (beginRecursion(this.mainblock)) {
+		if (beginRecursion(mainblock)) {
 			if (areBlocksValid()) {
 				if (isShipAlreadyPiloted()) {
 					sendMessage("&cThis ship is already being piloted");
 				} else {
+					// Register the ship
 					plugin.getShipHandler().putShip(player, this);
+
+					// Tell the player they're in control
 					sendMessage("&7You are in control of this ship");
 					sendMessage("&7Use the right mouse to guide the ship");
+
+					// Log it (only if it was successful)
+					plugin.getLogHandler().log("{0} has started flying {1} at: {2}, {3}, {4} in world {5}", player.getName(),
+							data.getShipType(), player.getLocation().getBlockX(), player.getLocation().getBlockY(),
+							player.getLocation().getBlockZ(), player.getWorld().getName());
 				}
 			}
 		}
@@ -462,8 +465,8 @@ public class Ship {
 				updateMainBlock();
 				// Check each block's new position for obstructions
 				for (int i = 0; i < blocks.length; i++) {
-					Vector v = getRotationVector(blocks[i].getLocation(), this.mainblock, dir);
-					Block block = this.mainblock.getRelative(v.getBlockX(), v.getBlockY(), v.getBlockZ());
+					Vector v = getRotationVector(blocks[i].getLocation(), mainblock, dir);
+					Block block = mainblock.getRelative(v.getBlockX(), v.getBlockY(), v.getBlockZ());
 					if (block.getType().equals(Material.AIR) 
 							|| block.getType().equals(Material.SNOW) 
 							|| blockBelongsToShip(block, blocks)
@@ -505,20 +508,20 @@ public class Ship {
 
 		// Make new blocks in their new respective positions
 		for (int i = 0; i < blocks.length; i++) {
-			// blocks[i].getLocation().distance(this.mainblock.getLocation());
-			Vector v = getRotationVector(blocks[i].getLocation(), this.mainblock, dir);
-			blocks[i] = this.mainblock.getRelative(v.getBlockX(), v.getBlockY(), v.getBlockZ());
+			// blocks[i].getLocation().distance(mainblock.getLocation());
+			Vector v = getRotationVector(blocks[i].getLocation(), mainblock, dir);
+			blocks[i] = mainblock.getRelative(v.getBlockX(), v.getBlockY(), v.getBlockZ());
 			setBlock(blocks[i], temp[i], dir);
 		}
 
 		for (int i = 0; i < specialBlocks.length; i++) {
-			Vector v = getRotationVector(specialBlocks[i].getLocation(), this.mainblock, dir);
-			specialBlocks[i] = this.mainblock.getRelative(v.getBlockX(), v.getBlockY(), v.getBlockZ());
+			Vector v = getRotationVector(specialBlocks[i].getLocation(), mainblock, dir);
+			specialBlocks[i] = mainblock.getRelative(v.getBlockX(), v.getBlockY(), v.getBlockZ());
 			setBlock(specialBlocks[i], special[i], dir);
 		}
 
 		for (Player p : passengers) {
-			Location l = p.getLocation().clone().add(getRotationVector(p.getLocation(), this.mainblock, dir).toLocation(p.getWorld()));
+			Location l = p.getLocation().clone().add(getRotationVector(p.getLocation(), mainblock, dir).toLocation(p.getWorld()));
 			l.setYaw(l.getYaw() + ((dir == TurnDirection.LEFT) ? -90 : 90));
 			p.teleport(l);
 		}
@@ -644,8 +647,14 @@ public class Ship {
 	}
 
 	public boolean isSpecial(MaterialData data) {
-		return (data instanceof SimpleAttachableMaterialData || data instanceof org.bukkit.material.Sign || data instanceof Bed
-				|| data instanceof PressurePlate || data instanceof RedstoneWire || data instanceof Rails || data instanceof Diode || data instanceof Vine);
+		return (data instanceof SimpleAttachableMaterialData
+				|| data instanceof org.bukkit.material.Sign 
+				|| data instanceof Bed
+				|| data instanceof PressurePlate 
+				|| data instanceof RedstoneWire 
+				|| data instanceof Rails 
+				|| data instanceof Diode 
+				|| data instanceof Vine);
 	}
 
 	public void setBlock(Block to, ACBlockState from, TurnDirection dir) {
@@ -732,6 +741,7 @@ public class Ship {
 			to.getState().update();
 		} catch (Throwable ex) {
 			// There's not a real good way to check for this...
+			plugin.getLogHandler().debug(Util.getUsefulStack(ex, "setting block at " + to.getLocation()));
 		}
 	}
 
@@ -743,13 +753,15 @@ public class Ship {
 	// Checks that the ship is within its size restraints as defined by its AC
 	// data.
 	public boolean areBlocksValid() {
-		if (!data.isValidMaterial(mainblock)) {
+		if (! data.isValidMaterial(mainblock)) {
 			sendMessage("&cPlease stand on a valid block for this type of ship");
 		} else {
 			if (blocks.length > data.getMaxBlocks()) {
-				sendMessage("&cYour ship has &e{0}&c/&e{1} &cblocks. Please remove some.", blocks.length, data.getMaxBlocks());
+				sendMessage("&cYour ship has &e{0}&c/&e{1} &cblocks. Please remove some.", 
+						blocks.length, data.getMaxBlocks());
 			} else if (numMainBlocks < data.getMinBlocks()) {
-				sendMessage("&cYour ship has &e{0}&c/&e{1} {2} &cblocks. Please add more.", numMainBlocks, data.getMinBlocks(), getMainType());
+				sendMessage("&cYour ship has &e{0}&c/&e{1} {2} &cblocks. Please add more.",
+						numMainBlocks, data.getMinBlocks(), getMainType());
 			} else {
 				return true;
 			}
@@ -777,11 +789,15 @@ public class Ship {
 	// Checks that the block being queried belongs to the block list for this
 	// ship.
 	public boolean blockBelongsToShip(Block block, Block[] blocks) {
-		if (blocks == null)
+		if (blocks == null) {
 			blocks = this.blocks.clone();
-		for (Block b : blocks)
+		}
+
+		for (Block b : blocks) {
 			if (b.equals(block))
 				return true;
+		}
+
 		return false;
 	}
 
@@ -808,12 +824,15 @@ public class Ship {
 		Block[] blocks = this.blocks.clone();
 		for (int i = 0; i < blocks.length; i++) {
 			Block block = blocks[i];
-			if (block.getType().equals(Material.AIR))
+			if (block.getType().equals(Material.AIR)) {
 				continue;
+			}
+
 			Block blockon = player.getWorld().getBlockAt(player.getLocation().add(0, -1, 0));
 			Block blockon2 = player.getWorld().getBlockAt(player.getLocation().add(0, -2, 0));
-			if (blockon.getLocation().equals(block.getLocation()) || blockon2.getLocation().equals(block.getLocation()))
+			if (blockon.getLocation().equals(block.getLocation()) || blockon2.getLocation().equals(block.getLocation())) {
 				return true;
+			}
 		}
 
 		return false;
@@ -849,7 +868,7 @@ public class Ship {
 			if (blockList.size() <= data.getMaxBlocks()) {
 				// If this new block to be checked doesn't already belong to the
 				// ship and is a valid material, accept it.
-				if (!blockBelongsToShip(block, blockList.toArray(new Block[0])) && data.isValidMaterial(block)) {
+				if (! blockBelongsToShip(block, blockList.toArray(new Block[0])) && data.isValidMaterial(block)) {
 					// If its material is same as main type than add to number
 					// of main block count.
 					if (block.getType() == MaterialUtil.getMaterial(data.getMainType()))
@@ -866,17 +885,19 @@ public class Ship {
 					}
 					// Otherwise if the block isn't a block that the ship is
 					// allowed to touch then stop creating the ship.
-				} else if (!data.isValidMaterial(block) && !block.getType().equals(Material.AIR) && !block.getType().equals(Material.SNOW)
-						&& !block.getType().equals(Material.BEDROCK) && !block.getType().equals(Material.WATER)
-						&& !block.getType().equals(Material.STATIONARY_WATER) && !data.isIgnoreAttachments()) {
-
+				} else if (! data.isValidMaterial(block) 
+						&& ! block.getType().equals(Material.AIR) 
+						&& ! block.getType().equals(Material.SNOW)
+						&& ! block.getType().equals(Material.BEDROCK) 
+						&& ! block.getType().equals(Material.WATER)
+						&& ! block.getType().equals(Material.STATIONARY_WATER) 
+						&& ! data.isIgnoreAttachments()) {
 					plugin.getShipHandler().unpilotShip(player);
 					sendMessage("&cThis ship needs to be floating!");
 					String str = FormatUtil.format("Problem at ({0}, {1}, {2}) it''s on {3}", block.getX(), block.getY(), block.getZ(),
 							FormatUtil.getFriendlyName(block.getType()));
-
 					sendMessage(str);
-					log("{0} had a problem flying an airship: {1}", player.getName(), str);
+					plugin.getLogHandler().debug("{0} had a problem flying an airship: {1}", player.getName(), str);
 					this.stopped = true;
 					return null;
 				}
@@ -912,10 +933,6 @@ public class Ship {
 		}
 
 		return blockList;
-	}
-
-	public void log(String msg, Object... objects) {
-		plugin.getLogHandler().log(msg, objects);
 	}
 
 	public void sendMessage(String msg, Object... args) {
