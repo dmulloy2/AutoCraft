@@ -1,19 +1,19 @@
 package net.dmulloy2.autocraft.handlers;
 
-import net.dmulloy2.autocraft.AutoCraft;
 import net.dmulloy2.autocraft.types.Permission;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.java.JavaPlugin;
 
 /**
  * @author dmulloy2
  */
 
 public class PermissionHandler {
-	private final AutoCraft plugin;
-	
-	public PermissionHandler(final AutoCraft plugin) {
+	private final JavaPlugin plugin;
+
+	public PermissionHandler(JavaPlugin plugin) {
 		this.plugin = plugin;
 	}
 
@@ -26,10 +26,10 @@ public class PermissionHandler {
 			Player p = (Player) sender;
 			return (p.hasPermission(permission) || p.isOp());
 		}
-		
+
 		return true;
 	}
-	
+
 	private String getPermissionString(Permission permission) {
 		return plugin.getName().toLowerCase() + "." + permission.getNode().toLowerCase();
 	}

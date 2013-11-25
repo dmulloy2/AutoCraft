@@ -18,15 +18,15 @@ import com.massivecraft.factions.FLocation;
 public class Napalm extends Projectile {
 	private final AutoCraft plugin;
 	private Block napalm;
-	
+
 	public Napalm(AutoCraft plugin, Block dispenser) {
 		super(plugin, 200L);
-				
+
 		this.plugin = plugin;
-		
+
 		napalm = dispenser.getRelative(0, -1, 0);
 		napalm.setType(Material.WOOL);
-		
+
 		((Wool) napalm.getState().getData()).setColor(DyeColor.GREEN);
 	}
 
@@ -38,7 +38,7 @@ public class Napalm extends Projectile {
 		napalm.setType(Material.AIR);
 		burn();
 	}
-	
+
 	public void burn() {
 		int burnRadius = plugin.getConfig().getInt("napalmBurnRadius");
 		for (int i = -burnRadius; i <= burnRadius; i++) {
@@ -51,36 +51,36 @@ public class Napalm extends Projectile {
 			}
 		}
 	}
-	
+
 	@Override
 	public void move() {
 		if (!isExploded()) {
 			Block b = napalm.getRelative(0, -1, 0);
-			if (b.getType().equals(Material.AIR) ||
-				b.getType().equals(Material.WATER) ||
-				b.getType().equals(Material.STATIONARY_WATER) ||
-				b.getType().equals(Material.LAVA) ||
-				b.getType().equals(Material.STATIONARY_LAVA) ||
-				b.getType().equals(Material.FIRE) ||
-				b.getType().equals(Material.LADDER) ||
-				b.getType().equals(Material.IRON_DOOR_BLOCK) ||
-				b.getType().equals(Material.ENCHANTMENT_TABLE) ||
-				b.getType().equals(Material.PORTAL) ||
-				b.getType().equals(Material.ENDER_PORTAL) ||
-				b.getType().equals(Material.ENDER_STONE) ||
-				b.getType().equals(Material.ENDER_PORTAL_FRAME)) {
+			if (b.getType().equals(Material.AIR) 
+					|| b.getType().equals(Material.WATER) 
+					|| b.getType().equals(Material.STATIONARY_WATER)
+					|| b.getType().equals(Material.LAVA)
+					|| b.getType().equals(Material.STATIONARY_LAVA)
+					|| b.getType().equals(Material.FIRE)
+					|| b.getType().equals(Material.LADDER) 
+					|| b.getType().equals(Material.IRON_DOOR_BLOCK)
+					|| b.getType().equals(Material.ENCHANTMENT_TABLE)
+					|| b.getType().equals(Material.PORTAL)
+					|| b.getType().equals(Material.ENDER_PORTAL)
+					|| b.getType().equals(Material.ENDER_STONE)
+					|| b.getType().equals(Material.ENDER_PORTAL_FRAME)) {
 				b.setType(Material.WOOL);
 				napalm.setType(Material.AIR);
 				((Wool) b.getState().getData()).setColor(DyeColor.GREEN);
 				napalm = b;
 			} else {
 				if (plugin.isFactionsEnabled() 
-						&& ! Board.getFactionAt(new FLocation(b.getLocation())).isNone() 
+						&& ! Board.getFactionAt(new FLocation(b.getLocation())).isNone()
 						&& ! Board.getFactionAt(new FLocation(b.getLocation())).hasPlayersOnline()) {
 					this.exploded = true;
 					return;
 				}
-				
+
 				if (b.getType() != Material.BEDROCK) {
 					b.setType(Material.AIR);
 				}
@@ -88,5 +88,5 @@ public class Napalm extends Projectile {
 				explode();
 			}
 		}
-	}	
+	}
 }

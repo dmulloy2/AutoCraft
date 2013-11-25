@@ -29,7 +29,7 @@ public class CmdReload extends AutoCraftCommand implements Reloadable {
 		plugin.reload();
 
 		// Forces the reloading of ship data
-		if (args[0].equalsIgnoreCase("true")) {
+		if (args.length > 0 && args[0].equalsIgnoreCase("true")) {
 			plugin.getDataHandler().reload();
 		}
 		

@@ -63,8 +63,8 @@ import com.google.common.collect.Maps;
  * @author dmulloy2
  */
 
-public enum Material
-{
+public enum Material {
+
     AIR(0, 0),
     STONE(1),
     GRASS(2),
@@ -410,230 +410,212 @@ public enum Material
     RECORD_12(2267, 1),
     ;
 
-    private final int id;
-    private final Constructor<? extends MaterialData> ctor;
-    private static Material[] byId = new Material[383];
-    private final static Map<String, Material> BY_NAME = Maps.newHashMap();
-    private final int maxStack;
-    private final short durability;
+	private final int id;
+	private final Constructor<? extends MaterialData> ctor;
+	private static Material[] byId = new Material[383];
+	private final static Map<String, Material> BY_NAME = Maps.newHashMap();
+	private final int maxStack;
+	private final short durability;
 
-    private Material(final int id) 
-    {
-        this(id, 64);
-    }
+	private Material(final int id) {
+		this(id, 64);
+	}
 
-    private Material(final int id, final int stack) 
-    {
-        this(id, stack, MaterialData.class);
-    }
+	private Material(final int id, final int stack) {
+		this(id, stack, MaterialData.class);
+	}
 
-    private Material(final int id, final int stack, final int durability) 
-    {
-        this(id, stack, durability, MaterialData.class);
-    }
+	private Material(final int id, final int stack, final int durability) {
+		this(id, stack, durability, MaterialData.class);
+	}
 
-    private Material(final int id, final Class<? extends MaterialData> data)
-    {
-        this(id, 64, data);
-    }
+	private Material(final int id, final Class<? extends MaterialData> data) {
+		this(id, 64, data);
+	}
 
-    private Material(final int id, final int stack, final Class<? extends MaterialData> data) 
-    {
-        this(id, stack, 0, data);
-    }
+	private Material(final int id, final int stack, final Class<? extends MaterialData> data) {
+		this(id, stack, 0, data);
+	}
 
-    private Material(final int id, final int stack, final int durability, final Class<? extends MaterialData> data) 
-    {
-        this.id = id;
-        this.durability = (short) durability;
-        this.maxStack = stack;
-        // try to cache the constructor for this material
-        try 
-        {
-            this.ctor = data.getConstructor(int.class, byte.class);
-        } 
-        catch (Exception ex) 
-        {
-            throw new AssertionError(ex);
-        } 
-    }
+	private Material(final int id, final int stack, final int durability, final Class<? extends MaterialData> data) {
+		this.id = id;
+		this.durability = (short) durability;
+		this.maxStack = stack;
+		// try to cache the constructor for this material
+		try {
+			this.ctor = data.getConstructor(int.class, byte.class);
+		} catch (Exception ex) {
+			throw new AssertionError(ex);
+		}
+	}
 
-    /**
-     * Gets the item ID or block ID of this Material
-     *
-     * @return ID of this material
-     */
-    public int getId() 
-    {
-        return id;
-    }
+	/**
+	 * Gets the item ID or block ID of this Material
+	 * 
+	 * @return ID of this material
+	 */
+	public int getId() {
+		return id;
+	}
 
-    /**
-     * Gets the maximum amount of this material that can be held in a stack
-     *
-     * @return Maximum stack size for this material
-     */
-    public int getMaxStackSize() 
-    {
-        return maxStack;
-    }
+	/**
+	 * Gets the maximum amount of this material that can be held in a stack
+	 * 
+	 * @return Maximum stack size for this material
+	 */
+	public int getMaxStackSize() {
+		return maxStack;
+	}
 
-    /**
-     * Gets the maximum durability of this material
-     *
-     * @return Maximum durability for this material
-     */
-    public short getMaxDurability() 
-    {
-        return durability;
-    }
+	/**
+	 * Gets the maximum durability of this material
+	 * 
+	 * @return Maximum durability for this material
+	 */
+	public short getMaxDurability() {
+		return durability;
+	}
 
-    /**
-     * Gets the MaterialData class associated with this Material
-     *
-     * @return MaterialData associated with this Material
-     */
-    public Class<? extends MaterialData> getData() 
-    {
-        return ctor.getDeclaringClass();
-    }
+	/**
+	 * Gets the MaterialData class associated with this Material
+	 * 
+	 * @return MaterialData associated with this Material
+	 */
+	public Class<? extends MaterialData> getData() {
+		return ctor.getDeclaringClass();
+	}
 
-    /**
-     * Constructs a new MaterialData relevant for this Material, with the given
-     * initial data
-     *
-     * @param raw Initial data to construct the MaterialData with
-     * @return New MaterialData with the given data
-     */
-    public MaterialData getNewData(final byte raw) 
-    {
-        try
-        {
-            return ctor.newInstance(id, raw);
-        } 
-        catch (InstantiationException ex) 
-        {
-            final Throwable t = ex.getCause();
-            if (t instanceof RuntimeException) 
-            {
-                throw (RuntimeException) t;
-            }
-            if (t instanceof Error) 
-            {
-                throw (Error) t;
-            }
-            throw new AssertionError(t);
-        }
-        catch (Throwable t)
-        {
-            throw new AssertionError(t);
-        }
-    }
+	/**
+	 * Constructs a new MaterialData relevant for this Material, with the given
+	 * initial data
+	 * 
+	 * @param raw
+	 *        Initial data to construct the MaterialData with
+	 * @return New MaterialData with the given data
+	 */
+	public MaterialData getNewData(final byte raw) {
+		try {
+			return ctor.newInstance(id, raw);
+		} catch (InstantiationException ex) {
+			final Throwable t = ex.getCause();
+			if (t instanceof RuntimeException) {
+				throw (RuntimeException) t;
+			}
+			if (t instanceof Error) {
+				throw (Error) t;
+			}
+			throw new AssertionError(t);
+		} catch (Throwable t) {
+			throw new AssertionError(t);
+		}
+	}
 
-    /**
-     * Checks if this Material is a placable block
-     *
-     * @return true if this material is a block
-     */
-    public boolean isBlock() 
-    {
-        return id < 256;
-    }
-    
-    /**
-     * Returns the Bukkit {@link org.bukkit.Material} associated with this
-     * 
-     * @return The Bukkit {@link org.bukkit.Material} associated with this
-     */
-    public org.bukkit.Material getMaterial() 
-    {
-    	return org.bukkit.Material.matchMaterial(toString().toUpperCase());
-    }
-    
-    public static int getTypeId(org.bukkit.Material mat)
-    {
-    	return getMaterial(mat.toString().toUpperCase()).getId();
-    }
+	/**
+	 * Checks if this Material is a placable block
+	 * 
+	 * @return true if this material is a block
+	 */
+	public boolean isBlock() {
+		return id < 256;
+	}
 
-    /**
-     * Attempts to get the Material with the given ID
-     *
-     * @param id ID of the material to get
-     * @return Material if found, or null
-     */
-    public static Material getMaterial(final int id) 
-    {
-        if (byId.length > id && id >= 0) 
-        {
-            return byId[id];
-        }
-        
-        return null;
-    }
+	/**
+	 * Returns the Bukkit {@link org.bukkit.Material} associated with this
+	 * 
+	 * @return The Bukkit {@link org.bukkit.Material} associated with this
+	 */
+	public org.bukkit.Material getMaterial() {
+		return org.bukkit.Material.matchMaterial(toString().toUpperCase());
+	}
 
-    /**
-     * Attempts to get the Material with the given name.
-     * This is a normal lookup, names must be the precise name they are given
-     * in the enum.
-     *
-     * @param name Name of the material to get
-     * @return Material if found, or null
-     */
-    public static Material getMaterial(final String name)
-    {
-        return BY_NAME.get(name);
-    }
+	/**
+	 * Attempts to get the type id of a given {@link org.bukkit.Material}
+	 * 
+	 * @param mat
+	 *        - {@link org.bukkit.Material} to get id for
+	 * @return The type id (if applicable)
+	 */
+	public static int getTypeId(org.bukkit.Material mat) {
+		int id = 1;
 
-    /**
-     * Attempts to match the Material with the given name.
-     * This is a match lookup; names will be converted to uppercase, then stripped
-     * of special characters in an attempt to format it like the enum.
-     * <p>
-     * Using this for match by ID is deprecated.
-     *
-     * @param name Name of the material to get
-     * @return Material if found, or null
-     */
-    public static Material matchMaterial(final String name) 
-    {
-        Validate.notNull(name, "Name cannot be null");
+		if (mat != null) {
+			Material material = matchMaterial(mat.toString().toUpperCase());
+			if (material != null) {
+				id = material.getId();
+			}
+		}
 
-        Material result = null;
+		return id;
+	}
 
-        try 
-        {
-            result = getMaterial(Integer.parseInt(name));
-        } 
-        catch (NumberFormatException ex) 
-        {
-        	//
-        }
+	/**
+	 * Attempts to get the Material with the given ID
+	 * 
+	 * @param id
+	 *        ID of the material to get
+	 * @return Material if found, or null
+	 */
+	public static Material getMaterial(final int id) {
+		if (byId.length > id && id >= 0) {
+			return byId[id];
+		}
 
-        if (result == null)
-        {
-            String filtered = name.toUpperCase();
+		return null;
+	}
 
-            filtered = filtered.replaceAll("\\s+", "_").replaceAll("\\W", "");
-            result = BY_NAME.get(filtered);
-        }
+	/**
+	 * Attempts to get the Material with the given name. This is a normal
+	 * lookup, names must be the precise name they are given in the enum.
+	 * 
+	 * @param name
+	 *        Name of the material to get
+	 * @return Material if found, or null
+	 */
+	public static Material getMaterial(final String name) {
+		return BY_NAME.get(name);
+	}
 
-        return result;
-    }
+	/**
+	 * Attempts to match the Material with the given name. This is a match
+	 * lookup; names will be converted to uppercase, then stripped of special
+	 * characters in an attempt to format it like the enum.
+	 * <p>
+	 * Using this for match by ID is deprecated.
+	 * 
+	 * @param name
+	 *        Name of the material to get
+	 * @return Material if found, or null
+	 */
+	public static Material matchMaterial(final String name) {
+		Validate.notNull(name, "Name cannot be null");
 
-    static 
-    {
-        for (Material material : values())
-        {
-            if (byId.length > material.id) 
-            {
-                byId[material.id] = material;
-            }
-            else 
-            {
-                byId = Java15Compat.Arrays_copyOfRange(byId, 0, material.id + 2);
-                byId[material.id] = material;
-            }
-            BY_NAME.put(material.name(), material);
-        }
-    }
+		Material result = null;
+
+		try {
+			result = getMaterial(Integer.parseInt(name));
+		} catch (NumberFormatException ex) {
+			//
+		}
+
+		if (result == null) {
+			String filtered = name.toUpperCase();
+
+			filtered = filtered.replaceAll("\\s+", "_").replaceAll("\\W", "");
+			result = BY_NAME.get(filtered);
+		}
+
+		return result;
+	}
+
+	static {
+		for (Material material : values()) {
+			if (byId.length > material.id) {
+				byId[material.id] = material;
+			} else {
+				byId = Java15Compat.Arrays_copyOfRange(byId, 0, material.id + 2);
+				byId[material.id] = material;
+			}
+			BY_NAME.put(material.name(), material);
+		}
+	}
 }

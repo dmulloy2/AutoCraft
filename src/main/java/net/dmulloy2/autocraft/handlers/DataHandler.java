@@ -24,19 +24,20 @@ public class DataHandler implements Reloadable {
 	private final String folderName = "ships";
 
 	private HashMap<String, ShipData> data;
-	
+
 	public DataHandler(AutoCraft plugin) {
 		this.plugin = plugin;
 		this.folder = new File(plugin.getDataFolder(), folderName);
-		
-		if (! folder.exists())
+
+		if (! folder.exists()) {
 			folder.mkdir();
+		}
 
 		this.data = new HashMap<String, ShipData>();
-		
+
 		load();
 	}
-	
+
 	public void load() {
 		plugin.getLogHandler().log("Loading {0}...", folderName);
 
@@ -48,7 +49,7 @@ public class DataHandler implements Reloadable {
 			public boolean accept(File file) {
 				return file.getName().contains(extension);
 			}
-			
+
 		});
 
 		if (children.length == 0) {
@@ -65,73 +66,75 @@ public class DataHandler implements Reloadable {
 
 		plugin.getLogHandler().log("{0} loaded! [{1}ms]", WordUtils.capitalize(folderName), System.currentTimeMillis() - start);
 	}
-	
+
 	public void save() {
 		plugin.getLogHandler().log("Saving {0} to disk...", folderName);
-		
+
 		long start = System.currentTimeMillis();
 
 		for (ShipData shipData : data.values()) {
 			saveData(shipData);
 		}
-		
+
 		plugin.getLogHandler().log("{0} saved! [{1}ms]", WordUtils.capitalize(folderName), System.currentTimeMillis() - start);
 	}
 
 	public void generateStockShips() {
 		plugin.getLogHandler().log("Generating stock ships!");
-		
+
 		String[] stocks = new String[] { "airship", "base", "battle", "dreadnought", "pirate", "stealth", "titan", "turret" };
-		
+
 		for (String stock : stocks) {
 			plugin.saveResource(folderName + File.separator + stock + extension, false);
 		}
 	}
-	
+
 	public void saveData(ShipData shipData) {
 		File file = new File(folder, getFileName(shipData.getShipType()));
 		FileSerialization.save(shipData, file);
 	}
-	
+
 	public void onDisable() {
 		save();
-		
+
 		data.clear();
 	}
-	
+
 	private String trimFileExtension(File file) {
 		int index = file.getName().lastIndexOf(extension);
-		return index > 0 ? file.getName().substring(0, index) : file.getName(); 
+		return index > 0 ? file.getName().substring(0, index) : file.getName();
 	}
-	
+
 	private String getFileName(String key) {
 		return key + extension;
 	}
-	
+
 	public ShipData getData(String key) {
 		for (ShipData dat : data.values()) {
 			if (dat.getShipType().equalsIgnoreCase(key))
 				return dat;
 		}
-		
+
 		return null;
 	}
-	
+
 	public boolean isValidShip(String key) {
 		return getData(key) != null;
 	}
-	
+
 	public Set<String> getShips() {
 		return data.keySet();
 	}
-	
+
 	public Collection<ShipData> getData() {
 		return data.values();
 	}
 
+	/**
+	 * Forces the reloading of ship data
+	 */
 	@Override
 	public void reload() {
-		// Clear data, then load fresh files
 		data.clear();
 		load();
 	}

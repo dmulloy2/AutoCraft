@@ -15,12 +15,12 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public class FileResourceLoader extends ClassLoader {
 	private final transient File dataFolder;
-	
+
 	public FileResourceLoader(final ClassLoader classLoader, final JavaPlugin plugin) {
 		super(classLoader);
 		this.dataFolder = plugin.getDataFolder();
 	}
-	
+
 	@Override
 	public URL getResource(final String string) {
 		final File file = new File(dataFolder, string);
@@ -33,7 +33,7 @@ public class FileResourceLoader extends ClassLoader {
 		}
 		return super.getResource(string);
 	}
-	
+
 	@Override
 	public InputStream getResourceAsStream(final String string) {
 		final File file = new File(dataFolder, string);

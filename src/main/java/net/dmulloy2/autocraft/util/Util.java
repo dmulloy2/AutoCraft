@@ -177,7 +177,6 @@ public class Util {
 		return ret.toString();
 	}
 
-
 	/**
 	 * Constructs a new list from an existing {@link List}
 	 * <p>

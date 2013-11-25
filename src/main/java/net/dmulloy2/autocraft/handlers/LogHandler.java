@@ -2,17 +2,18 @@ package net.dmulloy2.autocraft.handlers;
 
 import java.util.logging.Level;
 
-import net.dmulloy2.autocraft.AutoCraft;
 import net.dmulloy2.autocraft.util.FormatUtil;
+
+import org.bukkit.plugin.java.JavaPlugin;
 
 /**
  * @author dmulloy2
  */
 
 public class LogHandler {
-	private final AutoCraft plugin;
-	
-	public LogHandler(AutoCraft plugin) {
+	private final JavaPlugin plugin;
+
+	public LogHandler(JavaPlugin plugin) {
 		this.plugin = plugin;
 	}
 

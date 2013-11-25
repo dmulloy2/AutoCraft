@@ -11,10 +11,11 @@ import org.bukkit.util.Vector;
 @Getter
 public enum Direction {
 	X(1, 0, 0), 
-	Y(0, 1, 0),
+	Y(0, 1, 0), 
 	Z(0, 0, 1);
-	
+
 	private Vector vector;
+
 	Direction(int x, int y, int z) {
 		vector = new Vector(x, y, z);
 	}

@@ -25,7 +25,7 @@ public class ShipData implements ConfigurationSerializable {
 	private transient int fastFlyAtSize = 1000;
 	private transient int maxAltitude = 254;
 	private transient int minAltitude = 2;
-	
+
 	private transient String shipType;
 
 	private int mainType;
@@ -43,24 +43,24 @@ public class ShipData implements ConfigurationSerializable {
 	private boolean firesTorpedo;
 	private boolean needsPermission;
 	private boolean ignoreAttachments;
-	
+
 	private List<Integer> allowedBlocks = new ArrayList<Integer>();
 
 	public ShipData() {
-		
+
 	}
-	
+
 	public ShipData(Map<String, Object> args) {
 		for (Entry<String, Object> entry : args.entrySet()) {
 			try {
 				for (Field field : getClass().getDeclaredFields()) {
 					if (field.getName().equals(entry.getKey())) {
 						boolean accessible = field.isAccessible();
-						
+
 						field.setAccessible(true);
-						
+
 						field.set(this, entry.getValue());
-						
+
 						field.setAccessible(accessible);
 					}
 				}
@@ -72,16 +72,16 @@ public class ShipData implements ConfigurationSerializable {
 	@Override
 	public Map<String, Object> serialize() {
 		Map<String, Object> data = new HashMap<String, Object>();
-		
+
 		for (Field field : getClass().getDeclaredFields()) {
 			if (Modifier.isTransient(field.getModifiers()))
 				continue;
-			
+
 			try {
 				boolean accessible = field.isAccessible();
 
 				field.setAccessible(true);
-				
+
 				if (field.getType().equals(Integer.TYPE)) {
 					data.put(field.getName(), field.getInt(this));
 				} else if (field.getType().equals(Long.TYPE)) {
@@ -102,17 +102,17 @@ public class ShipData implements ConfigurationSerializable {
 			} catch (Throwable ex) {
 			}
 		}
-		
+
 		return data;
 	}
-	
+
 	public boolean isValidMaterial(Block block) {
 		for (int allowedBlock : allowedBlocks) {
 			if (MaterialUtil.getMaterial(allowedBlock) == block.getType())
 				return true;
 		}
-		
-		return MaterialUtil.getMaterial(mainType) == block.getType()
+
+		return MaterialUtil.getMaterial(mainType) == block.getType() 
 				|| MaterialUtil.getMaterial(cannonMaterial) == block.getType()
 				|| block.getType() == Material.DISPENSER;
 	}
