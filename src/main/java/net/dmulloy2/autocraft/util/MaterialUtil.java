@@ -35,7 +35,7 @@ public class MaterialUtil {
 	public static org.bukkit.Material getMaterial(int id) {
 		Material mat = Material.getMaterial(id);
 		if (mat != null) {
-			return mat.getMaterial();
+			return mat.getBukkitMaterial();
 		}
 
 		return null;
@@ -48,8 +48,13 @@ public class MaterialUtil {
 	 *        - Bukkit material
 	 * @return Item ID (if applicable)
 	 */
-	public static int getItemId(org.bukkit.Material mat) {
-		return Material.getTypeId(mat);
+	public static int getItemId(org.bukkit.Material bukkitMaterial) {
+		Material mat = Material.getByBukkitMaterial(bukkitMaterial);
+		if (mat != null) {
+			return mat.getId();
+		}
+
+		return 1; // Stone
 	}
 
 	/**
