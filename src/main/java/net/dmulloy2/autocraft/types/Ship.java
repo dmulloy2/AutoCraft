@@ -699,15 +699,17 @@ public class Ship {
 	public void setBlock(Block to, ACBlockState from) {
 		try {
 			to.setType(from.getData().getItemType());
-			to.getState().setData(from.getData());
 
-			// Basically, there isn't an api for Block.setState(BlockState)
+			// Inventory
 			if (from.getInventory() != null) {
 				Inventory inv = ((InventoryHolder) to.getState()).getInventory();
 
 				inv.clear();
 				inv.setContents(from.getInventory());
-			} else if (from.getState() instanceof Sign) {
+			} 
+
+			// Block state stuff
+			if (from.getState() instanceof Sign) {
 				Sign fromSign = (Sign) from.getState();
 				Sign toSign = (Sign) to.getState();
 
@@ -738,7 +740,8 @@ public class Ship {
 				toSkull.setOwner(fromSkull.getOwner());
 			}
 
-			to.getState().update();
+			to.getState().setData(from.getData());
+			to.getState().update(true);
 		} catch (Throwable ex) {
 			// There's not a real good way to check for this...
 			plugin.getLogHandler().debug(Util.getUsefulStack(ex, "setting block at " + to.getLocation()));

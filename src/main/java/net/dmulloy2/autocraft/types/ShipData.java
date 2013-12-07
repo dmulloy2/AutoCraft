@@ -108,12 +108,12 @@ public class ShipData implements ConfigurationSerializable {
 
 	public boolean isValidMaterial(Block block) {
 		for (int allowedBlock : allowedBlocks) {
-			if (MaterialUtil.getMaterial(allowedBlock) == block.getType())
+			if (block.getType() == MaterialUtil.getMaterial(allowedBlock))
 				return true;
 		}
 
-		return MaterialUtil.getMaterial(mainType) == block.getType() 
-				|| MaterialUtil.getMaterial(cannonMaterial) == block.getType()
+		return block.getType() == MaterialUtil.getMaterial(mainType) 
+				|| block.getType() == MaterialUtil.getMaterial(cannonMaterial)
 				|| block.getType() == Material.DISPENSER;
 	}
 }

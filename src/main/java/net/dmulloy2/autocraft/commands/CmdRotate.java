@@ -37,6 +37,10 @@ public class CmdRotate extends AutoCraftCommand {
 			ship.rotate(TurnDirection.LEFT);
 		} else if (direction.equals("right") || direction.equals("r") || direction.equals("90")) {
 			ship.rotate(TurnDirection.RIGHT);
+		} else  if (direction.equals("180")){
+			// Turn twice for a 180
+			ship.rotate(TurnDirection.RIGHT);
+			ship.rotate(TurnDirection.RIGHT);
 		} else {
 			err("{0} is not a valid direction!", direction);
 		}
