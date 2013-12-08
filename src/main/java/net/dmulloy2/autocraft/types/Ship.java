@@ -86,7 +86,7 @@ public class Ship {
 	public void drop() {
 		// Has player waited cooldown before trying to fire again?
 		if ((System.currentTimeMillis() - lastFired) > (plugin.getConfig().getInt("weaponCooldownTime") * 1000)) {
-
+			plugin.getLogHandler().log("{0} is attempting to drop a bomb.", player.getName());
 			// Can this airship drop bombs?
 			if (data.isDropsBomb()) {
 				if (plugin.isFactionsEnabled() && ! FactionUtil.canPlayerUseWeapon(player)) {
@@ -113,7 +113,7 @@ public class Ship {
 						} else {
 							// More cannons on ship than allowed. Not all fired
 							// - can break out of loop now.
-							sendMessage("&bSome cannons did not fire. Max cannon limit is: &6{0}", data.getMaxNumberOfCannons());
+							sendMessage("&6Some cannons did not fire. Max cannon limit is: &b{0}", data.getMaxNumberOfCannons());
 							break;
 						}
 					}
@@ -133,7 +133,7 @@ public class Ship {
 			plugin.getLogHandler().log("{0} is attempting to fire TNT.", player.getName());
 			// Can this airship drop bombs?
 			if (data.isFiresTnt()) {
-				if (plugin.isFactionsEnabled() && !FactionUtil.canPlayerUseWeapon(player)) {
+				if (plugin.isFactionsEnabled() && ! FactionUtil.canPlayerUseWeapon(player)) {
 					return;
 				}
 
@@ -164,7 +164,7 @@ public class Ship {
 							} else {
 								// More cannons on ship than allowed. Not all
 								// fired - can break out of loop now.
-								sendMessage("&bSome cannons did not fire. Max cannon limit is &6{0}", data.getMaxNumberOfCannons());
+								sendMessage("&6Some cannons did not fire. Max cannon limit is &b{0}", data.getMaxNumberOfCannons());
 								break;
 							}
 						}
@@ -197,12 +197,12 @@ public class Ship {
 					if (cannons[i] != null && cannons[i].getRelative(0, -1, 0).getType().equals(Material.AIR)
 							&& cannonHasTnt(cannons[i], plugin.getConfig().getInt("numTntToDropNapalm"))) {
 						boolean missingMaterial = false;
-						for (int id : plugin.getConfig().getIntegerList("materialsNeededForNapalm")) {
-							if (!cannonHasItem(cannons[i], MaterialUtil.getMaterial(id), 1))
+						for (String mat : plugin.getConfig().getStringList("materialsNeededForNapalm")) {
+							if (! cannonHasItem(cannons[i], MaterialUtil.getMaterial(mat), 1))
 								missingMaterial = true;
 						}
 
-						if (!missingMaterial && numfiredcannons < data.getMaxNumberOfCannons()) {
+						if (! missingMaterial && numfiredcannons < data.getMaxNumberOfCannons()) {
 							numfiredcannons++;
 							lastFired = System.currentTimeMillis();
 							withdrawTnt(cannons[i], plugin.getConfig().getInt("numTntToDropNapalm"));
@@ -217,7 +217,7 @@ public class Ship {
 						} else {
 							// More cannons on ship than allowed. Not all fired
 							// - can break out of loop now.
-							sendMessage("&bSome napalm cannons did not fire. Max cannon limit is &6{0}", data.getMaxNumberOfCannons());
+							sendMessage("&6Some napalm cannons did not fire. Max cannon limit is &b{0}", data.getMaxNumberOfCannons());
 							break;
 						}
 					}
@@ -250,8 +250,8 @@ public class Ship {
 						BlockFace face = ((Directional) cannons[i].getState().getData()).getFacing();
 						boolean missingMaterial = false;
 
-						for (int id : plugin.getConfig().getIntegerList("materialsNeededForTorpedo")) {
-							if (!cannonHasItem(cannons[i], MaterialUtil.getMaterial(id), 1)) {
+						for (String mat : plugin.getConfig().getStringList("materialsNeededForTorpedo")) {
+							if (!cannonHasItem(cannons[i], MaterialUtil.getMaterial(mat), 1)) {
 								missingMaterial = true;
 							}
 						}
@@ -263,8 +263,8 @@ public class Ship {
 							numfiredcannons++;
 							lastFired = System.currentTimeMillis();
 							withdrawTnt(cannons[i], plugin.getConfig().getInt("numTntToFireTorpedo"));
-							for (int id : plugin.getConfig().getIntegerList("materialsNeededForTorpedo")) {
-								withdrawItem(cannons[i], MaterialUtil.getMaterial(id), 1);
+							for (String mat : plugin.getConfig().getStringList("materialsNeededForTorpedo")) {
+								withdrawItem(cannons[i], MaterialUtil.getMaterial(mat), 1);
 							}
 
 							// Fire some torpedoes
@@ -274,7 +274,7 @@ public class Ship {
 						} else {
 							// More cannons on ship than allowed. Not all fired
 							// - can break out of loop now.
-							sendMessage("&bSome cannons did not fire. Max cannon limit is &6{0}", data.getMaxNumberOfCannons());
+							sendMessage("&6Some cannons did not fire. Max cannon limit is &b{0}", data.getMaxNumberOfCannons());
 							break;
 						}
 					}
@@ -647,14 +647,14 @@ public class Ship {
 	}
 
 	public boolean isSpecial(MaterialData data) {
-		return (data instanceof SimpleAttachableMaterialData
+		return data instanceof SimpleAttachableMaterialData
 				|| data instanceof org.bukkit.material.Sign 
 				|| data instanceof Bed
 				|| data instanceof PressurePlate 
 				|| data instanceof RedstoneWire 
 				|| data instanceof Rails 
 				|| data instanceof Diode 
-				|| data instanceof Vine);
+				|| data instanceof Vine;
 	}
 
 	public void setBlock(Block to, ACBlockState from, TurnDirection dir) {

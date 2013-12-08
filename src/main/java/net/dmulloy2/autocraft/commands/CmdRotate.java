@@ -29,20 +29,20 @@ public class CmdRotate extends AutoCraftCommand {
 			err("You are not piloting a ship!");
 			return;
 		}
-		
+
 		Ship ship = plugin.getShipHandler().getShip(player);
-		
+
 		String direction = args[0].toLowerCase();
 		if (direction.equals("left") || direction.equals("l") || direction.equals("-90")) {
 			ship.rotate(TurnDirection.LEFT);
 		} else if (direction.equals("right") || direction.equals("r") || direction.equals("90")) {
 			ship.rotate(TurnDirection.RIGHT);
-		} else  if (direction.equals("180")){
+		} else if (direction.equals("180")) {
 			// Turn twice for a 180
 			ship.rotate(TurnDirection.RIGHT);
 			ship.rotate(TurnDirection.RIGHT);
 		} else {
 			err("{0} is not a valid direction!", direction);
 		}
-	}	
+	}
 }

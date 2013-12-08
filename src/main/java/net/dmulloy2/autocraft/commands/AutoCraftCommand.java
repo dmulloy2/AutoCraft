@@ -100,9 +100,8 @@ public abstract class AutoCraftCommand implements CommandExecutor {
 
 	protected final boolean argMatchesAlias(String arg, String... aliases) {
 		for (String s : aliases) {
-			if (arg.equalsIgnoreCase(s)) {
+			if (arg.equalsIgnoreCase(s))
 				return true;
-			}
 		}
 
 		return false;

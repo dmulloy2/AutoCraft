@@ -1,6 +1,6 @@
 /**
  * AutoCraft - a Bukkit plugin 
- * Copyright (C) 2011-2013 MineSworn
+ * Copyright (C) 2011-2013 MineSworn and Affiliates
  * 
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU General Public License as published by the Free Software
@@ -72,20 +72,24 @@ public class AutoCraft extends JavaPlugin implements Reloadable {
 	@Override
 	public void onEnable() {
 		long start = System.currentTimeMillis();
-		
-		saveDefaultConfig();
-		reloadConfig();
-		
-		permissionHandler = new PermissionHandler(this);
-		commandHandler = new CommandHandler(this);
+
+		// LogHandler first
 		logHandler = new LogHandler(this);
 
+		// Then messages
 		saveResource("messages.properties", true);
 		resourceHandler = new ResourceHandler(this, getClassLoader());
-		
-		shipHandler = new ShipHandler();
+
+		// Register other handlers
+		permissionHandler = new PermissionHandler(this);
+		commandHandler = new CommandHandler(this);
 		dataHandler = new DataHandler(this);
-		
+		shipHandler = new ShipHandler();
+
+		saveDefaultConfig();
+		reloadConfig();
+
+		// Register commands
 		commandHandler.setCommandPrefix("ac");
 		commandHandler.registerCommand(new CmdAllowed(this));
 		commandHandler.registerCommand(new CmdDismount(this));
@@ -100,37 +104,39 @@ public class AutoCraft extends JavaPlugin implements Reloadable {
 		commandHandler.registerCommand(new CmdReload(this));
 		commandHandler.registerCommand(new CmdRotate(this));
 		commandHandler.registerCommand(new CmdTorpedo(this));
-		
+
+		// Listeners
+		PluginManager pm = getServer().getPluginManager();
+		pm.registerEvents(new PlayerListener(this), this);
+
+		// Factions integration
 		if (getConfig().getBoolean("factionsProtectionsEnabled")) {
-			PluginManager pm = getServer().getPluginManager();
-			
-			this.factionsEnabled = pm.isPluginEnabled("SwornNations") || pm.isPluginEnabled("Factions");
-			
+			factionsEnabled = pm.isPluginEnabled("SwornNations") || pm.isPluginEnabled("Factions");
+
 			if (factionsEnabled) {
 				logHandler.log(getMessage("log_factions_found"));
-			} else  {
+			} else {
 				logHandler.log(getMessage("log_factions_notfound"));
 			}
 		}
-		
+
+		// Permissions
 		registerPermissions();
 
-		getServer().getPluginManager().registerEvents(new PlayerListener(this), this);
-		
 		long finish = System.currentTimeMillis();
-		
+
 		logHandler.log(getMessage("log_enabled"), getDescription().getFullName(), finish - start);
 	}
-	
+
 	@Override
 	public void onDisable() {
 		long start = System.currentTimeMillis();
-		
+
 		dataHandler.onDisable();
 		shipHandler.clearMemory();
-		
+
 		long finish = System.currentTimeMillis();
-		
+
 		logHandler.log(getMessage("log_disabled"), getDescription().getFullName(), finish - start);
 	}
 
@@ -142,19 +148,19 @@ public class AutoCraft extends JavaPlugin implements Reloadable {
 			return null;
 		}
 	}
-	
+
 	private List<Permission> permissions;
 
 	public void registerPermissions() {
 		this.permissions = new ArrayList<Permission>();
-		
+
 		for (ShipData data : dataHandler.getData()) {
 			PermissionDefault def = data.isNeedsPermission() ? PermissionDefault.FALSE : PermissionDefault.TRUE;
-			
+
 			Permission perm = new Permission("autocraft." + data.getShipType().toLowerCase(), def);
-			
+
 			getServer().getPluginManager().addPermission(perm);
-			
+
 			permissions.add(perm);
 		}
 	}

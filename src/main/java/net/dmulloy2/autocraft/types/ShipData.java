@@ -28,11 +28,12 @@ public class ShipData implements ConfigurationSerializable {
 
 	private transient String shipType;
 
-	private int mainType;
+	private String mainType;
+	private String cannonMaterial;
+
 	private int moveSpeed;
 	private int maxBlocks;
 	private int minBlocks;
-	private int cannonMaterial;
 	private int maxCannonLength;
 	private int maxShipDimensions;
 	private int maxNumberOfCannons;
