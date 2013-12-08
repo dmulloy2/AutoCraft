@@ -25,9 +25,14 @@ public class Napalm extends Projectile {
 		this.plugin = plugin;
 
 		napalm = dispenser.getRelative(0, -1, 0);
+
+		// Set type
 		napalm.setType(Material.WOOL);
 
-		((Wool) napalm.getState().getData()).setColor(DyeColor.GREEN);
+		// Set color
+		Wool wool = (Wool) napalm.getState().getData();
+		wool.setColor(DyeColor.GREEN);
+		napalm.getState().update();
 	}
 
 	public void explode() {
@@ -56,22 +61,26 @@ public class Napalm extends Projectile {
 	public void move() {
 		if (!isExploded()) {
 			Block b = napalm.getRelative(0, -1, 0);
-			if (b.getType().equals(Material.AIR) 
-					|| b.getType().equals(Material.WATER) 
+			if (b.getType().equals(Material.AIR)
+					|| b.getType().equals(Material.WATER)
 					|| b.getType().equals(Material.STATIONARY_WATER)
 					|| b.getType().equals(Material.LAVA)
 					|| b.getType().equals(Material.STATIONARY_LAVA)
 					|| b.getType().equals(Material.FIRE)
-					|| b.getType().equals(Material.LADDER) 
+					|| b.getType().equals(Material.LADDER)
 					|| b.getType().equals(Material.IRON_DOOR_BLOCK)
 					|| b.getType().equals(Material.ENCHANTMENT_TABLE)
 					|| b.getType().equals(Material.PORTAL)
 					|| b.getType().equals(Material.ENDER_PORTAL)
 					|| b.getType().equals(Material.ENDER_STONE)
 					|| b.getType().equals(Material.ENDER_PORTAL_FRAME)) {
-				b.setType(Material.WOOL);
 				napalm.setType(Material.AIR);
-				((Wool) b.getState().getData()).setColor(DyeColor.GREEN);
+
+				b.setType(Material.WOOL);
+				Wool w = (Wool) b.getState().getData();
+				w.setColor(DyeColor.GREEN);
+				b.getState().update();
+
 				napalm = b;
 			} else {
 				if (plugin.isFactionsEnabled() 
