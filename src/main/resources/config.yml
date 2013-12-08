@@ -10,7 +10,7 @@ numTntToFireTorpedo: 8
 numTntToDropBomb: 2
 numTntToDropNapalm: 4
 
-# Materials Needed (integer)
+# Materials Needed (material id/string)
 materialsNeededForTorpedo:
 - 264
 - 259
