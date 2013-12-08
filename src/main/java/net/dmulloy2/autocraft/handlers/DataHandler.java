@@ -5,11 +5,13 @@ import java.io.FileFilter;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Set;
+import java.util.logging.Level;
 
 import net.dmulloy2.autocraft.AutoCraft;
 import net.dmulloy2.autocraft.io.FileSerialization;
 import net.dmulloy2.autocraft.types.Reloadable;
 import net.dmulloy2.autocraft.types.ShipData;
+import net.dmulloy2.autocraft.util.Util;
 
 import org.apache.commons.lang.WordUtils;
 
@@ -39,9 +41,9 @@ public class DataHandler implements Reloadable {
 	}
 
 	public void load() {
-		plugin.getLogHandler().log("Loading {0}...", folderName);
-
 		long start = System.currentTimeMillis();
+
+		plugin.getLogHandler().log("Loading {0}...", folderName);
 
 		File[] children = folder.listFiles(new FileFilter() {
 
@@ -54,23 +56,26 @@ public class DataHandler implements Reloadable {
 
 		if (children.length == 0) {
 			generateStockShips();
-
 			children = folder.listFiles();
 		}
 
 		for (File file : children) {
-			ShipData shipData = FileSerialization.load(file, ShipData.class);
-			shipData.setShipType(trimFileExtension(file));
-			data.put(shipData.getShipType(), shipData);
+			try {
+				ShipData shipData = FileSerialization.load(file, ShipData.class);
+				shipData.setShipType(trimFileExtension(file));
+				data.put(shipData.getShipType(), shipData);
+			} catch (Throwable ex) {
+				plugin.getLogHandler().log(Level.SEVERE, Util.getUsefulStack(ex, "loading ship: " + file.getName()));
+			}
 		}
 
 		plugin.getLogHandler().log("{0} loaded! [{1}ms]", WordUtils.capitalize(folderName), System.currentTimeMillis() - start);
 	}
 
 	public void save() {
-		plugin.getLogHandler().log("Saving {0} to disk...", folderName);
-
 		long start = System.currentTimeMillis();
+
+		plugin.getLogHandler().log("Saving {0} to disk...", folderName);
 
 		for (ShipData shipData : data.values()) {
 			saveData(shipData);
@@ -90,13 +95,18 @@ public class DataHandler implements Reloadable {
 	}
 
 	public void saveData(ShipData shipData) {
-		File file = new File(folder, getFileName(shipData.getShipType()));
-		FileSerialization.save(shipData, file);
+		try {
+			File file = new File(folder, getFileName(shipData.getShipType()));
+			FileSerialization.save(shipData, file);
+		} catch (Throwable ex) {
+			if (shipData != null) {
+				plugin.getLogHandler().log(Level.SEVERE, Util.getUsefulStack(ex, "saving ship: " + shipData.getShipType()));
+			}
+		}
 	}
 
 	public void onDisable() {
 		save();
-
 		data.clear();
 	}
 

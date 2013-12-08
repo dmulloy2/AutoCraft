@@ -256,7 +256,7 @@ public class Ship {
 							}
 						}
 
-						if (!cannons[i].getRelative(face.getModX(), 0, face.getModZ()).getType().equals(Material.AIR) || missingMaterial)
+						if (! cannons[i].getRelative(face.getModX(), 0, face.getModZ()).getType().equals(Material.AIR) || missingMaterial)
 							continue;
 
 						if (numfiredcannons < data.getMaxNumberOfCannons()) {
@@ -442,8 +442,8 @@ public class Ship {
 				// Can't move :/
 				if (obstruction) {
 					sendMessage("&eObstruction - &cCannot move any further in this direction.");
-					// Lets move this thing :D
 				} else {
+					// Lets move this thing :D
 					domove(dx, dy, dz);
 				}
 			}
