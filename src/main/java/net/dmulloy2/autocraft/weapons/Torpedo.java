@@ -34,8 +34,11 @@ public class Torpedo extends Projectile {
 
 		if (torpedo[0].getType().equals(Material.AIR) && torpedo[1].getType().equals(Material.AIR)) {
 			torpedo[0].setType(Material.DIAMOND_BLOCK);
+
 			torpedo[1].setType(Material.WOOL);
-			((Wool) torpedo[1].getState().getData()).setColor(DyeColor.RED);
+			Wool w = (Wool) torpedo[1].getState().getData();
+			w.setColor(DyeColor.RED);
+			torpedo[1].getState().update();
 		} else {
 			this.exploded = true;
 			explode();
@@ -55,7 +58,9 @@ public class Torpedo extends Projectile {
 			Block b = torpedo[0].getRelative(dir.getModX(), (int) -yvelo, dir.getModZ());
 			if (b.getType().equals(Material.AIR) || b.getType().equals(Material.WATER) || b.getType().equals(Material.STATIONARY_WATER)) {
 				torpedo[0].setType(Material.WOOL);
-				((Wool) torpedo[0].getState().getData()).setColor(DyeColor.RED);
+				Wool w = (Wool) torpedo[0].getState().getData();
+				w.setColor(DyeColor.RED);
+				torpedo[0].getState().update();
 				torpedo[1].setType(Material.AIR);
 				torpedo[1] = torpedo[0];
 				torpedo[0] = b;
