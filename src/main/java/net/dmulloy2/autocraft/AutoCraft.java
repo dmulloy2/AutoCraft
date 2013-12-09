@@ -86,6 +86,7 @@ public class AutoCraft extends JavaPlugin implements Reloadable {
 		dataHandler = new DataHandler(this);
 		shipHandler = new ShipHandler();
 
+		// Configuration
 		saveDefaultConfig();
 		reloadConfig();
 
@@ -123,9 +124,7 @@ public class AutoCraft extends JavaPlugin implements Reloadable {
 		// Permissions
 		registerPermissions();
 
-		long finish = System.currentTimeMillis();
-
-		logHandler.log(getMessage("log_enabled"), getDescription().getFullName(), finish - start);
+		logHandler.log(getMessage("log_enabled"), getDescription().getFullName(), System.currentTimeMillis() - start);
 	}
 
 	@Override
@@ -135,9 +134,7 @@ public class AutoCraft extends JavaPlugin implements Reloadable {
 		dataHandler.onDisable();
 		shipHandler.clearMemory();
 
-		long finish = System.currentTimeMillis();
-
-		logHandler.log(getMessage("log_disabled"), getDescription().getFullName(), finish - start);
+		logHandler.log(getMessage("log_disabled"), getDescription().getFullName(), System.currentTimeMillis() - start);
 	}
 
 	public String getMessage(String string) {
@@ -156,11 +153,8 @@ public class AutoCraft extends JavaPlugin implements Reloadable {
 
 		for (ShipData data : dataHandler.getData()) {
 			PermissionDefault def = data.isNeedsPermission() ? PermissionDefault.FALSE : PermissionDefault.TRUE;
-
 			Permission perm = new Permission("autocraft." + data.getShipType().toLowerCase(), def);
-
 			getServer().getPluginManager().addPermission(perm);
-
 			permissions.add(perm);
 		}
 	}
