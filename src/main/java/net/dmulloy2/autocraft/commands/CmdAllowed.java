@@ -55,7 +55,7 @@ public class CmdAllowed extends AutoCraftCommand {
 	public String getAllowedList(ShipData data) {
 		StringBuilder ret = new StringBuilder();
 
-		for (String allowed : data.getAllowedTypes()) {
+		for (String allowed : data.getAllowedBlocks()) {
 			ret.append("&e" + MaterialUtil.getMaterialName(allowed) + "&b, ");
 		}
 
