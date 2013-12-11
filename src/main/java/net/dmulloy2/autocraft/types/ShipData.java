@@ -45,7 +45,7 @@ public class ShipData implements ConfigurationSerializable {
 	private boolean needsPermission;
 	private boolean ignoreAttachments;
 
-	private List<Integer> allowedBlocks = new ArrayList<Integer>();
+	private List<String> allowedTypes = new ArrayList<String>();
 
 	public ShipData() {
 
@@ -108,8 +108,8 @@ public class ShipData implements ConfigurationSerializable {
 	}
 
 	public boolean isValidMaterial(Block block) {
-		for (int allowedBlock : allowedBlocks) {
-			if (block.getType() == MaterialUtil.getMaterial(allowedBlock))
+		for (String allowed : allowedTypes) {
+			if (block.getType() == MaterialUtil.getMaterial(allowed))
 				return true;
 		}
 
