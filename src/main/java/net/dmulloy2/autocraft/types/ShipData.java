@@ -45,7 +45,13 @@ public class ShipData implements ConfigurationSerializable {
 	private boolean needsPermission;
 	private boolean ignoreAttachments;
 
-	private List<String> allowedBlocks = new ArrayList<String>();
+	// Not exactly ideal, but basically, since integers cant be casted to strings
+	// for whatever reason, allowedBlocks is the old integer list, which we will
+	// convert into string form and save it as allowedTypes. The allowedBlocks
+	// list will load as normal, but will not save, since it is transient. The
+	// allowedTypes list will save instead.
+	private List<String> allowedTypes = new ArrayList<String>();
+	private transient List<Integer> allowedBlocks = new ArrayList<Integer>();
 
 	public ShipData() {
 
@@ -68,6 +74,8 @@ public class ShipData implements ConfigurationSerializable {
 			} catch (Throwable ex) {
 			}
 		}
+
+		convertToStringList();
 	}
 
 	@Override
@@ -107,8 +115,18 @@ public class ShipData implements ConfigurationSerializable {
 		return data;
 	}
 
+	private final void convertToStringList() {
+		if (! allowedBlocks.isEmpty()) {
+			for (int id : allowedBlocks) {
+				allowedTypes.add(Integer.toString(id));
+			}
+
+			allowedBlocks.clear();
+		}
+	}
+
 	public boolean isValidMaterial(Block block) {
-		for (String allowed : allowedBlocks) {
+		for (String allowed : allowedTypes) {
 			if (block.getType() == MaterialUtil.getMaterial(allowed))
 				return true;
 		}
