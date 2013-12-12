@@ -1,6 +1,6 @@
 name: AutoCraft
 main: net.dmulloy2.autocraft.AutoCraft
-version: ${project.version}
+version: "${project.version} (Build ${BUILD_NUMBER})"
 author: dmulloy2
 softdepend: [SwornNations, Factions]
 description: The MoveCraft alternative. Allows players to create PvP Airships!
