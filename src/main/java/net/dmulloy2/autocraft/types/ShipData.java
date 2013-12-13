@@ -22,6 +22,8 @@ import org.bukkit.configuration.serialization.ConfigurationSerializable;
 
 @Data
 public class ShipData implements ConfigurationSerializable {
+	public static transient final int LATEST_VERSION = 3; // 'Dat modifiers
+
 	private transient int fastFlyAtSize = 1000;
 	private transient int maxAltitude = 254;
 	private transient int minAltitude = 2;
@@ -31,6 +33,7 @@ public class ShipData implements ConfigurationSerializable {
 	private String mainType;
 	private String cannonMaterial;
 
+	private int version;
 	private int moveSpeed;
 	private int maxBlocks;
 	private int minBlocks;
@@ -45,13 +48,7 @@ public class ShipData implements ConfigurationSerializable {
 	private boolean needsPermission;
 	private boolean ignoreAttachments;
 
-	// Not exactly ideal, but basically, since integers cant be casted to strings
-	// for whatever reason, allowedBlocks is the old integer list, which we will
-	// convert into string form and save it as allowedTypes. The allowedBlocks
-	// list will load as normal, but will not save, since it is transient. The
-	// allowedTypes list will save instead.
 	private List<String> allowedTypes = new ArrayList<String>();
-	private transient List<Integer> allowedBlocks = new ArrayList<Integer>();
 
 	public ShipData() {
 
@@ -74,8 +71,6 @@ public class ShipData implements ConfigurationSerializable {
 			} catch (Throwable ex) {
 			}
 		}
-
-		convertToStringList();
 	}
 
 	@Override
@@ -113,16 +108,6 @@ public class ShipData implements ConfigurationSerializable {
 		}
 
 		return data;
-	}
-
-	private final void convertToStringList() {
-		if (! allowedBlocks.isEmpty()) {
-			for (int id : allowedBlocks) {
-				allowedTypes.add(Integer.toString(id));
-			}
-
-			allowedBlocks.clear();
-		}
 	}
 
 	public boolean isValidMaterial(Block block) {
