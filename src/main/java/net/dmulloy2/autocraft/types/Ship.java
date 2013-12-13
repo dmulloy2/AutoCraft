@@ -699,6 +699,7 @@ public class Ship {
 	public void setBlock(Block to, ACBlockState from) {
 		try {
 			to.setType(from.getData().getItemType());
+			to.getState().update(true);
 
 			// Inventory
 			if (from.getInventory() != null) {
