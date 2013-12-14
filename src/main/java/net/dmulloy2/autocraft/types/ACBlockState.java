@@ -17,12 +17,16 @@ public class ACBlockState {
 	private MaterialData data;
 	private ItemStack[] inventory;
 
-	public ACBlockState(BlockState s) {
-		this.data = s.getData();
-		this.state = s;
+	public ACBlockState(BlockState state, MaterialData data) {
+		this.data = data;
+		this.state = state;
 
-		if (s instanceof InventoryHolder) {
-			this.inventory = ((InventoryHolder) s).getInventory().getContents();
+		if (state instanceof InventoryHolder) {
+			this.inventory = ((InventoryHolder) state).getInventory().getContents();
 		}
+	}
+
+	public ACBlockState(BlockState state) {
+		this(state, state.getData());
 	}
 }

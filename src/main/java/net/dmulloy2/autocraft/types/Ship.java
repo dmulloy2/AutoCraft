@@ -18,6 +18,7 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.CommandBlock;
 import org.bukkit.block.Dispenser;
+import org.bukkit.block.Furnace;
 import org.bukkit.block.Jukebox;
 import org.bukkit.block.NoteBlock;
 import org.bukkit.block.Sign;
@@ -79,7 +80,7 @@ public class Ship {
 
 		plugin.getLogHandler().debug("{0} is attempting to fly {1} at: {2}", player.getName(), data.getShipType(),
 				Util.locationToString(player.getLocation()));
-		startship();
+		startShip();
 	}
 
 	// Drop tnt bombs :D
@@ -374,7 +375,7 @@ public class Ship {
 		return cannons.toArray(new Block[0]);
 	}
 
-	public void startship() {
+	public void startShip() {
 		updateMainBlock();
 		if (beginRecursion(mainblock)) {
 			if (areBlocksValid()) {
@@ -444,7 +445,7 @@ public class Ship {
 					sendMessage("&eObstruction - &cCannot move any further in this direction.");
 				} else {
 					// Lets move this thing :D
-					domove(dx, dy, dz);
+					doMove(dx, dy, dz);
 				}
 			}
 		}
@@ -479,14 +480,14 @@ public class Ship {
 				if (obstruction) {
 					sendMessage("&eObstruction - &cCannot move any further in this direction.");
 				} else {
-					dorotate(dir);
+					doRotate(dir);
 				}
 			}
 		}
 	}
 
 	// Rotate the ship and all passengers in the specified direction
-	public void dorotate(TurnDirection dir) {
+	public void doRotate(TurnDirection dir) {
 		List<Player> passengers = getPassengers();
 		ACBlockState[] temp = new ACBlockState[blocks.length];
 		ACBlockState[] special = new ACBlockState[blocks.length];
@@ -543,10 +544,10 @@ public class Ship {
 	}
 
 	// Move the ship and all passengers the specified distance
-	public void domove(int dx, int dy, int dz) {
+	public void doMove(int dx, int dy, int dz) {
 		List<Player> passengers = getPassengers();
 
-		boolean fastFly = (data.getFastFlyAtSize() == 0 ? false : data.getFastFlyAtSize() < (blocks.length + specialBlocks.length));
+		boolean fastFly = data.getFastFlyAtSize() == 0 ? false : data.getFastFlyAtSize() < (blocks.length + specialBlocks.length);
 
 		if (fastFly) {
 			if (largeShipSpecialBlocks == null || largeShipBlocks == null) {
@@ -555,26 +556,49 @@ public class Ship {
 
 				// First remove all special blocks from the world
 				for (int i = 0; i < specialBlocks.length; i++) {
-					largeShipSpecialBlocks[i] = new ACBlockState(specialBlocks[i].getState());
-					specialBlocks[i].setType(Material.AIR);
+					Block b = specialBlocks[i];
+
+					// Store it
+					largeShipSpecialBlocks[i] = new ACBlockState(b.getState());
+
+					// Remove it
+					b.setType(Material.AIR);
+					b.getState().setData(new MaterialData(Material.AIR));
+					b.getState().update();
 				}
 
 				// Then remove the rest of the blocks from the scene
 				for (int i = 0; i < blocks.length; i++) {
-					largeShipBlocks[i] = new ACBlockState(blocks[i].getState());
-					if (blocks[i].getState() instanceof InventoryHolder)
-						((InventoryHolder) blocks[i].getState()).getInventory().clear();
-					blocks[i].setType(Material.AIR);
+					Block b = blocks[i];
+
+					// Store it
+					largeShipBlocks[i] = new ACBlockState(b.getState());
+
+					// Store inventory (if applicable)
+					if (b.getState() instanceof InventoryHolder) {
+						((InventoryHolder) b.getState()).getInventory().clear();
+					}
+
+					// Remove it
+					b.setType(Material.AIR);
+					b.getState().setData(new MaterialData(Material.AIR));
+					b.getState().update();
 				}
 			} else {
 				for (int i = 0; i < blocks.length; i++) {
-					if (blocks[i].getType() != Material.AIR)
+					if (blocks[i].getType() != Material.AIR) {
 						blocks[i].setType(Material.AIR);
+						blocks[i].getState().setData(new MaterialData(Material.AIR));
+						blocks[i].getState().update();
+					}
 				}
 
 				for (int i = 0; i < specialBlocks.length; i++) {
-					if (specialBlocks[i].getType() != Material.AIR)
+					if (specialBlocks[i].getType() != Material.AIR) {
 						specialBlocks[i].setType(Material.AIR);
+						specialBlocks[i].getState().setData(new MaterialData(Material.AIR));
+						specialBlocks[i].getState().update();
+					}
 				}
 			}
 
@@ -587,6 +611,7 @@ public class Ship {
 				specialBlocks[i] = specialBlocks[i].getRelative(dx, dy, dz);
 			}
 
+			// Put players on glass for a sec
 			for (Player p : passengers) {
 				Block b = p.getWorld().getBlockAt(p.getLocation().subtract(0, 1, 0));
 				b = b.getRelative(dx, dy, dz);
@@ -615,16 +640,33 @@ public class Ship {
 
 			// First remove all special blocks from the world
 			for (int i = 0; i < specialBlocks.length; i++) {
-				special[i] = new ACBlockState(specialBlocks[i].getState());
-				specialBlocks[i].setType(Material.AIR);
+				Block b = specialBlocks[i];
+
+				// Store in special array
+				special[i] = new ACBlockState(b.getState());
+
+				// Remove it
+				b.setType(Material.AIR);
+				b.getState().setData(new MaterialData(Material.AIR));
+				b.getState().update();
 			}
 
 			// Then remove the rest of the blocks from the scene
 			for (int i = 0; i < blocks.length; i++) {
-				temp[i] = new ACBlockState(blocks[i].getState());
-				if (blocks[i].getState() instanceof InventoryHolder)
-					((InventoryHolder) blocks[i].getState()).getInventory().clear();
-				blocks[i].setType(Material.AIR);
+				Block b = blocks[i];
+
+				// Store it
+				temp[i] = new ACBlockState(b.getState());
+
+				// Clear inventory (if applicable)
+				if (b.getState() instanceof InventoryHolder) {
+					((InventoryHolder) b.getState()).getInventory().clear();
+				}
+
+				// Remove it
+				b.setType(Material.AIR);
+				b.getState().setData(new MaterialData(Material.AIR));
+				b.getState().update();
 			}
 
 			// Make new blocks in their new respective positions
@@ -657,21 +699,6 @@ public class Ship {
 				|| data instanceof Vine;
 	}
 
-	public void setBlock(Block to, ACBlockState from, TurnDirection dir) {
-		MaterialData data = from.getData();
-		if (data instanceof Directional) {
-			Directional directional = (Directional) data;
-			directional.setFacingDirection(getRotatedBlockFace(dir, directional));
-		}
-
-		if (data instanceof SimpleAttachableMaterialData) {
-			SimpleAttachableMaterialData samd = (SimpleAttachableMaterialData) data;
-			samd.setFacingDirection(getRotatedBlockFace(dir, samd));
-		}
-
-		setBlock(to, from);
-	}
-
 	public BlockFace getRotatedBlockFace(TurnDirection dir, Directional data) {
 		BlockFace face;
 
@@ -693,13 +720,47 @@ public class Ship {
 			default:
 				return BlockFace.NORTH;
 		}
+	}
 
+	// ---- Block Setting ---- //
+
+	public void setBlock(Block to, ACBlockState from, TurnDirection dir) {
+		MaterialData data = from.getData();
+		if (data instanceof Directional) {
+			Directional directional = (Directional) data;
+			directional.setFacingDirection(getRotatedBlockFace(dir, (Directional) data));
+		}
+
+		// Wood isn't a directional material in bukkit >_>
+		if (data.getItemType() == Material.LOG) {
+			setWoodDirection(data);
+		}
+
+		setBlock(to, from, data);
+	}
+
+	@SuppressWarnings("deprecation")
+	public void setWoodDirection(MaterialData data) {
+		byte d = data.getData();
+
+		if ((d & 0x4) != 0) {
+			// Currently East-West - Change to North-South
+			data.setData((byte) ((d & 0x3) | 0x8));
+		} else if ((d & 0x8) != 0) {
+			// Currently North-South - Change to East-West
+			data.setData((byte) ((d & 0x3) | 0x4));
+		}
+		// else directionless, we don't need to do anything.
 	}
 
 	public void setBlock(Block to, ACBlockState from) {
+		setBlock(to, from, from.getData());
+	}
+
+	public void setBlock(Block to, ACBlockState from, MaterialData data) {
 		try {
-			to.setType(from.getData().getItemType());
-			to.getState().update(true);
+			to.setType(data.getItemType());
+			to.getState().setData(data);
 
 			// Inventory
 			if (from.getInventory() != null) {
@@ -739,9 +800,14 @@ public class Ship {
 
 				toSkull.setSkullType(fromSkull.getSkullType());
 				toSkull.setOwner(fromSkull.getOwner());
+			} else if (from.getState() instanceof Furnace) {
+				Furnace fromFurnace = (Furnace) from.getState();
+				Furnace toFurnace = (Furnace) to.getState();
+
+				toFurnace.setBurnTime(fromFurnace.getBurnTime());
+				toFurnace.setCookTime(fromFurnace.getCookTime());
 			}
 
-			to.getState().setData(from.getData());
 			to.getState().update(true);
 		} catch (Throwable ex) {
 			// There's not a real good way to check for this...
