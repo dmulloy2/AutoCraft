@@ -2,15 +2,17 @@ dropsNapalm: false
 moveSpeed: 10
 dropsBomb: false
 minBlocks: 30
+needsPermission: false
 maxNumberOfCannons: 1
 maxCannonLength: 0
 maxShipDimensions: 10
-cannonMaterial: 42
 maxBlocks: 45
+cannonMaterial: IRON_BLOCK
 ignoreAttachments: false
+allowedTypes:
+- GLASS
+- DISPENSER
 firesTorpedo: true
-allowedBlocks:
-- 20
-- 23
-mainType: 20
+mainType: GLASS
 firesTnt: false
+version: 3
