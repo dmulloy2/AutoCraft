@@ -37,6 +37,7 @@ import org.bukkit.material.Rails;
 import org.bukkit.material.RedstoneWire;
 import org.bukkit.material.SimpleAttachableMaterialData;
 import org.bukkit.material.Stairs;
+import org.bukkit.material.Tree;
 import org.bukkit.material.Vine;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
@@ -720,48 +721,56 @@ public class Ship {
 			default:
 				return BlockFace.NORTH;
 		}
+
 	}
 
 	// ---- Block Setting ---- //
 
+	// Standard setBlock method
+	public void setBlock(Block to, ACBlockState from) {
+		to.setType(from.getData().getItemType());
+		to.getState().setData(from.getData());
+
+		setBlockState(to, from);
+	}
+
+	// When the ship is turned
 	public void setBlock(Block to, ACBlockState from, TurnDirection dir) {
+		// Set block type
+		to.setType(from.getData().getItemType());
+
 		MaterialData data = from.getData();
+
+		// Directional Materials
 		if (data instanceof Directional) {
 			Directional directional = (Directional) data;
-			directional.setFacingDirection(getRotatedBlockFace(dir, (Directional) data));
+			directional.setFacingDirection(getRotatedBlockFace(dir, directional));
 		}
 
-		// Wood isn't a directional material in bukkit >_>
-		if (data.getItemType() == Material.LOG) {
-			setWoodDirection(data);
+		// Special case for trees
+		if (data instanceof Tree) {
+			Tree tree = (Tree) data;
+			BlockFace direction = tree.getDirection();
+
+			// Switch from North-South to East-West and vice versa
+			if (direction == BlockFace.WEST) {
+				tree.setDirection(BlockFace.NORTH);
+			} else if (direction == BlockFace.NORTH) {
+				tree.setDirection(BlockFace.WEST);
+			} else {
+				// Directionless or up-down
+			}
 		}
 
-		setBlock(to, from, data);
+		// Set the data
+		to.getState().setData(data);
+
+		// Block state stuff
+		setBlockState(to, from);
 	}
 
-	@SuppressWarnings("deprecation")
-	public void setWoodDirection(MaterialData data) {
-		byte d = data.getData();
-
-		if ((d & 0x4) != 0) {
-			// Currently East-West - Change to North-South
-			data.setData((byte) ((d & 0x3) | 0x8));
-		} else if ((d & 0x8) != 0) {
-			// Currently North-South - Change to East-West
-			data.setData((byte) ((d & 0x3) | 0x4));
-		}
-		// else directionless, we don't need to do anything.
-	}
-
-	public void setBlock(Block to, ACBlockState from) {
-		setBlock(to, from, from.getData());
-	}
-
-	public void setBlock(Block to, ACBlockState from, MaterialData data) {
+	public void setBlockState(Block to, ACBlockState from) {
 		try {
-			to.setType(data.getItemType());
-			to.getState().setData(data);
-
 			// Inventory
 			if (from.getInventory() != null) {
 				Inventory inv = ((InventoryHolder) to.getState()).getInventory();
@@ -811,7 +820,7 @@ public class Ship {
 			to.getState().update(true);
 		} catch (Throwable ex) {
 			// There's not a real good way to check for this...
-			plugin.getLogHandler().debug(Util.getUsefulStack(ex, "setting block at " + to.getLocation()));
+			plugin.getLogHandler().debug(Util.getUsefulStack(ex, "setting block state at " + to.getLocation()));
 		}
 	}
 
