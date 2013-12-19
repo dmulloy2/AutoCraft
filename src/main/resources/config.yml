@@ -12,12 +12,12 @@ numTntToDropNapalm: 4
 
 # Materials Needed (material id/string)
 materialsNeededForTorpedo:
-- 264
-- 259
+- DIAMOND
+- FLINT_AND_STEEL
 
 materialsNeededForNapalm:
-- 341
-- 259
+- SLIME_BALL
+- FLINT_AND_STEEL
 
 # Napalm Burn Radius
 napalmBurnRadius: 6
