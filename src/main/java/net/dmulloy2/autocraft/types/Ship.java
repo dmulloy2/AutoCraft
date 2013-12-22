@@ -560,7 +560,7 @@ public class Ship {
 					Block b = specialBlocks[i];
 
 					// Store it
-					largeShipSpecialBlocks[i] = new ACBlockState(b.getState());
+					largeShipSpecialBlocks[i] = new ACBlockState(b.getState(), b.getType());
 
 					// Remove it
 					b.setType(Material.AIR);
@@ -573,7 +573,7 @@ public class Ship {
 					Block b = blocks[i];
 
 					// Store it
-					largeShipBlocks[i] = new ACBlockState(b.getState());
+					largeShipBlocks[i] = new ACBlockState(b.getState(), b.getType());
 
 					// Store inventory (if applicable)
 					if (b.getState() instanceof InventoryHolder) {
@@ -728,7 +728,7 @@ public class Ship {
 
 	// Standard setBlock method
 	public void setBlock(Block to, ACBlockState from) {
-		to.setType(from.getData().getItemType());
+		to.setType(from.getType());
 		to.getState().setData(from.getData());
 
 		setBlockState(to, from);
