@@ -4,8 +4,6 @@ import java.text.MessageFormat;
 
 import org.apache.commons.lang.WordUtils;
 import org.bukkit.ChatColor;
-import org.bukkit.Material;
-import org.bukkit.entity.EntityType;
 
 /**
  * Util used for general formatting
@@ -30,25 +28,14 @@ public class FormatUtil {
 	}
 
 	/**
-	 * Returns the "Friendly" name of a material
+	 * Returns the "friendly" text version of an enum constant
 	 * 
-	 * @param mat
-	 *        - Material to get the "friendly" name for
-	 * @return The "friendly" name for the given material
+	 * @param en
+	 *        - Enum constant
+	 * @return The "friendly" text version of the given enum constant
 	 */
-	public static String getFriendlyName(Material mat) {
-		return getFriendlyName(mat.toString());
-	}
-
-	/**
-	 * Returns the "Friendly" name of an entity
-	 * 
-	 * @param mat
-	 *        - Entity to get the "friendly" name for
-	 * @return The "friendly" name for the given entity
-	 */
-	public static String getFriendlyName(EntityType entityType) {
-		return getFriendlyName(entityType.toString());
+	public static String getFriendlyName(Enum<?> en) {
+		return getFriendlyName(en.toString());
 	}
 
 	/**

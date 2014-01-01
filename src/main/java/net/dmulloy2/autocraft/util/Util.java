@@ -9,6 +9,13 @@ import net.dmulloy2.autocraft.AutoCraft;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.block.BlockState;
+import org.bukkit.block.CommandBlock;
+import org.bukkit.block.Furnace;
+import org.bukkit.block.Jukebox;
+import org.bukkit.block.NoteBlock;
+import org.bukkit.block.Sign;
+import org.bukkit.block.Skull;
 import org.bukkit.entity.Player;
 
 /**
@@ -245,5 +252,34 @@ public class Util {
 	 */
 	public static boolean isInteger(String s) {
 		return parseInt(s) != -1;
+	}
+
+	public static String blockStateToString(BlockState state) {
+		StringBuilder ret = new StringBuilder();
+
+		if (state instanceof Sign) {
+			Sign sign = (Sign) state;
+			ret.append("Sign { lines = " + sign.getLines() + " }");
+		} else if (state instanceof CommandBlock) {
+			CommandBlock cmd = (CommandBlock) state;
+			ret.append("CommandBlock { command = " + cmd.getCommand() + ", name = " + cmd.getName() + " }");
+		} else if (state instanceof Jukebox) {
+			Jukebox jukebox = (Jukebox) state;
+			ret.append("Jukebox { playing = " + FormatUtil.getFriendlyName(jukebox.getPlaying()) + " }");
+		} else if (state instanceof NoteBlock) {
+			NoteBlock note = (NoteBlock) state;
+			ret.append("NoteBlock { note = " + FormatUtil.getFriendlyName(note.getNote().getTone()) + " }");
+			;
+		} else if (state instanceof Skull) {
+			Skull skull = (Skull) state;
+			ret.append("Skull { type = " + FormatUtil.getFriendlyName(skull.getSkullType()) + ", owner = " + skull.getOwner() + " }");
+		} else if (state instanceof Furnace) {
+			Furnace furnace = (Furnace) state;
+			ret.append("Furnace { burnTime = " + furnace.getBurnTime() + ", cookTime = " + furnace.getCookTime() + " }");
+		} else {
+			ret.append("BlockState { type = " + FormatUtil.getFriendlyName(state.getType()) + " }");
+		}
+
+		return ret.toString();
 	}
 }

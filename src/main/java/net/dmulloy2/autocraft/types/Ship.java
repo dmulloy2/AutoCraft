@@ -514,7 +514,8 @@ public class Ship {
 			b.getState().update();
 
 			if (debug) {
-				plugin.getLogHandler().debug("Block at {0} set to {1}, data = {2}", b.getLocation(), b.getType(), b.getState().getData());
+				plugin.getLogHandler().debug("Block at {0} set, type = {1}, data = {2}", 
+						b.getLocation(), b.getType(), b.getState().getData());
 				debug = false;
 			}
 		}
@@ -607,7 +608,7 @@ public class Ship {
 					b.getState().update();
 
 					if (debug) {
-						plugin.getLogHandler().debug("Block at {0} set to {1}, data = {2}", b.getLocation(), b.getType(),
+						plugin.getLogHandler().debug("Block at {0} set, type = {1}, data = {2}", b.getLocation(), b.getType(),
 								b.getState().getData());
 						debug = false;
 					}
@@ -796,7 +797,7 @@ public class Ship {
 
 		if (debug) {
 			plugin.getLogHandler().debug("Block at {0} set to {1}, data = {2}, state = {3}", to.getLocation(), to.getState().getData(),
-					to.getState());
+					Util.blockStateToString(to.getState()));
 			plugin.getLogHandler().debug("from = {0}", from);
 			debug = false;
 		}

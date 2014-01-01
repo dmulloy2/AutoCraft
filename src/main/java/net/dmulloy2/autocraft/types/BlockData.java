@@ -2,6 +2,9 @@ package net.dmulloy2.autocraft.types;
 
 import lombok.Data;
 
+import net.dmulloy2.autocraft.util.FormatUtil;
+import net.dmulloy2.autocraft.util.Util;
+
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
@@ -48,6 +51,7 @@ public class BlockData {
 
 	@Override
 	public String toString() {
-		return "BlockData { type = " + type + ", state = " + state + ", data = " + data + ", inventory = " + inventory + " }";
+		return "BlockData { type = " + FormatUtil.getFriendlyName(type) + ", state = " + Util.blockStateToString(state) + ", data = " + data
+				+ " }";
 	}
 }
