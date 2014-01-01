@@ -60,10 +60,9 @@ public class AutoCraft extends JavaPlugin implements Reloadable {
 	private @Getter PermissionHandler permissionHandler;
 	private @Getter ResourceHandler resourceHandler;
 	private @Getter CommandHandler commandHandler;
-	private @Getter LogHandler logHandler;
-
 	private @Getter DataHandler dataHandler;
 	private @Getter ShipHandler shipHandler;
+	private @Getter LogHandler logHandler;
 	
 	private @Getter boolean factionsEnabled;
 	

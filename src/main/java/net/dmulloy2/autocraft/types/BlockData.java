@@ -3,6 +3,7 @@ package net.dmulloy2.autocraft.types;
 import lombok.Data;
 
 import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
@@ -13,13 +14,13 @@ import org.bukkit.material.MaterialData;
  */
 
 @Data
-public class ACBlockState {
+public class BlockData {
 	private Material type;
 	private BlockState state;
 	private MaterialData data;
 	private ItemStack[] inventory;
 
-	public ACBlockState(BlockState state, MaterialData data, Material type) {
+	public BlockData(BlockState state, MaterialData data, Material type) {
 		this.type = type;
 		this.data = data;
 		this.state = state;
@@ -29,15 +30,24 @@ public class ACBlockState {
 		}
 	}
 
-	public ACBlockState(BlockState state, MaterialData data) {
+	public BlockData(BlockState state, MaterialData data) {
 		this(state, data, state.getType());
 	}
 
-	public ACBlockState(BlockState state, Material type) {
+	public BlockData(BlockState state, Material type) {
 		this(state, state.getData(), type);
 	}
 
-	public ACBlockState(BlockState state) {
+	public BlockData(BlockState state) {
 		this(state, state.getData());
+	}
+
+	public BlockData(Block block) {
+		this(block.getState());
+	}
+
+	@Override
+	public String toString() {
+		return "BlockData { type = " + type + ", state = " + state + ", data = " + data + ", inventory = " + inventory + " }";
 	}
 }

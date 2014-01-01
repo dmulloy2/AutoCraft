@@ -64,12 +64,15 @@ public class Ship {
 	// Used for checking if move cooldown is over.
 	private long lastmove;
 
+	// Debug
+	private boolean debug = true;
+
 	// Hold all blocks part of this ship.
 	private Block[] blocks;
 	private Block[] specialBlocks;
 
-	private ACBlockState[] largeShipBlocks;
-	private ACBlockState[] largeShipSpecialBlocks;
+	private BlockData[] largeShipBlocks;
+	private BlockData[] largeShipSpecialBlocks;
 
 	// Place holder for the block the player is standing on.
 	private Block mainblock;
@@ -490,20 +493,48 @@ public class Ship {
 	// Rotate the ship and all passengers in the specified direction
 	public void doRotate(TurnDirection dir) {
 		List<Player> passengers = getPassengers();
-		ACBlockState[] temp = new ACBlockState[blocks.length];
-		ACBlockState[] special = new ACBlockState[blocks.length];
+		BlockData[] temp = new BlockData[blocks.length];
+		BlockData[] special = new BlockData[blocks.length];
+
+		plugin.getLogHandler().debug("Rotating ship {0}, dir = {1}", this, dir);
 
 		for (int i = 0; i < specialBlocks.length; i++) {
-			special[i] = new ACBlockState(specialBlocks[i].getState());
-			specialBlocks[i].setType(Material.AIR);
+			Block b = specialBlocks[i];
+
+			// Store in blocks array
+			special[i] = new BlockData(b);
+
+			if (debug) {
+				plugin.getLogHandler().debug("special[{0}] = {1}", i, special[i]);
+			}
+
+			// Reset
+			b.setType(Material.AIR);
+			b.getState().setData(new MaterialData(Material.AIR));
+			b.getState().update();
+
+			if (debug) {
+				plugin.getLogHandler().debug("Block at {0} set to {1}, data = {2}", b.getLocation(), b.getType(), b.getState().getData());
+				debug = false;
+			}
 		}
 
 		// First remove all blocks from the scene
 		for (int i = 0; i < blocks.length; i++) {
-			temp[i] = new ACBlockState(blocks[i].getState());
-			if (blocks[i].getState() instanceof InventoryHolder)
+			Block b = blocks[i];
+
+			// Store in blocks aray
+			temp[i] = new BlockData(b);
+
+			// Clear inventory
+			if (blocks[i].getState() instanceof InventoryHolder) {
 				((InventoryHolder) blocks[i].getState()).getInventory().clear();
-			blocks[i].setType(Material.AIR);
+			}
+
+			// Reset
+			b.setType(Material.AIR);
+			b.getState().setData(new MaterialData(Material.AIR));
+			b.getState().update();
 		}
 
 		updateMainBlock();
@@ -527,6 +558,8 @@ public class Ship {
 			l.setYaw(l.getYaw() + ((dir == TurnDirection.LEFT) ? -90 : 90));
 			p.teleport(l);
 		}
+
+		debug = true;
 	}
 
 	// Returns the relative position from the main block that this vector is at
@@ -550,22 +583,34 @@ public class Ship {
 
 		boolean fastFly = data.getFastFlyAtSize() == 0 ? false : data.getFastFlyAtSize() < (blocks.length + specialBlocks.length);
 
+		plugin.getLogHandler().debug("Moving ship {0} (x = {1}, y = {2}, z = {3}, fastFly = {4})", this, dx, dy, dz, fastFly);
+
 		if (fastFly) {
 			if (largeShipSpecialBlocks == null || largeShipBlocks == null) {
-				largeShipSpecialBlocks = new ACBlockState[specialBlocks.length];
-				largeShipBlocks = new ACBlockState[blocks.length];
+				largeShipSpecialBlocks = new BlockData[specialBlocks.length];
+				largeShipBlocks = new BlockData[blocks.length];
 
 				// First remove all special blocks from the world
 				for (int i = 0; i < specialBlocks.length; i++) {
 					Block b = specialBlocks[i];
 
 					// Store it
-					largeShipSpecialBlocks[i] = new ACBlockState(b.getState(), b.getType());
+					largeShipSpecialBlocks[i] = new BlockData(b);
+
+					if (debug) {
+						plugin.getLogHandler().debug("largeShipSpecialBlocks[{0}] = {1}", i, largeShipSpecialBlocks[i]);
+					}
 
 					// Remove it
 					b.setType(Material.AIR);
 					b.getState().setData(new MaterialData(Material.AIR));
 					b.getState().update();
+
+					if (debug) {
+						plugin.getLogHandler().debug("Block at {0} set to {1}, data = {2}", b.getLocation(), b.getType(),
+								b.getState().getData());
+						debug = false;
+					}
 				}
 
 				// Then remove the rest of the blocks from the scene
@@ -573,7 +618,7 @@ public class Ship {
 					Block b = blocks[i];
 
 					// Store it
-					largeShipBlocks[i] = new ACBlockState(b.getState(), b.getType());
+					largeShipBlocks[i] = new BlockData(b);
 
 					// Store inventory (if applicable)
 					if (b.getState() instanceof InventoryHolder) {
@@ -587,18 +632,20 @@ public class Ship {
 				}
 			} else {
 				for (int i = 0; i < blocks.length; i++) {
-					if (blocks[i].getType() != Material.AIR) {
-						blocks[i].setType(Material.AIR);
-						blocks[i].getState().setData(new MaterialData(Material.AIR));
-						blocks[i].getState().update();
+					Block b = blocks[i];
+					if (b.getType() != Material.AIR) {
+						b.setType(Material.AIR);
+						b.getState().setData(new MaterialData(Material.AIR));
+						b.getState().update();
 					}
 				}
 
 				for (int i = 0; i < specialBlocks.length; i++) {
-					if (specialBlocks[i].getType() != Material.AIR) {
-						specialBlocks[i].setType(Material.AIR);
-						specialBlocks[i].getState().setData(new MaterialData(Material.AIR));
-						specialBlocks[i].getState().update();
+					Block b = specialBlocks[i];
+					if (b.getType() != Material.AIR) {
+						b.setType(Material.AIR);
+						b.getState().setData(new MaterialData(Material.AIR));
+						b.getState().update();
 					}
 				}
 			}
@@ -636,20 +683,30 @@ public class Ship {
 
 			}.runTaskLater(plugin, 40L);
 		} else {
-			ACBlockState[] temp = new ACBlockState[blocks.length];
-			ACBlockState[] special = new ACBlockState[specialBlocks.length];
+			BlockData[] temp = new BlockData[blocks.length];
+			BlockData[] special = new BlockData[specialBlocks.length];
 
 			// First remove all special blocks from the world
 			for (int i = 0; i < specialBlocks.length; i++) {
 				Block b = specialBlocks[i];
 
 				// Store in special array
-				special[i] = new ACBlockState(b.getState());
+				special[i] = new BlockData(b);
+
+				if (debug) {
+					plugin.getLogHandler().debug("special[i] = {1}", i, special[i]);
+				}
 
 				// Remove it
 				b.setType(Material.AIR);
 				b.getState().setData(new MaterialData(Material.AIR));
 				b.getState().update();
+
+				if (debug) {
+					plugin.getLogHandler().debug("Block at {0} set to {1}, data = {2}", b.getLocation(), b.getType(),
+							b.getState().getData());
+					debug = false;
+				}
 			}
 
 			// Then remove the rest of the blocks from the scene
@@ -657,7 +714,7 @@ public class Ship {
 				Block b = blocks[i];
 
 				// Store it
-				temp[i] = new ACBlockState(b.getState());
+				temp[i] = new BlockData(b);
 
 				// Clear inventory (if applicable)
 				if (b.getState() instanceof InventoryHolder) {
@@ -669,6 +726,8 @@ public class Ship {
 				b.getState().setData(new MaterialData(Material.AIR));
 				b.getState().update();
 			}
+
+			debug = true;
 
 			// Make new blocks in their new respective positions
 			for (int i = 0; i < blocks.length; i++) {
@@ -687,6 +746,8 @@ public class Ship {
 		for (Player p : passengers) {
 			p.teleport(p.getLocation().clone().add(dx, dy, dz));
 		}
+
+		debug = true;
 	}
 
 	public boolean isSpecial(MaterialData data) {
@@ -727,15 +788,22 @@ public class Ship {
 	// ---- Block Setting ---- //
 
 	// Standard setBlock method
-	public void setBlock(Block to, ACBlockState from) {
+	public void setBlock(Block to, BlockData from) {
 		to.setType(from.getType());
 		to.getState().setData(from.getData());
 
 		setBlockState(to, from);
+
+		if (debug) {
+			plugin.getLogHandler().debug("Block at {0} set to {1}, data = {2}, state = {3}", to.getLocation(), to.getState().getData(),
+					to.getState());
+			plugin.getLogHandler().debug("from = {0}", from);
+			debug = false;
+		}
 	}
 
 	// When the ship is turned
-	public void setBlock(Block to, ACBlockState from, TurnDirection dir) {
+	public void setBlock(Block to, BlockData from, TurnDirection dir) {
 		// Set block type
 		to.setType(from.getData().getItemType());
 
@@ -769,7 +837,7 @@ public class Ship {
 		setBlockState(to, from);
 	}
 
-	public void setBlockState(Block to, ACBlockState from) {
+	public void setBlockState(Block to, BlockData from) {
 		try {
 			// Inventory
 			if (from.getInventory() != null) {
@@ -820,7 +888,7 @@ public class Ship {
 			to.getState().update(true);
 		} catch (Throwable ex) {
 			// There's not a real good way to check for this...
-			plugin.getLogHandler().debug(Util.getUsefulStack(ex, "setting block state at " + to.getLocation()));
+			plugin.getLogHandler().debug(Util.getUsefulStack(ex, "setting block state for ship " + this  + " at " + to.getLocation()));
 		}
 	}
 
@@ -941,7 +1009,7 @@ public class Ship {
 	// Recursively call this method for every block relative to the starting
 	// block.
 	public List<Block> recurse(Block block, List<Block> blockList) {
-		boolean original = ((blockList != null) ? blockList.isEmpty() : false);
+		boolean original = blockList != null ? blockList.isEmpty() : false;
 
 		if (! stopped) {
 			if (blockList.size() <= data.getMaxBlocks()) {
@@ -1024,5 +1092,10 @@ public class Ship {
 
 	public ShipData getData() {
 		return data;
+	}
+
+	@Override
+	public String toString() {
+		return "Ship { pilot = " + player.getName() + ", type = " + data.getShipType() + " }";
 	}
 }
