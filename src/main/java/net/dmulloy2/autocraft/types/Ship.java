@@ -37,7 +37,6 @@ import org.bukkit.material.Rails;
 import org.bukkit.material.RedstoneWire;
 import org.bukkit.material.SimpleAttachableMaterialData;
 import org.bukkit.material.Stairs;
-import org.bukkit.material.Tree;
 import org.bukkit.material.Vine;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
@@ -63,9 +62,6 @@ public class Ship {
 
 	// Used for checking if move cooldown is over.
 	private long lastmove;
-
-	// Debug
-	private boolean debug = true;
 
 	// Hold all blocks part of this ship.
 	private Block[] blocks;
@@ -504,20 +500,10 @@ public class Ship {
 			// Store in blocks array
 			special[i] = new BlockData(b);
 
-			if (debug) {
-				plugin.getLogHandler().debug("special[{0}] = {1}", i, special[i]);
-			}
-
 			// Reset
 			b.setType(Material.AIR);
 			b.getState().setData(new MaterialData(Material.AIR));
 			b.getState().update();
-
-			if (debug) {
-				plugin.getLogHandler().debug("Block at {0} set, type = {1}, data = {2}", 
-						b.getLocation(), b.getType(), b.getState().getData());
-				debug = false;
-			}
 		}
 
 		// First remove all blocks from the scene
@@ -559,8 +545,6 @@ public class Ship {
 			l.setYaw(l.getYaw() + ((dir == TurnDirection.LEFT) ? -90 : 90));
 			p.teleport(l);
 		}
-
-		debug = true;
 	}
 
 	// Returns the relative position from the main block that this vector is at
@@ -598,20 +582,10 @@ public class Ship {
 					// Store it
 					largeShipSpecialBlocks[i] = new BlockData(b);
 
-					if (debug) {
-						plugin.getLogHandler().debug("largeShipSpecialBlocks[{0}] = {1}", i, largeShipSpecialBlocks[i]);
-					}
-
 					// Remove it
 					b.setType(Material.AIR);
 					b.getState().setData(new MaterialData(Material.AIR));
 					b.getState().update();
-
-					if (debug) {
-						plugin.getLogHandler().debug("Block at {0} set, type = {1}, data = {2}", b.getLocation(), b.getType(),
-								b.getState().getData());
-						debug = false;
-					}
 				}
 
 				// Then remove the rest of the blocks from the scene
@@ -694,20 +668,10 @@ public class Ship {
 				// Store in special array
 				special[i] = new BlockData(b);
 
-				if (debug) {
-					plugin.getLogHandler().debug("special[i] = {1}", i, special[i]);
-				}
-
 				// Remove it
 				b.setType(Material.AIR);
 				b.getState().setData(new MaterialData(Material.AIR));
 				b.getState().update();
-
-				if (debug) {
-					plugin.getLogHandler().debug("Block at {0} set to {1}, data = {2}", b.getLocation(), b.getType(),
-							b.getState().getData());
-					debug = false;
-				}
 			}
 
 			// Then remove the rest of the blocks from the scene
@@ -728,7 +692,6 @@ public class Ship {
 				b.getState().update();
 			}
 
-			debug = true;
 
 			// Make new blocks in their new respective positions
 			for (int i = 0; i < blocks.length; i++) {
@@ -747,8 +710,6 @@ public class Ship {
 		for (Player p : passengers) {
 			p.teleport(p.getLocation().clone().add(dx, dy, dz));
 		}
-
-		debug = true;
 	}
 
 	public boolean isSpecial(MaterialData data) {
@@ -760,6 +721,39 @@ public class Ship {
 				|| data instanceof Rails 
 				|| data instanceof Diode 
 				|| data instanceof Vine;
+	}
+
+	// ---- Block Setting ---- //
+
+	// WARNING: I tried to use Bukkit's BlockState and MaterialData methods, but it was pretty much unsuccessful
+	// The "Magic Value" methods have worked historically, so we're going to use them until they are removed
+	// Hopefully by then I can work out issues with the API methods
+	// Heavy deprecation for the next few lines... :(
+
+	// Crap code - start
+	@SuppressWarnings("deprecation")
+	public void setBlock(Block to, BlockData from, TurnDirection dir) {
+		MaterialData data = from.getData();
+		if (data instanceof Directional) {
+			Directional directional = (Directional) data;
+			directional.setFacingDirection(getRotatedBlockFace(dir, directional));
+		}
+
+		// Wood isn't a directional material in bukkit >_>
+		if (data.getItemTypeId() == 17) {
+			byte d = data.getData();
+
+			if ((d & 0x4) != 0) {
+				// Currently East-West - Change to North-South
+				data.setData((byte) ((d & 0x3) | 0x8));
+			} else if ((d & 0x8) != 0) {
+				// Currently North-South - Change to East-West
+				data.setData((byte) ((d & 0x3) | 0x4));
+			}
+			// else directionless, we don't need to do anything.
+		}
+
+		setBlock(to, from);
 	}
 
 	public BlockFace getRotatedBlockFace(TurnDirection dir, Directional data) {
@@ -783,115 +777,167 @@ public class Ship {
 			default:
 				return BlockFace.NORTH;
 		}
-
 	}
 
-	// ---- Block Setting ---- //
-
-	// Standard setBlock method
+	@SuppressWarnings("deprecation")
 	public void setBlock(Block to, BlockData from) {
-		to.setType(from.getType());
-		to.getState().setData(from.getData());
-
-		setBlockState(to, from);
-
-		if (debug) {
-			plugin.getLogHandler().debug("Block at {0} set to {1}, data = {2}, state = {3}", to.getLocation(), to.getState().getData(),
-					Util.blockStateToString(to.getState()));
-			plugin.getLogHandler().debug("from = {0}", from);
-			debug = false;
-		}
-	}
-
-	// When the ship is turned
-	public void setBlock(Block to, BlockData from, TurnDirection dir) {
-		// Set block type
 		to.setType(from.getData().getItemType());
+		to.setData(from.getData().getData());
+		// Crap code - end
 
-		MaterialData data = from.getData();
+		// Inventory
+		if (from.getInv() != null) {
+			Inventory inv = ((InventoryHolder) to.getState()).getInventory();
 
-		// Directional Materials
-		if (data instanceof Directional) {
-			Directional directional = (Directional) data;
-			directional.setFacingDirection(getRotatedBlockFace(dir, directional));
-		}
-
-		// Special case for trees
-		if (data instanceof Tree) {
-			Tree tree = (Tree) data;
-			BlockFace direction = tree.getDirection();
-
-			// Switch from North-South to East-West and vice versa
-			if (direction == BlockFace.WEST) {
-				tree.setDirection(BlockFace.NORTH);
-			} else if (direction == BlockFace.NORTH) {
-				tree.setDirection(BlockFace.WEST);
-			} else {
-				// Directionless or up-down
-			}
-		}
-
-		// Set the data
-		to.getState().setData(data);
+			inv.clear();
+			inv.setContents(from.getInv());
+		} 
 
 		// Block state stuff
-		setBlockState(to, from);
-	}
+		if (from.getState() instanceof Sign) {
+			Sign fromSign = (Sign) from.getState();
+			Sign toSign = (Sign) to.getState();
 
-	public void setBlockState(Block to, BlockData from) {
-		try {
-			// Inventory
-			if (from.getInventory() != null) {
-				Inventory inv = ((InventoryHolder) to.getState()).getInventory();
-
-				inv.clear();
-				inv.setContents(from.getInventory());
-			} 
-
-			// Block state stuff
-			if (from.getState() instanceof Sign) {
-				Sign fromSign = (Sign) from.getState();
-				Sign toSign = (Sign) to.getState();
-
-				for (int l = 0; l < 4; l++) {
-					toSign.setLine(l, fromSign.getLine(l));
-				}
-			} else if (from.getState() instanceof CommandBlock) {
-				CommandBlock fromCmd = (CommandBlock) from.getState();
-				CommandBlock toCmd = (CommandBlock) to.getState();
-
-				toCmd.setCommand(fromCmd.getCommand());
-				toCmd.setName(fromCmd.getName());
-			} else if (from.getState() instanceof Jukebox) {
-				Jukebox fromBox = (Jukebox) from.getState();
-				Jukebox toBox = (Jukebox) to.getState();
-
-				toBox.setPlaying(fromBox.getPlaying());
-			} else if (from.getState() instanceof NoteBlock) {
-				NoteBlock fromBlock = (NoteBlock) from.getState();
-				NoteBlock toBlock = (NoteBlock) to.getState();
-
-				toBlock.setNote(fromBlock.getNote());
-			} else if (from.getState() instanceof Skull) {
-				Skull fromSkull = (Skull) from.getState();
-				Skull toSkull = (Skull) to.getState();
-
-				toSkull.setSkullType(fromSkull.getSkullType());
-				toSkull.setOwner(fromSkull.getOwner());
-			} else if (from.getState() instanceof Furnace) {
-				Furnace fromFurnace = (Furnace) from.getState();
-				Furnace toFurnace = (Furnace) to.getState();
-
-				toFurnace.setBurnTime(fromFurnace.getBurnTime());
-				toFurnace.setCookTime(fromFurnace.getCookTime());
+			for (int l = 0; l < 4; l++) {
+				toSign.setLine(l, fromSign.getLine(l));
 			}
+		} else if (from.getState() instanceof CommandBlock) {
+			CommandBlock fromCmd = (CommandBlock) from.getState();
+			CommandBlock toCmd = (CommandBlock) to.getState();
 
-			to.getState().update(true);
-		} catch (Throwable ex) {
-			// There's not a real good way to check for this...
-			plugin.getLogHandler().debug(Util.getUsefulStack(ex, "setting block state for ship " + this  + " at " + to.getLocation()));
+			toCmd.setCommand(fromCmd.getCommand());
+			toCmd.setName(fromCmd.getName());
+		} else if (from.getState() instanceof Jukebox) {
+			Jukebox fromBox = (Jukebox) from.getState();
+			Jukebox toBox = (Jukebox) to.getState();
+
+			toBox.setPlaying(fromBox.getPlaying());
+		} else if (from.getState() instanceof NoteBlock) {
+			NoteBlock fromBlock = (NoteBlock) from.getState();
+			NoteBlock toBlock = (NoteBlock) to.getState();
+
+			toBlock.setNote(fromBlock.getNote());
+		} else if (from.getState() instanceof Skull) {
+			Skull fromSkull = (Skull) from.getState();
+			Skull toSkull = (Skull) to.getState();
+
+			toSkull.setSkullType(fromSkull.getSkullType());
+			toSkull.setOwner(fromSkull.getOwner());
+		} else if (from.getState() instanceof Furnace) {
+			Furnace fromFurnace = (Furnace) from.getState();
+			Furnace toFurnace = (Furnace) to.getState();
+
+			toFurnace.setBurnTime(fromFurnace.getBurnTime());
+			toFurnace.setCookTime(fromFurnace.getCookTime());
 		}
+
+		to.getState().update(true);
 	}
+
+//  This is the "clean code" that doesn't work
+//	public void setBlock(Block to, BlockData from) {
+//		to.setType(from.getType());
+//		to.getState().setData(from.getData());
+//
+//		setBlockState(to, from);
+//
+//		if (debug) {
+//			plugin.getLogHandler().debug("Block at {0} set to {1}, data = {2}, state = {3}", to.getLocation(), to.getState().getData(),
+//					Util.blockStateToString(to.getState()));
+//			plugin.getLogHandler().debug("from = {0}", from);
+//			debug = false;
+//		}
+//	}
+//
+//	// When the ship is turned
+//	public void setBlock(Block to, BlockData from, TurnDirection dir) {
+//		// Set block type
+//		to.setType(from.getData().getItemType());
+//
+//		MaterialData data = from.getData();
+//
+//		// Directional Materials
+//		if (data instanceof Directional) {
+//			Directional directional = (Directional) data;
+//			directional.setFacingDirection(getRotatedBlockFace(dir, directional));
+//		}
+//
+//		// Special case for trees
+//		if (data instanceof Tree) {
+//			Tree tree = (Tree) data;
+//			BlockFace direction = tree.getDirection();
+//
+//			// Switch from North-South to East-West and vice versa
+//			if (direction == BlockFace.WEST) {
+//				tree.setDirection(BlockFace.NORTH);
+//			} else if (direction == BlockFace.NORTH) {
+//				tree.setDirection(BlockFace.WEST);
+//			} else {
+//				// Directionless or up-down
+//			}
+//		}
+//
+//		// Set the data
+//		to.getState().setData(data);
+//
+//		// Block state stuff
+//		setBlockState(to, from);
+//	}
+//
+//	public void setBlockState(Block to, BlockData from) {
+//		try {
+//			// Inventory
+//			if (from.getInventory() != null) {
+//				Inventory inv = ((InventoryHolder) to.getState()).getInventory();
+//
+//				inv.clear();
+//				inv.setContents(from.getInventory());
+//			} 
+//
+//			// Block state stuff
+//			if (from.getState() instanceof Sign) {
+//				Sign fromSign = (Sign) from.getState();
+//				Sign toSign = (Sign) to.getState();
+//
+//				for (int l = 0; l < 4; l++) {
+//					toSign.setLine(l, fromSign.getLine(l));
+//				}
+//			} else if (from.getState() instanceof CommandBlock) {
+//				CommandBlock fromCmd = (CommandBlock) from.getState();
+//				CommandBlock toCmd = (CommandBlock) to.getState();
+//
+//				toCmd.setCommand(fromCmd.getCommand());
+//				toCmd.setName(fromCmd.getName());
+//			} else if (from.getState() instanceof Jukebox) {
+//				Jukebox fromBox = (Jukebox) from.getState();
+//				Jukebox toBox = (Jukebox) to.getState();
+//
+//				toBox.setPlaying(fromBox.getPlaying());
+//			} else if (from.getState() instanceof NoteBlock) {
+//				NoteBlock fromBlock = (NoteBlock) from.getState();
+//				NoteBlock toBlock = (NoteBlock) to.getState();
+//
+//				toBlock.setNote(fromBlock.getNote());
+//			} else if (from.getState() instanceof Skull) {
+//				Skull fromSkull = (Skull) from.getState();
+//				Skull toSkull = (Skull) to.getState();
+//
+//				toSkull.setSkullType(fromSkull.getSkullType());
+//				toSkull.setOwner(fromSkull.getOwner());
+//			} else if (from.getState() instanceof Furnace) {
+//				Furnace fromFurnace = (Furnace) from.getState();
+//				Furnace toFurnace = (Furnace) to.getState();
+//
+//				toFurnace.setBurnTime(fromFurnace.getBurnTime());
+//				toFurnace.setCookTime(fromFurnace.getCookTime());
+//			}
+//
+//			to.getState().update(true);
+//		} catch (Throwable ex) {
+//			// There's not a real good way to check for this...
+//			plugin.getLogHandler().debug(Util.getUsefulStack(ex, "setting block state for ship " + this  + " at " + to.getLocation()));
+//		}
+//	}
 
 	// Update main block with which block the player is standing on.
 	public void updateMainBlock() {
