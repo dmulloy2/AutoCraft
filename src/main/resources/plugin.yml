@@ -4,7 +4,7 @@ version: ${project.version} (Build ${project.build.number})
 author: dmulloy2
 softdepend: [SwornNations, Factions]
 description: The MoveCraft alternative. Allows players to create PvP Airships!
-commands: 
+commands:
   ac:
     description: AutoCraft base command
     usage: /<command> <args>

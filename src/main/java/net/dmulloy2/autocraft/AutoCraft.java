@@ -1,6 +1,6 @@
 /**
  * AutoCraft - a Bukkit plugin 
- * Copyright (C) 2011-2013 MineSworn and Affiliates
+ * Copyright (C) 2011 - 2014 MineSworn and Affiliates
  * 
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU General Public License as published by the Free Software
