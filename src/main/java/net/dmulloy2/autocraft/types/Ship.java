@@ -785,6 +785,8 @@ public class Ship {
 		to.setData(from.getData().getData());
 		// Crap code - end
 
+		to.getState().update(true);
+
 		// Inventory
 		if (from.getInv() != null) {
 			Inventory inv = ((InventoryHolder) to.getState()).getInventory();
