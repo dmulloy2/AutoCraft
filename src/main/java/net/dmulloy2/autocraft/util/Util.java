@@ -9,6 +9,7 @@ import net.dmulloy2.autocraft.AutoCraft;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.CommandBlock;
 import org.bukkit.block.Furnace;
@@ -17,6 +18,7 @@ import org.bukkit.block.NoteBlock;
 import org.bukkit.block.Sign;
 import org.bukkit.block.Skull;
 import org.bukkit.entity.Player;
+import org.bukkit.material.MaterialData;
 
 /**
  * Base Util class
@@ -281,5 +283,26 @@ public class Util {
 		}
 
 		return ret.toString();
+	}
+
+	public static String arrayToString(String[] array) {
+		StringBuilder ret = new StringBuilder();
+		ret.append("[ ");
+		for (String s : array) {
+			ret.append(s + ", ");
+		}
+
+		if (ret.lastIndexOf(", ") >= 0) {
+			ret.replace(ret.lastIndexOf(", "), ret.length(), "");
+		}
+
+		ret.append(" ]");
+
+		return ret.toString();
+	}
+
+	@SuppressWarnings("deprecation")
+	public static void setData(Block block, MaterialData data) {
+		block.setData(data.getData());
 	}
 }

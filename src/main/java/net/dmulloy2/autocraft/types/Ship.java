@@ -502,8 +502,6 @@ public class Ship {
 
 			// Reset
 			b.setType(Material.AIR);
-			b.getState().setData(new MaterialData(Material.AIR));
-			b.getState().update();
 		}
 
 		// First remove all blocks from the scene
@@ -520,8 +518,6 @@ public class Ship {
 
 			// Reset
 			b.setType(Material.AIR);
-			b.getState().setData(new MaterialData(Material.AIR));
-			b.getState().update();
 		}
 
 		updateMainBlock();
@@ -584,8 +580,6 @@ public class Ship {
 
 					// Remove it
 					b.setType(Material.AIR);
-					b.getState().setData(new MaterialData(Material.AIR));
-					b.getState().update();
 				}
 
 				// Then remove the rest of the blocks from the scene
@@ -602,16 +596,12 @@ public class Ship {
 
 					// Remove it
 					b.setType(Material.AIR);
-					b.getState().setData(new MaterialData(Material.AIR));
-					b.getState().update();
 				}
 			} else {
 				for (int i = 0; i < blocks.length; i++) {
 					Block b = blocks[i];
 					if (b.getType() != Material.AIR) {
 						b.setType(Material.AIR);
-						b.getState().setData(new MaterialData(Material.AIR));
-						b.getState().update();
 					}
 				}
 
@@ -619,8 +609,6 @@ public class Ship {
 					Block b = specialBlocks[i];
 					if (b.getType() != Material.AIR) {
 						b.setType(Material.AIR);
-						b.getState().setData(new MaterialData(Material.AIR));
-						b.getState().update();
 					}
 				}
 			}
@@ -670,8 +658,6 @@ public class Ship {
 
 				// Remove it
 				b.setType(Material.AIR);
-				b.getState().setData(new MaterialData(Material.AIR));
-				b.getState().update();
 			}
 
 			// Then remove the rest of the blocks from the scene
@@ -688,8 +674,6 @@ public class Ship {
 
 				// Remove it
 				b.setType(Material.AIR);
-				b.getState().setData(new MaterialData(Material.AIR));
-				b.getState().update();
 			}
 
 
@@ -727,8 +711,8 @@ public class Ship {
 
 	// WARNING: I tried to use Bukkit's BlockState and MaterialData methods, but it was pretty much unsuccessful
 	// The "Magic Value" methods have worked historically, so we're going to use them until they are removed
-	// Hopefully by then I can work out issues with the API methods
-	// Heavy deprecation for the next few lines... :(
+	// Hopefully by then I can work out issues with the "cleaner" methods
+	// "Crap code" confirmed to work
 
 	// Crap code - start
 	@SuppressWarnings("deprecation")
@@ -755,6 +739,7 @@ public class Ship {
 
 		setBlock(to, from);
 	}
+	// Crap code - end
 
 	public BlockFace getRotatedBlockFace(TurnDirection dir, Directional data) {
 		BlockFace face;
@@ -779,76 +764,89 @@ public class Ship {
 		}
 	}
 
-	@SuppressWarnings("deprecation")
 	public void setBlock(Block to, BlockData from) {
 		to.setType(from.getData().getItemType());
-		to.setData(from.getData().getData());
-		// Crap code - end
+		Util.setData(to, from.getData());
 
 		to.getState().update(true);
 
-		// Inventory
-		if (from.getInv() != null) {
+		if (from.getInventory() != null) {
 			Inventory inv = ((InventoryHolder) to.getState()).getInventory();
-
-			inv.clear();
-			inv.setContents(from.getInv());
-		} 
-
-		// Block state stuff
-		if (from.getState() instanceof Sign) {
-			Sign fromSign = (Sign) from.getState();
-			Sign toSign = (Sign) to.getState();
-
-			for (int l = 0; l < 4; l++) {
-				toSign.setLine(l, fromSign.getLine(l));
-			}
-		} else if (from.getState() instanceof CommandBlock) {
-			CommandBlock fromCmd = (CommandBlock) from.getState();
-			CommandBlock toCmd = (CommandBlock) to.getState();
-
-			toCmd.setCommand(fromCmd.getCommand());
-			toCmd.setName(fromCmd.getName());
-		} else if (from.getState() instanceof Jukebox) {
-			Jukebox fromBox = (Jukebox) from.getState();
-			Jukebox toBox = (Jukebox) to.getState();
-
-			toBox.setPlaying(fromBox.getPlaying());
-		} else if (from.getState() instanceof NoteBlock) {
-			NoteBlock fromBlock = (NoteBlock) from.getState();
-			NoteBlock toBlock = (NoteBlock) to.getState();
-
-			toBlock.setNote(fromBlock.getNote());
-		} else if (from.getState() instanceof Skull) {
-			Skull fromSkull = (Skull) from.getState();
-			Skull toSkull = (Skull) to.getState();
-
-			toSkull.setSkullType(fromSkull.getSkullType());
-			toSkull.setOwner(fromSkull.getOwner());
-		} else if (from.getState() instanceof Furnace) {
-			Furnace fromFurnace = (Furnace) from.getState();
-			Furnace toFurnace = (Furnace) to.getState();
-
-			toFurnace.setBurnTime(fromFurnace.getBurnTime());
-			toFurnace.setCookTime(fromFurnace.getCookTime());
+			inv.setContents(from.getInventory());
+			to.getState().update(true);
 		}
 
-		to.getState().update(true);
+		try {
+			if (to.getState() instanceof Sign) {
+				Sign fromSign = (Sign) from.getState();
+				Sign toSign = (Sign) to.getState();
+	
+				for (int l = 0; l < 4; l++) {
+					toSign.setLine(l, fromSign.getLine(l));
+				}
+	
+				toSign.update(true);
+			}
+	
+			if (to.getState() instanceof CommandBlock) {
+				CommandBlock fromCmd = (CommandBlock) from.getState();
+				CommandBlock toCmd = (CommandBlock) to.getState();
+	
+				toCmd.setCommand(fromCmd.getCommand());
+				toCmd.setName(fromCmd.getName());
+	
+				toCmd.update(true);
+			}
+	
+			if (to.getState() instanceof Jukebox) {
+				Jukebox fromBox = (Jukebox) from.getState();
+				Jukebox toBox = (Jukebox) to.getState();
+	
+				toBox.setPlaying(fromBox.getPlaying());
+	
+				toBox.update(true);
+			}
+	
+			if (to.getState() instanceof NoteBlock) {
+				NoteBlock fromBlock = (NoteBlock) from.getState();
+				NoteBlock toBlock = (NoteBlock) to.getState();
+	
+				toBlock.setNote(fromBlock.getNote());
+	
+				toBlock.update(true);
+			}
+	
+			if (to.getState() instanceof Skull) {
+				Skull fromSkull = (Skull) from.getState();
+				Skull toSkull = (Skull) to.getState();
+	
+				toSkull.setSkullType(fromSkull.getSkullType());
+				toSkull.setOwner(fromSkull.getOwner());
+				toSkull.setRotation(fromSkull.getRotation());
+	
+				toSkull.update(true);
+			}
+	
+			if (to.getState() instanceof Furnace) {
+				Furnace fromFurnace = (Furnace) from.getState();
+				Furnace toFurnace = (Furnace) to.getState();
+	
+				toFurnace.setBurnTime(fromFurnace.getBurnTime());
+				toFurnace.setCookTime(fromFurnace.getCookTime());
+	
+				toFurnace.update(true);
+			}
+		} catch (Throwable ex) {
+			debug(Util.getUsefulStack(ex, "updating block state for ship " + this));
+		}
 	}
 
 //  This is the "clean code" that doesn't work
 //	public void setBlock(Block to, BlockData from) {
-//		to.setType(from.getType());
+//		to.setType(from.getData().getItemType());
 //		to.getState().setData(from.getData());
 //
 //		setBlockState(to, from);
-//
-//		if (debug) {
-//			plugin.getLogHandler().debug("Block at {0} set to {1}, data = {2}, state = {3}", to.getLocation(), to.getState().getData(),
-//					Util.blockStateToString(to.getState()));
-//			plugin.getLogHandler().debug("from = {0}", from);
-//			debug = false;
-//		}
 //	}
 //
 //	// When the ship is turned
@@ -884,61 +882,6 @@ public class Ship {
 //
 //		// Block state stuff
 //		setBlockState(to, from);
-//	}
-//
-//	public void setBlockState(Block to, BlockData from) {
-//		try {
-//			// Inventory
-//			if (from.getInventory() != null) {
-//				Inventory inv = ((InventoryHolder) to.getState()).getInventory();
-//
-//				inv.clear();
-//				inv.setContents(from.getInventory());
-//			} 
-//
-//			// Block state stuff
-//			if (from.getState() instanceof Sign) {
-//				Sign fromSign = (Sign) from.getState();
-//				Sign toSign = (Sign) to.getState();
-//
-//				for (int l = 0; l < 4; l++) {
-//					toSign.setLine(l, fromSign.getLine(l));
-//				}
-//			} else if (from.getState() instanceof CommandBlock) {
-//				CommandBlock fromCmd = (CommandBlock) from.getState();
-//				CommandBlock toCmd = (CommandBlock) to.getState();
-//
-//				toCmd.setCommand(fromCmd.getCommand());
-//				toCmd.setName(fromCmd.getName());
-//			} else if (from.getState() instanceof Jukebox) {
-//				Jukebox fromBox = (Jukebox) from.getState();
-//				Jukebox toBox = (Jukebox) to.getState();
-//
-//				toBox.setPlaying(fromBox.getPlaying());
-//			} else if (from.getState() instanceof NoteBlock) {
-//				NoteBlock fromBlock = (NoteBlock) from.getState();
-//				NoteBlock toBlock = (NoteBlock) to.getState();
-//
-//				toBlock.setNote(fromBlock.getNote());
-//			} else if (from.getState() instanceof Skull) {
-//				Skull fromSkull = (Skull) from.getState();
-//				Skull toSkull = (Skull) to.getState();
-//
-//				toSkull.setSkullType(fromSkull.getSkullType());
-//				toSkull.setOwner(fromSkull.getOwner());
-//			} else if (from.getState() instanceof Furnace) {
-//				Furnace fromFurnace = (Furnace) from.getState();
-//				Furnace toFurnace = (Furnace) to.getState();
-//
-//				toFurnace.setBurnTime(fromFurnace.getBurnTime());
-//				toFurnace.setCookTime(fromFurnace.getCookTime());
-//			}
-//
-//			to.getState().update(true);
-//		} catch (Throwable ex) {
-//			// There's not a real good way to check for this...
-//			plugin.getLogHandler().debug(Util.getUsefulStack(ex, "setting block state for ship " + this  + " at " + to.getLocation()));
-//		}
 //	}
 
 	// Update main block with which block the player is standing on.
@@ -1090,7 +1033,7 @@ public class Ship {
 						&& ! data.isIgnoreAttachments()) {
 					plugin.getShipHandler().unpilotShip(player);
 					sendMessage("&cThis ship needs to be floating!");
-					String str = FormatUtil.format("Problem at ({0}, {1}, {2}) it''s on {3}", block.getX(), block.getY(), block.getZ(),
+					String str = FormatUtil.format("Problem at ({0}, {1}, {2}) it\'s on {3}", block.getX(), block.getY(), block.getZ(),
 							FormatUtil.getFriendlyName(block.getType()));
 					sendMessage(str);
 					plugin.getLogHandler().debug("{0} had a problem flying an airship: {1}", player.getName(), str);
@@ -1100,7 +1043,7 @@ public class Ship {
 			} else {
 				// Ship is too large as defined by built in limit
 				plugin.getShipHandler().unpilotShip(player);
-				sendMessage("&7This ship has over {0} blocks!", data.getMaxBlocks());
+				sendMessage("&7This ship has {0} blocks! Max: {1}", blockList.size(), data.getMaxBlocks());
 				this.stopped = true;
 				return null;
 			}
@@ -1141,6 +1084,10 @@ public class Ship {
 
 	public ShipData getData() {
 		return data;
+	}
+
+	public final void debug(String msg, Object... args) {
+		plugin.getLogHandler().debug( msg, args);
 	}
 
 	@Override

@@ -1,6 +1,7 @@
 package net.dmulloy2.autocraft.weapons;
 
 import net.dmulloy2.autocraft.AutoCraft;
+import net.dmulloy2.autocraft.util.Util;
 
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
@@ -30,8 +31,11 @@ public class Napalm extends Projectile {
 		napalm.setType(Material.WOOL);
 
 		// Set color
-		Wool wool = (Wool) napalm.getState().getData();
+		Wool wool = new Wool();
 		wool.setColor(DyeColor.GREEN);
+		Util.setData(napalm, wool);
+
+		// Update
 		napalm.getState().update();
 	}
 
@@ -75,13 +79,15 @@ public class Napalm extends Projectile {
 					|| b.getType().equals(Material.ENDER_STONE)
 					|| b.getType().equals(Material.ENDER_PORTAL_FRAME)) {
 				napalm.setType(Material.AIR);
-
-				b.setType(Material.WOOL);
-				Wool w = (Wool) b.getState().getData();
-				w.setColor(DyeColor.GREEN);
-				b.getState().update();
-
 				napalm = b;
+
+				napalm.setType(Material.WOOL);
+
+				Wool wool = new Wool();
+				wool.setColor(DyeColor.GREEN);
+				Util.setData(napalm, wool);
+
+				napalm.getState().update();
 			} else {
 				if (plugin.isFactionsEnabled() 
 						&& ! Board.getFactionAt(new FLocation(b.getLocation())).isNone()
