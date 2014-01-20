@@ -1,9 +1,14 @@
 package net.dmulloy2.autocraft.types;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
 /**
  * @author dmulloy2
  */
 
+@Getter
+@AllArgsConstructor
 public enum Permission {
 	CMD_ALLOWED("allowed"),
 	CMD_DISMOUNT("dismount"),
@@ -19,11 +24,4 @@ public enum Permission {
 	CMD_TORPEDO("torpedo");
 	
 	private final String node;
-	Permission(final String node) {
-		this.node = node;
-	}
-	
-	public String getNode() {
-		return node;
-	}
 }

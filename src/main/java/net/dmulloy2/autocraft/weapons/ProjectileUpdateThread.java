@@ -7,7 +7,7 @@ import net.dmulloy2.autocraft.util.Util;
  * @author dmulloy2
  */
 
-public class ProjectileUpdateThread extends Thread implements Runnable {
+public class ProjectileUpdateThread extends Thread {
 	private final AutoCraft plugin;
 	private final long updatePeriod;
 	private final Projectile p;

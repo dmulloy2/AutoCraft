@@ -1087,7 +1087,7 @@ public class Ship {
 	}
 
 	public final void debug(String msg, Object... args) {
-		plugin.getLogHandler().debug( msg, args);
+		plugin.getLogHandler().debug(msg, args);
 	}
 
 	@Override

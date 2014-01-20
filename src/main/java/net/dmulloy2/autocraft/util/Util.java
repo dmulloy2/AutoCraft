@@ -271,7 +271,6 @@ public class Util {
 		} else if (state instanceof NoteBlock) {
 			NoteBlock note = (NoteBlock) state;
 			ret.append("NoteBlock { note = " + FormatUtil.getFriendlyName(note.getNote().getTone()) + " }");
-			;
 		} else if (state instanceof Skull) {
 			Skull skull = (Skull) state;
 			ret.append("Skull { type = " + FormatUtil.getFriendlyName(skull.getSkullType()) + ", owner = " + skull.getOwner() + " }");

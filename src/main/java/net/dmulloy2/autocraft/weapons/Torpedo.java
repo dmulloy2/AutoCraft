@@ -1,6 +1,7 @@
 package net.dmulloy2.autocraft.weapons;
 
 import net.dmulloy2.autocraft.AutoCraft;
+import net.dmulloy2.autocraft.util.Util;
 
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
@@ -17,7 +18,6 @@ import com.massivecraft.factions.FLocation;
  */
 
 public class Torpedo extends Projectile {
-	private final AutoCraft plugin;
 	private Block[] torpedo = new Block[2];
 	private BlockFace dir;
 	private double yvelo;
@@ -27,8 +27,6 @@ public class Torpedo extends Projectile {
 		super(plugin, 200L);
 		this.dir = dir;
 
-		this.plugin = plugin;
-
 		torpedo[0] = dispenser.getRelative(dir.getModX() * 2, 0, dir.getModZ() * 2);
 		torpedo[1] = dispenser.getRelative(dir.getModX(), 0, dir.getModZ());
 
@@ -36,8 +34,11 @@ public class Torpedo extends Projectile {
 			torpedo[0].setType(Material.DIAMOND_BLOCK);
 
 			torpedo[1].setType(Material.WOOL);
-			Wool w = (Wool) torpedo[1].getState().getData();
-			w.setColor(DyeColor.RED);
+
+			Wool wool = new Wool();
+			wool.setColor(DyeColor.RED);
+			Util.setData(torpedo[1], wool);
+
 			torpedo[1].getState().update();
 		} else {
 			this.exploded = true;
@@ -58,11 +59,16 @@ public class Torpedo extends Projectile {
 			Block b = torpedo[0].getRelative(dir.getModX(), (int) -yvelo, dir.getModZ());
 			if (b.getType().equals(Material.AIR) || b.getType().equals(Material.WATER) || b.getType().equals(Material.STATIONARY_WATER)) {
 				torpedo[0].setType(Material.WOOL);
-				Wool w = (Wool) torpedo[0].getState().getData();
-				w.setColor(DyeColor.RED);
+
+				Wool wool = new Wool();
+				wool.setColor(DyeColor.RED);
+				Util.setData(torpedo[0], wool);
+
 				torpedo[0].getState().update();
+
 				torpedo[1].setType(Material.AIR);
 				torpedo[1] = torpedo[0];
+
 				torpedo[0] = b;
 				torpedo[0].setType(Material.DIAMOND_BLOCK);
 			} else {

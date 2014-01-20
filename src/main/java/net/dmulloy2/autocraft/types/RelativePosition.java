@@ -1,5 +1,6 @@
 package net.dmulloy2.autocraft.types;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 /**
@@ -7,6 +8,7 @@ import lombok.Getter;
  */
 
 @Getter
+@AllArgsConstructor
 public enum RelativePosition {
 	TOP(0, 1, 0), 
 	BOTTOM(0, -1, 0), 
@@ -16,10 +18,4 @@ public enum RelativePosition {
 	OUT(0, 0, -1);
 
 	private int x, y, z;
-
-	RelativePosition(int x, int y, int z) {
-		this.x = x;
-		this.y = y;
-		this.z = z;
-	}
 }

@@ -2,6 +2,7 @@ package net.dmulloy2.autocraft.handlers;
 
 import java.util.logging.Level;
 
+import lombok.AllArgsConstructor;
 import net.dmulloy2.autocraft.util.FormatUtil;
 
 import org.bukkit.plugin.java.JavaPlugin;
@@ -10,12 +11,9 @@ import org.bukkit.plugin.java.JavaPlugin;
  * @author dmulloy2
  */
 
+@AllArgsConstructor
 public class LogHandler {
 	private final JavaPlugin plugin;
-
-	public LogHandler(JavaPlugin plugin) {
-		this.plugin = plugin;
-	}
 
 	public final void log(Level level, String msg, Object... objects) {
 		plugin.getLogger().log(level, FormatUtil.format(msg, objects));

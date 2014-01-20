@@ -48,7 +48,7 @@ public class FormatUtil {
 	public static String getFriendlyName(String string) {
 		String ret = string.toLowerCase();
 		ret = ret.replaceAll("_", " ");
-		return (WordUtils.capitalize(ret));
+		return WordUtils.capitalize(ret);
 	}
 
 	/**

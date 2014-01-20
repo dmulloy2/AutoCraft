@@ -1,7 +1,6 @@
 package net.dmulloy2.autocraft.types;
 
 import lombok.Data;
-
 import net.dmulloy2.autocraft.util.Util;
 
 import org.bukkit.block.Block;
@@ -37,4 +36,29 @@ public class BlockData {
 	public String toString() {
 		return "BlockData { state = " + Util.blockStateToString(state) + ", data = " + data + " }";
 	}
+
+//  Experimental code
+//	public class BlockStateData implements Cloneable {
+//		private Field[] fields;
+//		public BlockStateData(BlockState state) {
+//			this.fields = state.getClass().getDeclaredFields();
+//		}
+//
+//		public void applyTo(BlockState state) {
+//			try {
+//				for (Field field : state.getClass().getDeclaredFields()) {
+//					for (Field f : fields) {
+//						if (f.getName().equals(field.getName())) {
+//							boolean accessible = field.isAccessible();
+//							field.setAccessible(true);
+//							field.set(state, f.get(this));
+//							field.setAccessible(accessible);
+//						}
+//					}
+//				}
+//			} catch (Exception e) {
+//				//
+//			}
+//		}
+//	}
 }

@@ -17,13 +17,10 @@ import com.massivecraft.factions.FLocation;
  */
 
 public class Napalm extends Projectile {
-	private final AutoCraft plugin;
 	private Block napalm;
 
 	public Napalm(AutoCraft plugin, Block dispenser) {
 		super(plugin, 200L);
-
-		this.plugin = plugin;
 
 		napalm = dispenser.getRelative(0, -1, 0);
 
@@ -63,7 +60,7 @@ public class Napalm extends Projectile {
 
 	@Override
 	public void move() {
-		if (!isExploded()) {
+		if (! isExploded()) {
 			Block b = napalm.getRelative(0, -1, 0);
 			if (b.getType().equals(Material.AIR)
 					|| b.getType().equals(Material.WATER)

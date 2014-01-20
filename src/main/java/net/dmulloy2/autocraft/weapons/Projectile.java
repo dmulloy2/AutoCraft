@@ -7,10 +7,12 @@ import net.dmulloy2.autocraft.AutoCraft;
  */
 
 public abstract class Projectile {
+	protected final AutoCraft plugin;
 	protected boolean exploded = false;
 	protected int movespeed = 0;
 
 	public Projectile(AutoCraft plugin, long updatePeriod) {
+		this.plugin = plugin;
 		new ProjectileUpdateThread(plugin, this, updatePeriod);
 	}
 
