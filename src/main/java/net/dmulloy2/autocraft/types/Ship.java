@@ -977,7 +977,10 @@ public class Ship {
 		return false;
 	}
 
+	private long recursionStartTime;
+
 	public boolean beginRecursion(Block block) {
+		recursionStartTime = System.currentTimeMillis();
 		List<Block> blockList = new ArrayList<Block>(data.getMaxBlocks());
 		blockList = recurse(block, blockList);
 
@@ -1001,6 +1004,13 @@ public class Ship {
 	// Recursively call this method for every block relative to the starting
 	// block.
 	public List<Block> recurse(Block block, List<Block> blockList) {
+		if ((System.currentTimeMillis() - recursionStartTime) >= 12 * 20) {
+			plugin.getShipHandler().unpilotShip(player);
+			sendMessage("&cRecursion took too long! This ship may be too big!");
+			this.stopped = true;
+			return null;
+		}
+
 		boolean original = blockList != null ? blockList.isEmpty() : false;
 
 		if (! stopped) {
