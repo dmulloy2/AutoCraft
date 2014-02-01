@@ -377,25 +377,47 @@ public class Ship {
 
 	public void startShip() {
 		updateMainBlock();
-		if (beginRecursion(mainblock)) {
-			if (areBlocksValid()) {
-				if (isShipAlreadyPiloted()) {
-					sendMessage("&cThis ship is already being piloted");
-				} else {
-					// Register the ship
-					plugin.getShipHandler().putShip(player, this);
+		// Move recursion async
+		new BukkitRunnable() {
 
-					// Tell the player they're in control
-					sendMessage("&7You are in control of this ship");
-					sendMessage("&7Use the right mouse to guide the ship");
+			@Override
+			public void run() {
+				if (beginRecursion(mainblock)) {
+					// Return to sync
+					new BukkitRunnable() {
 
-					// Log it (only if it was successful)
-					plugin.getLogHandler().log("{0} has started flying {1} at: {2}, {3}, {4} in world {5}", player.getName(),
-							data.getShipType(), player.getLocation().getBlockX(), player.getLocation().getBlockY(),
-							player.getLocation().getBlockZ(), player.getWorld().getName());
+						@Override
+						public void run() {
+							if (areBlocksValid()) {
+								if (isShipAlreadyPiloted()) {
+									sendMessage("&cThis ship is already being piloted");
+								} else {
+									pilot();
+								}
+							}
+						}
+
+					}.runTask(plugin);
 				}
 			}
-		}
+
+		}.runTaskAsynchronously(plugin);
+	}
+
+	public void pilot() {
+
+		// Register the ship
+		plugin.getShipHandler().putShip(player, this);
+
+		// Tell the player they're in control
+		sendMessage("&7You are in control of this ship");
+		sendMessage("&7Use the right mouse to guide the ship");
+
+		// Log it (only if it was successful)
+		plugin.getLogHandler().log("{0} has started flying {1} at: {2}, {3}, {4} in world {5}", player.getName(),
+				data.getShipType(), player.getLocation().getBlockX(), player.getLocation().getBlockY(),
+				player.getLocation().getBlockZ(), player.getWorld().getName());
+	
 	}
 
 	// This method doesn't actually move the ship, only prepares to before it
@@ -982,7 +1004,7 @@ public class Ship {
 	public boolean beginRecursion(Block block) {
 		recursionStartTime = System.currentTimeMillis();
 		List<Block> blockList = new ArrayList<Block>(data.getMaxBlocks());
-		blockList = recurse(block, blockList);
+		blockList = recurse(block, blockList, plugin.getConfig().getBoolean("recursionCap", false));
 
 		if (blockList != null) {
 			List<Block> specialBlockList = new ArrayList<Block>();
@@ -1003,8 +1025,8 @@ public class Ship {
 
 	// Recursively call this method for every block relative to the starting
 	// block.
-	public List<Block> recurse(Block block, List<Block> blockList) {
-		if ((System.currentTimeMillis() - recursionStartTime) >= 12 * 20) {
+	public List<Block> recurse(Block block, List<Block> blockList, boolean recursionCap) {
+		if (recursionCap && (System.currentTimeMillis() - recursionStartTime) >= 20 * 20) {
 			plugin.getShipHandler().unpilotShip(player);
 			sendMessage("&cRecursion took too long! This ship may be too big!");
 			this.stopped = true;
@@ -1030,7 +1052,7 @@ public class Ship {
 					// block around them before eventually returning to
 					// this method instance.
 					for (RelativePosition dir : RelativePosition.values()) {
-						blockList = recurse(block.getRelative(dir.getX(), dir.getY(), dir.getZ()), blockList);
+						blockList = recurse(block.getRelative(dir.getX(), dir.getY(), dir.getZ()), blockList, recursionCap);
 					}
 					// Otherwise if the block isn't a block that the ship is
 					// allowed to touch then stop creating the ship.
