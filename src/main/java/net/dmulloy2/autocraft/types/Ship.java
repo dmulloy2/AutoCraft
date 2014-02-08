@@ -1065,7 +1065,7 @@ public class Ship {
 						&& ! data.isIgnoreAttachments()) {
 					plugin.getShipHandler().unpilotShip(player);
 					sendMessage("&cThis ship needs to be floating!");
-					String str = FormatUtil.format("Problem at ({0}, {1}, {2}) it\'s on {3}", block.getX(), block.getY(), block.getZ(),
+					String str = FormatUtil.format("Problem at ({0}, {1}, {2}) it''s on {3}", block.getX(), block.getY(), block.getZ(),
 							FormatUtil.getFriendlyName(block.getType()));
 					sendMessage(str);
 					plugin.getLogHandler().debug("{0} had a problem flying an airship: {1}", player.getName(), str);
