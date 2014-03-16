@@ -46,11 +46,10 @@ public class DataHandler implements Reloadable {
 		}
 
 		this.data = new HashMap<String, ShipData>();
-
-		load();
+		this.load();
 	}
 
-	public void load() {
+	public final void load() {
 		long start = System.currentTimeMillis();
 
 		plugin.getLogHandler().log("Loading {0}...", folderName);
@@ -70,13 +69,9 @@ public class DataHandler implements Reloadable {
 		}
 
 		for (File file : children) {
-			try {
-				ShipData shipData = loadData(file);
-				if (shipData != null) {
-					data.put(shipData.getShipType(), shipData);
-				}
-			} catch (Throwable ex) {
-				plugin.getLogHandler().log(Level.SEVERE, Util.getUsefulStack(ex, "loading ship: " + file.getName()));
+			ShipData shipData = loadData(file);
+			if (shipData != null) {
+				data.put(shipData.getShipType(), shipData);
 			}
 		}
 
@@ -98,6 +93,7 @@ public class DataHandler implements Reloadable {
 				}
 			}
 
+			boolean save = false;
 			int version = (int) map.get("version");
 			if (version < 3) {
 				// Convert mainType and cannonMaterial
@@ -139,6 +135,7 @@ public class DataHandler implements Reloadable {
 
 				// Latest version
 				map.put("version", ShipData.LATEST_VERSION);
+				save = true;
 			}
 
 			// Deserialize so we're actually working with the ShipData object
@@ -147,26 +144,19 @@ public class DataHandler implements Reloadable {
 			// Set the ship's type
 			data.setShipType(trimFileExtension(file));
 
+			// Save if applicable
+			if (save) {
+				saveData(data);
+			}
+
 			return data;
 		} catch (Throwable ex) {
-			plugin.getLogHandler().log(Level.SEVERE, Util.getUsefulStack(ex, "loading ship for file " + file.getName()));
+			plugin.getLogHandler().log(Level.SEVERE, Util.getUsefulStack(ex, "loading ship " + file.getName()));
 			return null;
 		}
 	}
 
-	public void save() {
-		long start = System.currentTimeMillis();
-
-		plugin.getLogHandler().log("Saving {0} to disk...", folderName);
-
-		for (ShipData shipData : data.values()) {
-			saveData(shipData);
-		}
-
-		plugin.getLogHandler().log("{0} saved! [{1}ms]", WordUtils.capitalize(folderName), System.currentTimeMillis() - start);
-	}
-
-	public void generateStockShips() {
+	private final void generateStockShips() {
 		plugin.getLogHandler().log("Generating stock ships!");
 
 		String[] stocks = new String[] { "airship", "base", "battle", "dreadnought", "pirate", "stealth", "titan", "turret" };
@@ -176,32 +166,27 @@ public class DataHandler implements Reloadable {
 		}
 	}
 
-	public void saveData(ShipData shipData) {
+	private final void saveData(ShipData shipData) {
 		try {
 			File file = new File(folder, getFileName(shipData.getShipType()));
 			FileSerialization.save(shipData, file);
 		} catch (Throwable ex) {
 			if (shipData != null) {
-				plugin.getLogHandler().log(Level.SEVERE, Util.getUsefulStack(ex, "saving ship: " + shipData.getShipType()));
+				plugin.getLogHandler().log(Level.SEVERE, Util.getUsefulStack(ex, "saving ship " + shipData.getShipType()));
 			}
 		}
 	}
 
-	public void onDisable() {
-		save();
-		data.clear();
-	}
-
-	private String trimFileExtension(File file) {
+	private final String trimFileExtension(File file) {
 		int index = file.getName().lastIndexOf(extension);
 		return index > 0 ? file.getName().substring(0, index) : file.getName();
 	}
 
-	private String getFileName(String key) {
+	private final String getFileName(String key) {
 		return key + extension;
 	}
 
-	public ShipData getData(String key) {
+	public final ShipData getData(String key) {
 		for (ShipData dat : data.values()) {
 			if (dat.getShipType().equalsIgnoreCase(key))
 				return dat;
@@ -210,21 +195,18 @@ public class DataHandler implements Reloadable {
 		return null;
 	}
 
-	public boolean isValidShip(String key) {
+	public final boolean isValidShip(String key) {
 		return getData(key) != null;
 	}
 
-	public Set<String> getShips() {
+	public final Set<String> getShips() {
 		return data.keySet();
 	}
 
-	public Collection<ShipData> getData() {
+	public final Collection<ShipData> getData() {
 		return data.values();
 	}
 
-	/**
-	 * Forces the reloading of ship data
-	 */
 	@Override
 	public void reload() {
 		data.clear();

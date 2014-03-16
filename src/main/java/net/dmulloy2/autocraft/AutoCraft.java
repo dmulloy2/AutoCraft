@@ -130,7 +130,7 @@ public class AutoCraft extends JavaPlugin implements Reloadable {
 	public void onDisable() {
 		long start = System.currentTimeMillis();
 
-		dataHandler.onDisable();
+		getServer().getScheduler().cancelTasks(this);
 		shipHandler.clearMemory();
 
 		logHandler.log(getMessage("log_disabled"), getDescription().getFullName(), System.currentTimeMillis() - start);
@@ -161,5 +161,6 @@ public class AutoCraft extends JavaPlugin implements Reloadable {
 	@Override
 	public void reload() {
 		reloadConfig();
+		dataHandler.reload();
 	}
 }
