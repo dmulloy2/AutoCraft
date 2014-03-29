@@ -2,6 +2,8 @@ package net.dmulloy2.autocraft.util;
 
 import net.dmulloy2.autocraft.types.Material;
 
+import org.bukkit.Bukkit;
+
 /**
  * Util dealing with the loss of item id's
  * 
@@ -9,6 +11,8 @@ import net.dmulloy2.autocraft.types.Material;
  */
 
 public class MaterialUtil {
+
+	private MaterialUtil() { }
 
 	/**
 	 * Returns the {@link org.bukkit.Material} from a given string
@@ -18,11 +22,30 @@ public class MaterialUtil {
 	 * @return The {@link org.bukkit.Material} from a given string
 	 */
 	public static org.bukkit.Material getMaterial(String string) {
-		if (Util.isInteger(string)) {
+		if (NumberUtil.isInt(string)) {
 			return getMaterial(Integer.parseInt(string));
 		} else {
-			return org.bukkit.Material.matchMaterial(string);
+			return matchMaterial(string);
 		}
+	}
+
+	@SuppressWarnings("deprecation")
+	private static org.bukkit.Material matchMaterial(String string) {
+		org.bukkit.Material material = null;
+
+		try {
+			material = org.bukkit.Material.matchMaterial(string);
+		} catch (Throwable ex) {
+		}
+
+		if (material == null) {
+			try {
+				material = Bukkit.getUnsafe().getMaterialFromInternalName(string);
+			} catch (Throwable ex) {
+			}
+		}
+
+		return material;
 	}
 
 	/**
