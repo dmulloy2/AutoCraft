@@ -63,11 +63,11 @@ public class AutoCraft extends JavaPlugin implements Reloadable {
 	private @Getter DataHandler dataHandler;
 	private @Getter ShipHandler shipHandler;
 	private @Getter LogHandler logHandler;
-	
+
 	private @Getter boolean factionsEnabled;
-	
+
 	private @Getter String prefix = FormatUtil.format("&6[&4&lAC&6] ");
-	
+
 	@Override
 	public void onEnable() {
 		long start = System.currentTimeMillis();
