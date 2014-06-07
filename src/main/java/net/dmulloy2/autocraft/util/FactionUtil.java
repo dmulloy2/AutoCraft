@@ -43,7 +43,8 @@ public class FactionUtil {
 				fme.msg("<i>You cannot do that in the territory of %s.", them.getTag(fme));
 				return false;
 			}
-		} catch (Exception e) {
+		} catch (Throwable ex) {
+			//
 		}
 
 		return true;

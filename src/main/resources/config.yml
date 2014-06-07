@@ -23,7 +23,7 @@ materialsNeededForNapalm:
 napalmBurnRadius: 6
 
 # Factions Protection Enabled
-factionsProtectionsEnabled: true
+factionsProtectionsEnabled: false
 
 # Whether or not to stop recursion if it takes too long
 # Only use this if recursions are crashing the server

@@ -110,8 +110,8 @@ public class AutoCraft extends JavaPlugin implements Reloadable {
 		pm.registerEvents(new PlayerListener(this), this);
 
 		// Factions integration
-		if (getConfig().getBoolean("factionsProtectionsEnabled")) {
-			factionsEnabled = pm.isPluginEnabled("SwornNations") || pm.isPluginEnabled("Factions");
+		if (getConfig().getBoolean("factionsProtectionsEnabled", false)) {
+			factionsEnabled = pm.getPlugin("SwornNations") != null;
 
 			if (factionsEnabled) {
 				logHandler.log(getMessage("log_factions_found"));
@@ -132,6 +132,7 @@ public class AutoCraft extends JavaPlugin implements Reloadable {
 
 		getServer().getScheduler().cancelTasks(this);
 		shipHandler.clearMemory();
+		permissions.clear();
 
 		logHandler.log(getMessage("log_disabled"), getDescription().getFullName(), System.currentTimeMillis() - start);
 	}

@@ -2,6 +2,7 @@ package net.dmulloy2.autocraft.commands;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 
 import net.dmulloy2.autocraft.AutoCraft;
 import net.dmulloy2.autocraft.types.Permission;
@@ -80,9 +81,9 @@ public abstract class AutoCraftCommand implements CommandExecutor {
 
 		try {
 			perform();
-		} catch (Throwable e) {
-			err("Error executing command: {0}", e.getMessage());
-			plugin.getLogHandler().debug(Util.getUsefulStack(e, "executing command " + name));
+		} catch (Throwable ex) {
+			err(plugin.getMessage("error_execution"), ex.getClass().getName(), ex.getMessage());
+			plugin.getLogHandler().log(Level.WARNING, Util.getUsefulStack(ex, "executing command " + name));
 		}
 	}
 
