@@ -39,13 +39,13 @@ import net.dmulloy2.autocraft.commands.CmdTorpedo;
 import net.dmulloy2.autocraft.handlers.DataHandler;
 import net.dmulloy2.autocraft.handlers.ShipHandler;
 import net.dmulloy2.autocraft.listeners.PlayerListener;
-import net.dmulloy2.autocraft.types.Reloadable;
 import net.dmulloy2.autocraft.types.ShipData;
 import net.dmulloy2.commands.CmdHelp;
 import net.dmulloy2.handlers.CommandHandler;
 import net.dmulloy2.handlers.LogHandler;
 import net.dmulloy2.handlers.PermissionHandler;
 import net.dmulloy2.handlers.ResourceHandler;
+import net.dmulloy2.types.Reloadable;
 import net.dmulloy2.util.FormatUtil;
 
 import org.bukkit.permissions.Permission;

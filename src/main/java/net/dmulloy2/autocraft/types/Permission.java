@@ -1,8 +1,8 @@
 package net.dmulloy2.autocraft.types;
 
-import net.dmulloy2.types.IPermission;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import net.dmulloy2.types.IPermission;
 
 /**
  * @author dmulloy2

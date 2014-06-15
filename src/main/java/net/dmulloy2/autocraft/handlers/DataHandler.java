@@ -13,9 +13,9 @@ import java.util.Set;
 import java.util.logging.Level;
 
 import net.dmulloy2.autocraft.AutoCraft;
-import net.dmulloy2.autocraft.io.FileSerialization;
-import net.dmulloy2.autocraft.types.Reloadable;
 import net.dmulloy2.autocraft.types.ShipData;
+import net.dmulloy2.io.FileSerialization;
+import net.dmulloy2.types.Reloadable;
 import net.dmulloy2.util.MaterialUtil;
 import net.dmulloy2.util.Util;
 
