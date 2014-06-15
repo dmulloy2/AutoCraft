@@ -15,15 +15,17 @@ public class CmdDismount extends AutoCraftCommand {
 		this.aliases.add("x");
 		this.description = "Dismount your airship.";
 		this.permission = Permission.CMD_DISMOUNT;
-		
 		this.mustBePlayer = true;
-		this.mustBePiloting = true;
 	}
-	
+
 	@Override
 	public void perform() {
+		if (! isPiloting()) {
+			err("You must be piloting a ship to do this!");
+			return;
+		}
+
 		plugin.getShipHandler().unpilotShip(player);
-		
 		sendpMessage("&7You have stopped piloting this ship.");
 	}
 }

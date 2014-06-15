@@ -5,11 +5,11 @@ import java.util.List;
 
 import net.dmulloy2.autocraft.AutoCraft;
 import net.dmulloy2.autocraft.util.FactionUtil;
-import net.dmulloy2.autocraft.util.FormatUtil;
-import net.dmulloy2.autocraft.util.MaterialUtil;
-import net.dmulloy2.autocraft.util.Util;
 import net.dmulloy2.autocraft.weapons.Napalm;
 import net.dmulloy2.autocraft.weapons.Torpedo;
+import net.dmulloy2.util.FormatUtil;
+import net.dmulloy2.util.MaterialUtil;
+import net.dmulloy2.util.Util;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -786,6 +786,7 @@ public class Ship {
 		}
 	}
 
+	@SuppressWarnings("deprecation") // Util#setData(...)
 	public void setBlock(Block to, BlockData from) {
 		to.setType(from.getData().getItemType());
 		Util.setData(to, from.getData());

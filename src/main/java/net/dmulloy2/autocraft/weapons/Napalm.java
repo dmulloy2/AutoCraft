@@ -1,7 +1,6 @@
 package net.dmulloy2.autocraft.weapons;
 
 import net.dmulloy2.autocraft.AutoCraft;
-import net.dmulloy2.autocraft.util.Util;
 
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
@@ -30,7 +29,7 @@ public class Napalm extends Projectile {
 		// Set color
 		Wool wool = new Wool();
 		wool.setColor(DyeColor.GREEN);
-		Util.setData(napalm, wool);
+		setData(napalm, wool);
 
 		// Update
 		napalm.getState().update();
@@ -82,7 +81,7 @@ public class Napalm extends Projectile {
 
 				Wool wool = new Wool();
 				wool.setColor(DyeColor.GREEN);
-				Util.setData(napalm, wool);
+				setData(napalm, wool);
 
 				napalm.getState().update();
 			} else {

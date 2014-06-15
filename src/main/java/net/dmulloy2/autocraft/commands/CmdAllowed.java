@@ -3,7 +3,7 @@ package net.dmulloy2.autocraft.commands;
 import net.dmulloy2.autocraft.AutoCraft;
 import net.dmulloy2.autocraft.types.Permission;
 import net.dmulloy2.autocraft.types.ShipData;
-import net.dmulloy2.autocraft.util.MaterialUtil;
+import net.dmulloy2.util.MaterialUtil;
 
 import org.apache.commons.lang.WordUtils;
 

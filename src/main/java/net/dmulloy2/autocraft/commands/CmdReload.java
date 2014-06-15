@@ -17,7 +17,7 @@ public class CmdReload extends AutoCraftCommand implements Reloadable {
 		this.description = "Reloads AutoCraft plugin.";
 		this.permission = Permission.CMD_RELOAD;
 	}
-	
+
 	@Override
 	public void perform() {
 		reload();
@@ -28,7 +28,7 @@ public class CmdReload extends AutoCraftCommand implements Reloadable {
 		plugin.reload();
 
 		sendpMessage("&aReload complete!");
-		
+
 		plugin.getLogHandler().log("{0} has reloaded AutoCraft!", sender.getName());
 	}
 }

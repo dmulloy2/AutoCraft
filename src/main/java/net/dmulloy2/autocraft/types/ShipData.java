@@ -10,7 +10,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import lombok.Data;
-import net.dmulloy2.autocraft.util.MaterialUtil;
+import net.dmulloy2.util.MaterialUtil;
 
 import org.bukkit.Material;
 import org.bukkit.block.Block;

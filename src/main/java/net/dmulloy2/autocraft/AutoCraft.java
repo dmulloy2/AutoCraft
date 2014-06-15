@@ -23,11 +23,11 @@ import java.util.MissingResourceException;
 import java.util.logging.Level;
 
 import lombok.Getter;
+import net.dmulloy2.SwornPlugin;
 import net.dmulloy2.autocraft.commands.CmdAllowed;
 import net.dmulloy2.autocraft.commands.CmdDismount;
 import net.dmulloy2.autocraft.commands.CmdDrop;
 import net.dmulloy2.autocraft.commands.CmdFire;
-import net.dmulloy2.autocraft.commands.CmdHelp;
 import net.dmulloy2.autocraft.commands.CmdInfo;
 import net.dmulloy2.autocraft.commands.CmdList;
 import net.dmulloy2.autocraft.commands.CmdMove;
@@ -36,33 +36,30 @@ import net.dmulloy2.autocraft.commands.CmdPilot;
 import net.dmulloy2.autocraft.commands.CmdReload;
 import net.dmulloy2.autocraft.commands.CmdRotate;
 import net.dmulloy2.autocraft.commands.CmdTorpedo;
-import net.dmulloy2.autocraft.commands.CommandHandler;
 import net.dmulloy2.autocraft.handlers.DataHandler;
-import net.dmulloy2.autocraft.handlers.LogHandler;
-import net.dmulloy2.autocraft.handlers.PermissionHandler;
-import net.dmulloy2.autocraft.handlers.ResourceHandler;
 import net.dmulloy2.autocraft.handlers.ShipHandler;
 import net.dmulloy2.autocraft.listeners.PlayerListener;
 import net.dmulloy2.autocraft.types.Reloadable;
 import net.dmulloy2.autocraft.types.ShipData;
-import net.dmulloy2.autocraft.util.FormatUtil;
+import net.dmulloy2.commands.CmdHelp;
+import net.dmulloy2.handlers.CommandHandler;
+import net.dmulloy2.handlers.LogHandler;
+import net.dmulloy2.handlers.PermissionHandler;
+import net.dmulloy2.handlers.ResourceHandler;
+import net.dmulloy2.util.FormatUtil;
 
 import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
 import org.bukkit.plugin.PluginManager;
-import org.bukkit.plugin.java.JavaPlugin;
 
 /**
  * @author dmulloy2
  */
 
-public class AutoCraft extends JavaPlugin implements Reloadable {
-	private @Getter PermissionHandler permissionHandler;
+public class AutoCraft extends SwornPlugin implements Reloadable {
 	private @Getter ResourceHandler resourceHandler;
-	private @Getter CommandHandler commandHandler;
 	private @Getter DataHandler dataHandler;
 	private @Getter ShipHandler shipHandler;
-	private @Getter LogHandler logHandler;
 
 	private @Getter boolean factionsEnabled;
 
@@ -91,19 +88,19 @@ public class AutoCraft extends JavaPlugin implements Reloadable {
 
 		// Register commands
 		commandHandler.setCommandPrefix("ac");
-		commandHandler.registerCommand(new CmdAllowed(this));
-		commandHandler.registerCommand(new CmdDismount(this));
-		commandHandler.registerCommand(new CmdDrop(this));
-		commandHandler.registerCommand(new CmdFire(this));
-		commandHandler.registerCommand(new CmdHelp(this));
-		commandHandler.registerCommand(new CmdInfo(this));
-		commandHandler.registerCommand(new CmdList(this));
-		commandHandler.registerCommand(new CmdMove(this));
-		commandHandler.registerCommand(new CmdNapalm(this));
-		commandHandler.registerCommand(new CmdPilot(this));
-		commandHandler.registerCommand(new CmdReload(this));
-		commandHandler.registerCommand(new CmdRotate(this));
-		commandHandler.registerCommand(new CmdTorpedo(this));
+		commandHandler.registerPrefixedCommand(new CmdAllowed(this));
+		commandHandler.registerPrefixedCommand(new CmdDismount(this));
+		commandHandler.registerPrefixedCommand(new CmdDrop(this));
+		commandHandler.registerPrefixedCommand(new CmdFire(this));
+		commandHandler.registerPrefixedCommand(new CmdHelp(this));
+		commandHandler.registerPrefixedCommand(new CmdInfo(this));
+		commandHandler.registerPrefixedCommand(new CmdList(this));
+		commandHandler.registerPrefixedCommand(new CmdMove(this));
+		commandHandler.registerPrefixedCommand(new CmdNapalm(this));
+		commandHandler.registerPrefixedCommand(new CmdPilot(this));
+		commandHandler.registerPrefixedCommand(new CmdReload(this));
+		commandHandler.registerPrefixedCommand(new CmdRotate(this));
+		commandHandler.registerPrefixedCommand(new CmdTorpedo(this));
 
 		// Listeners
 		PluginManager pm = getServer().getPluginManager();

@@ -15,13 +15,16 @@ public class CmdDrop extends AutoCraftCommand {
 		this.aliases.add("d");
 		this.description = "Drop a bomb";
 		this.permission = Permission.CMD_DROP;
-		
 		this.mustBePlayer = true;
-		this.mustBePiloting = true;
 	}
-	
+
 	@Override
 	public void perform() {
+		if (! isPiloting()) {
+			err("You must be piloting a ship to do this!");
+			return;
+		}
+
 		plugin.getShipHandler().getShip(player).drop();
 	}
 }

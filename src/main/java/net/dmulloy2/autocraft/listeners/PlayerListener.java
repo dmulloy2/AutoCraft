@@ -1,7 +1,7 @@
 package net.dmulloy2.autocraft.listeners;
 
 import net.dmulloy2.autocraft.AutoCraft;
-import net.dmulloy2.autocraft.util.FormatUtil;
+import net.dmulloy2.util.FormatUtil;
 
 import org.bukkit.Material;
 import org.bukkit.entity.Player;

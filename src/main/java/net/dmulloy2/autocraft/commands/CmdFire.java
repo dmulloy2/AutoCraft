@@ -15,13 +15,16 @@ public class CmdFire extends AutoCraftCommand {
 		this.aliases.add("f");
 		this.description = "Fire your ship's tnt cannons";
 		this.permission = Permission.CMD_FIRE;
-		
 		this.mustBePlayer = true;
-		this.mustBePiloting = true;
 	}
-	
+
 	@Override
 	public void perform() {
+		if (! isPiloting()) {
+			err("You must be piloting a ship to do this!");
+			return;
+		}
+
 		plugin.getShipHandler().getShip(player).fire();
 	}
 }

@@ -1,7 +1,6 @@
 package net.dmulloy2.autocraft.weapons;
 
 import net.dmulloy2.autocraft.AutoCraft;
-import net.dmulloy2.autocraft.util.Util;
 
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
@@ -37,7 +36,7 @@ public class Torpedo extends Projectile {
 
 			Wool wool = new Wool();
 			wool.setColor(DyeColor.RED);
-			Util.setData(torpedo[1], wool);
+			setData(torpedo[1], wool);
 
 			torpedo[1].getState().update();
 		} else {
@@ -62,7 +61,7 @@ public class Torpedo extends Projectile {
 
 				Wool wool = new Wool();
 				wool.setColor(DyeColor.RED);
-				Util.setData(torpedo[0], wool);
+				setData(torpedo[0], wool);
 
 				torpedo[0].getState().update();
 

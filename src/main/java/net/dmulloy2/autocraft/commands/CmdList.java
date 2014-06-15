@@ -16,11 +16,11 @@ public class CmdList extends AutoCraftCommand {
 		this.description = "List the AutoCraft ship types";
 		this.permission = Permission.CMD_LIST;
 	}
-	
+
 	@Override
 	public void perform() {
 		sendMessage("&3====[ &eAutoCraft Ship Types &3]====");
-		
+
 		for (String type : plugin.getDataHandler().getShips()) {
 			sendMessage("&b - &e{0}", type);
 		}

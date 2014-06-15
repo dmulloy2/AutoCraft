@@ -17,18 +17,19 @@ public class CmdMove extends AutoCraftCommand {
 		this.aliases.add("m");
 		this.description = "Moves your ship in direction you are facing.";
 		this.permission = Permission.CMD_MOVE;
-		
 		this.mustBePlayer = true;
-		this.mustBePiloting = true;
 	}
-	
+
 	@Override
 	public void perform() {
+		if (! isPiloting()) {
+			err("You must be piloting a ship to do this!");
+			return;
+		}
+
 		Vector dir = player.getLocation().getDirection();
-			
-		plugin.getShipHandler().getShip(player).move( 
-				(int) Math.round(dir.getX()),
-				(int) Math.round(dir.getY()),
-				(int) Math.round(dir.getZ()));
-	}	
+
+		plugin.getShipHandler().getShip(player)
+				.move((int) Math.round(dir.getX()), (int) Math.round(dir.getY()), (int) Math.round(dir.getZ()));
+	}
 }

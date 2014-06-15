@@ -1,5 +1,6 @@
 package net.dmulloy2.autocraft.types;
 
+import net.dmulloy2.types.IPermission;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -9,7 +10,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public enum Permission {
+public enum Permission implements IPermission {
 	CMD_ALLOWED("allowed"),
 	CMD_DISMOUNT("dismount"),
 	CMD_DROP("drop"),

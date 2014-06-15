@@ -1,45 +1,46 @@
 package net.dmulloy2.autocraft.weapons;
 
 import net.dmulloy2.autocraft.AutoCraft;
-import net.dmulloy2.autocraft.util.Util;
+import net.dmulloy2.util.Util;
+
+import org.bukkit.scheduler.BukkitRunnable;
 
 /**
  * @author dmulloy2
  */
 
 public class ProjectileUpdateThread extends Thread {
-	private final AutoCraft plugin;
+	private final Projectile projectile;
 	private final long updatePeriod;
-	private final Projectile p;
-	private Thread t;
 
-	public ProjectileUpdateThread(AutoCraft plugin, Projectile p, long updatePeriod) {
-		this.t = new Thread(this);
-		this.t.start();
+	private final AutoCraft plugin;
+	public ProjectileUpdateThread(AutoCraft plugin, Projectile projectile, long updatePeriod) {
+		super("AutoCraft-ProjectileUpdateThread");
+		this.setPriority(MIN_PRIORITY);
+		this.start();
 
 		this.plugin = plugin;
-
-		this.p = p;
+		this.projectile = projectile;
 		this.updatePeriod = updatePeriod;
 	}
 
 	@Override
 	public void run() {
 		try {
-			while (! p.isExploded()) {
+			while (! projectile.isExploded()) {
 				Thread.sleep(updatePeriod);
 
-				plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+				new BukkitRunnable() {
 
 					@Override
 					public void run() {
-						p.move();
+						projectile.move();
 					}
 
-				});
+				}.runTask(plugin);
 			}
-		} catch (InterruptedException e) {
-			plugin.getLogHandler().debug(Util.getUsefulStack(e, "running ProjectileUpdateThread"));
+		} catch (Throwable ex) {
+			plugin.getLogHandler().debug(Util.getUsefulStack(ex, "running ProjectileUpdateThread"));
 		}
 	}
 }

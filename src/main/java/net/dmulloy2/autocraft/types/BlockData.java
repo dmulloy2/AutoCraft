@@ -1,7 +1,7 @@
 package net.dmulloy2.autocraft.types;
 
 import lombok.Data;
-import net.dmulloy2.autocraft.util.Util;
+import net.dmulloy2.util.Util;
 
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;

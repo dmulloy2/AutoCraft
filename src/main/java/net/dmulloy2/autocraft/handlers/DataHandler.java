@@ -16,8 +16,8 @@ import net.dmulloy2.autocraft.AutoCraft;
 import net.dmulloy2.autocraft.io.FileSerialization;
 import net.dmulloy2.autocraft.types.Reloadable;
 import net.dmulloy2.autocraft.types.ShipData;
-import net.dmulloy2.autocraft.util.MaterialUtil;
-import net.dmulloy2.autocraft.util.Util;
+import net.dmulloy2.util.MaterialUtil;
+import net.dmulloy2.util.Util;
 
 import org.apache.commons.lang.WordUtils;
 import org.bukkit.Material;
