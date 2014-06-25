@@ -52,6 +52,11 @@ public class FactionsHandler extends IntegrationHandler {
 		}
 	}
 
+	@Override
+	public final boolean isEnabled() {
+		return factionsEnabled;
+	}
+
 	public final boolean canPlayerUseWeapon(Player player) {
 		if (! factionsEnabled) {
 			return true;
