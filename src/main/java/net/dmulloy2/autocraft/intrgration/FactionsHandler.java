@@ -1,11 +1,11 @@
 /**
  * (c) 2014 dmulloy2
  */
-package net.dmulloy2.autocraft.handlers;
+package net.dmulloy2.autocraft.intrgration;
 
 import lombok.Getter;
 import net.dmulloy2.autocraft.AutoCraft;
-import net.dmulloy2.handlers.IntegrationHandler;
+import net.dmulloy2.integration.IntegrationHandler;
 
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
