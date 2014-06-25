@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.dmulloy2.autocraft.AutoCraft;
-import net.dmulloy2.autocraft.util.FactionUtil;
 import net.dmulloy2.autocraft.weapons.Napalm;
 import net.dmulloy2.autocraft.weapons.Torpedo;
 import net.dmulloy2.util.FormatUtil;
@@ -90,7 +89,7 @@ public class Ship {
 			plugin.getLogHandler().log("{0} is attempting to drop a bomb.", player.getName());
 			// Can this airship drop bombs?
 			if (data.isDropsBomb()) {
-				if (plugin.isFactionsEnabled() && ! FactionUtil.canPlayerUseWeapon(player)) {
+				if (! plugin.getFactionsHandler().canPlayerUseWeapon(player)) {
 					return;
 				}
 
@@ -134,7 +133,7 @@ public class Ship {
 			plugin.getLogHandler().log("{0} is attempting to fire TNT.", player.getName());
 			// Can this airship drop bombs?
 			if (data.isFiresTnt()) {
-				if (plugin.isFactionsEnabled() && ! FactionUtil.canPlayerUseWeapon(player)) {
+				if (! plugin.getFactionsHandler().canPlayerUseWeapon(player)) {
 					return;
 				}
 
@@ -186,7 +185,7 @@ public class Ship {
 			plugin.getLogHandler().log("{0} is attempting to drop napalm.", player.getName());
 			// Can this airship drop napalm?
 			if (data.isDropsNapalm()) {
-				if (plugin.isFactionsEnabled() && ! FactionUtil.canPlayerUseWeapon(player)) {
+				if (! plugin.getFactionsHandler().canPlayerUseWeapon(player)) {
 					return;
 				}
 
@@ -238,7 +237,7 @@ public class Ship {
 			plugin.getLogHandler().log("{0} is attempting to fire a torpedo", player.getName());
 			// Can this airship fire torpedoes?
 			if (data.isFiresTorpedo()) {
-				if (plugin.isFactionsEnabled() && ! FactionUtil.canPlayerUseWeapon(player)) {
+				if (! plugin.getFactionsHandler().canPlayerUseWeapon(player)) {
 					return;
 				}
 

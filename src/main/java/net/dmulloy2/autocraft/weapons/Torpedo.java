@@ -71,7 +71,7 @@ public class Torpedo extends Projectile {
 				torpedo[0] = b;
 				torpedo[0].setType(Material.DIAMOND_BLOCK);
 			} else {
-				if (plugin.isFactionsEnabled() 
+				if (plugin.getFactionsHandler().isFactionsEnabled()
 						&& ! Board.getFactionAt(new FLocation(b.getLocation())).isNone()
 						&& ! Board.getFactionAt(new FLocation(b.getLocation())).hasPlayersOnline()) {
 					torpedo[0].setType(Material.AIR);

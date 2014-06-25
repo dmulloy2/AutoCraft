@@ -37,6 +37,7 @@ import net.dmulloy2.autocraft.commands.CmdReload;
 import net.dmulloy2.autocraft.commands.CmdRotate;
 import net.dmulloy2.autocraft.commands.CmdTorpedo;
 import net.dmulloy2.autocraft.handlers.DataHandler;
+import net.dmulloy2.autocraft.handlers.FactionsHandler;
 import net.dmulloy2.autocraft.handlers.ShipHandler;
 import net.dmulloy2.autocraft.listeners.PlayerListener;
 import net.dmulloy2.autocraft.types.ShipData;
@@ -58,10 +59,9 @@ import org.bukkit.plugin.PluginManager;
 
 public class AutoCraft extends SwornPlugin implements Reloadable {
 	private @Getter ResourceHandler resourceHandler;
+	private @Getter FactionsHandler factionsHandler;
 	private @Getter DataHandler dataHandler;
 	private @Getter ShipHandler shipHandler;
-
-	private @Getter boolean factionsEnabled;
 
 	private @Getter String prefix = FormatUtil.format("&6[&4&lAC&6] ");
 
@@ -106,16 +106,8 @@ public class AutoCraft extends SwornPlugin implements Reloadable {
 		PluginManager pm = getServer().getPluginManager();
 		pm.registerEvents(new PlayerListener(this), this);
 
-		// Factions integration
-		if (getConfig().getBoolean("factionsProtectionsEnabled", false)) {
-			factionsEnabled = pm.getPlugin("SwornNations") != null;
-
-			if (factionsEnabled) {
-				logHandler.log(getMessage("log_factions_found"));
-			} else {
-				logHandler.log(getMessage("log_factions_notfound"));
-			}
-		}
+		// Integration
+		factionsHandler = new FactionsHandler(this);
 
 		// Permissions
 		registerPermissions();

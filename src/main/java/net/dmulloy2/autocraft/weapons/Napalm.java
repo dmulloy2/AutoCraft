@@ -85,7 +85,7 @@ public class Napalm extends Projectile {
 
 				napalm.getState().update();
 			} else {
-				if (plugin.isFactionsEnabled() 
+				if (plugin.getFactionsHandler().isFactionsEnabled()
 						&& ! Board.getFactionAt(new FLocation(b.getLocation())).isNone()
 						&& ! Board.getFactionAt(new FLocation(b.getLocation())).hasPlayersOnline()) {
 					this.exploded = true;
