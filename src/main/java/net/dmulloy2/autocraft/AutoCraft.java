@@ -38,7 +38,7 @@ import net.dmulloy2.autocraft.commands.CmdRotate;
 import net.dmulloy2.autocraft.commands.CmdTorpedo;
 import net.dmulloy2.autocraft.handlers.DataHandler;
 import net.dmulloy2.autocraft.handlers.ShipHandler;
-import net.dmulloy2.autocraft.intrgration.FactionsHandler;
+import net.dmulloy2.autocraft.integration.FactionsHandler;
 import net.dmulloy2.autocraft.listeners.PlayerListener;
 import net.dmulloy2.autocraft.types.ShipData;
 import net.dmulloy2.commands.CmdHelp;

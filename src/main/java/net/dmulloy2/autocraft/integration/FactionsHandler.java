@@ -1,7 +1,7 @@
 /**
  * (c) 2014 dmulloy2
  */
-package net.dmulloy2.autocraft.intrgration;
+package net.dmulloy2.autocraft.integration;
 
 import lombok.Getter;
 import net.dmulloy2.autocraft.AutoCraft;
@@ -38,7 +38,10 @@ public class FactionsHandler extends IntegrationHandler {
 			PluginManager pm = plugin.getServer().getPluginManager();
 			if (plugin.getConfig().getBoolean("factionsProtectionsEnabled", false)) {
 				factionsEnabled = pm.getPlugin("Factions") != null;
-				swornNationsEnabled = pm.getPlugin("SwornNations") != null;
+				if (pm.getPlugin("SwornNations") != null) {
+					factionsEnabled = true;
+					swornNationsEnabled = true;
+				}
 	
 				if (factionsEnabled) {
 					plugin.getLogHandler().log(plugin.getMessage("log_factions_found"));
