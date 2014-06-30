@@ -969,29 +969,32 @@ public class Ship {
 
 	// Checks all online players to find which are passengers on this ship.
 	public List<Player> getPassengers() {
-		List<Player> ret = new ArrayList<Player>();
+		List<Player> ret = new ArrayList<>();
 
-		for (Player p : plugin.getServer().getOnlinePlayers()) {
-			if (isPassenger(p))
-				ret.add(p);
+		for (Player player : Util.getOnlinePlayers()) {
+			if (isPassenger(player))
+				ret.add(player);
 		}
 
 		return ret;
 	}
 
-	// Checks if player is on any block on the ship and returns true if they
-	// are.
+	// Checks if player is on any block on the ship and returns true if they are.
 	public boolean isPassenger(Player player) {
-		Block[] blocks = this.blocks.clone();
-		for (int i = 0; i < blocks.length; i++) {
-			Block block = blocks[i];
-			if (block.getType().equals(Material.AIR)) {
+		for (Block block : Util.toList(blocks)) {
+			if (player.getWorld().getUID() != block.getWorld().getUID()) {
+				return false;
+			}
+
+			if (block.getType() == Material.AIR) {
 				continue;
 			}
 
 			Block blockon = player.getWorld().getBlockAt(player.getLocation().add(0, -1, 0));
 			Block blockon2 = player.getWorld().getBlockAt(player.getLocation().add(0, -2, 0));
-			if (blockon.getLocation().equals(block.getLocation()) || blockon2.getLocation().equals(block.getLocation())) {
+			if (Util.checkLocation(block.getLocation(), blockon.getLocation())
+					|| Util.checkLocation(block.getLocation(), blockon2.getLocation())
+					|| Util.checkLocation(block.getLocation(), player.getLocation())) {
 				return true;
 			}
 		}
