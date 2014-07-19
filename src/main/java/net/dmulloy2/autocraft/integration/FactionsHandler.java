@@ -6,6 +6,7 @@ package net.dmulloy2.autocraft.integration;
 import lombok.Getter;
 import net.dmulloy2.autocraft.AutoCraft;
 import net.dmulloy2.integration.IntegrationHandler;
+import net.dmulloy2.util.Util;
 
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
@@ -42,7 +43,7 @@ public class FactionsHandler extends IntegrationHandler {
 					factionsEnabled = true;
 					swornNationsEnabled = true;
 				}
-	
+
 				if (factionsEnabled) {
 					plugin.getLogHandler().log(plugin.getMessage("log_factions_found"));
 				} else {
@@ -50,8 +51,9 @@ public class FactionsHandler extends IntegrationHandler {
 				}
 			}
 		} catch (Throwable ex) {
-			factionsEnabled = false;
+			plugin.getLogHandler().debug(Util.getUsefulStack(ex, "setting up Factions integration"));
 			swornNationsEnabled = false;
+			factionsEnabled = false;
 		}
 	}
 
