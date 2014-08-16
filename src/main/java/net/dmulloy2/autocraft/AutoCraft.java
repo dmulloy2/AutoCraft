@@ -17,8 +17,6 @@
  */
 package net.dmulloy2.autocraft;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.MissingResourceException;
 import java.util.logging.Level;
 
@@ -123,7 +121,6 @@ public class AutoCraft extends SwornPlugin implements Reloadable {
 
 		getServer().getScheduler().cancelTasks(this);
 		shipHandler.clearMemory();
-		permissions.clear();
 
 		logHandler.log(getMessage("log_disabled"), getDescription().getFullName(), System.currentTimeMillis() - start);
 	}
@@ -137,16 +134,17 @@ public class AutoCraft extends SwornPlugin implements Reloadable {
 		}
 	}
 
-	private List<Permission> permissions;
-
 	public void registerPermissions() {
-		this.permissions = new ArrayList<Permission>();
-
+		PluginManager pm = getServer().getPluginManager();
 		for (ShipData data : dataHandler.getData()) {
-			PermissionDefault def = data.isNeedsPermission() ? PermissionDefault.FALSE : PermissionDefault.TRUE;
-			Permission perm = new Permission("autocraft." + data.getShipType().toLowerCase(), def);
-			getServer().getPluginManager().addPermission(perm);
-			permissions.add(perm);
+			if (data.isNeedsPermission()) {
+				String node = "autocraft." + data.getShipType().toLowerCase();
+				Permission permission = pm.getPermission(node);
+				if (permission == null) {
+					permission = new Permission(node, PermissionDefault.OP);
+					pm.addPermission(permission);
+				}
+			}
 		}
 	}
 
