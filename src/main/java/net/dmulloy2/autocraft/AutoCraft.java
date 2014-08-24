@@ -17,8 +17,7 @@
  */
 package net.dmulloy2.autocraft;
 
-import java.util.MissingResourceException;
-import java.util.logging.Level;
+import java.io.File;
 
 import lombok.Getter;
 import net.dmulloy2.SwornPlugin;
@@ -71,19 +70,24 @@ public class AutoCraft extends SwornPlugin implements Reloadable {
 		// LogHandler first
 		logHandler = new LogHandler(this);
 
+		// Configuration
+		saveDefaultConfig();
+		reloadConfig();
+
 		// Then messages
-		saveResource("messages.properties", true);
-		resourceHandler = new ResourceHandler(this, getClassLoader());
+		File messages = new File(getDataFolder(), "messages.properties");
+		if (messages.exists()) {
+			messages.delete();
+		}
+
+		// saveResource("messages.properties", true);
+		resourceHandler = new ResourceHandler(this);
 
 		// Register other handlers
 		permissionHandler = new PermissionHandler(this);
 		commandHandler = new CommandHandler(this);
 		dataHandler = new DataHandler(this);
 		shipHandler = new ShipHandler();
-
-		// Configuration
-		saveDefaultConfig();
-		reloadConfig();
 
 		// Register commands
 		commandHandler.setCommandPrefix("ac");
@@ -125,13 +129,8 @@ public class AutoCraft extends SwornPlugin implements Reloadable {
 		logHandler.log(getMessage("log_disabled"), getDescription().getFullName(), System.currentTimeMillis() - start);
 	}
 
-	public String getMessage(String string) {
-		try {
-			return resourceHandler.getMessages().getString(string);
-		} catch (MissingResourceException ex) {
-			logHandler.log(Level.WARNING, getMessage("log_message_missing"), string);
-			return null;
-		}
+	public String getMessage(String key) {
+		return resourceHandler.getMessage(key);
 	}
 
 	public void registerPermissions() {
