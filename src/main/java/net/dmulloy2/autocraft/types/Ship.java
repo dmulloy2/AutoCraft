@@ -7,6 +7,7 @@ import net.dmulloy2.autocraft.AutoCraft;
 import net.dmulloy2.autocraft.weapons.Napalm;
 import net.dmulloy2.autocraft.weapons.Torpedo;
 import net.dmulloy2.util.FormatUtil;
+import net.dmulloy2.util.ListUtil;
 import net.dmulloy2.util.MaterialUtil;
 import net.dmulloy2.util.Util;
 
@@ -194,22 +195,29 @@ public class Ship {
 				Block[] cannons = getCannons();
 				int numfiredcannons = 0;
 				for (int i = 0; i < cannons.length; i++) {
-					if (cannons[i] != null && cannons[i].getRelative(0, -1, 0).getType().equals(Material.AIR)
-							&& cannonHasTnt(cannons[i], plugin.getConfig().getInt("numTntToDropNapalm"))) {
-						boolean missingMaterial = false;
-						for (String mat : plugin.getConfig().getStringList("materialsNeededForNapalm")) {
-							if (! cannonHasItem(cannons[i], MaterialUtil.getMaterial(mat), 1))
-								missingMaterial = true;
+					Block cannon = cannons[i];
+					if (cannon != null && cannon.getRelative(0, -1, 0).getType().equals(Material.AIR)
+							&& cannonHasTnt(cannon, plugin.getConfig().getInt("numTntToDropNapalm"))) {
+						Material missingMaterial = null;
+						for (Material mat : plugin.getNapalmMaterials()) {
+							if (! cannonHasItem(cannon, mat, 1)) {
+								missingMaterial = mat;
+								break;
+							}
 						}
 
-						if (! missingMaterial && numfiredcannons < data.getMaxNumberOfCannons()) {
+						if (missingMaterial != null) {
+							sendMessage("&6Cannon &b{0} &6is missing &b{1}&6!", i, FormatUtil.getFriendlyName(missingMaterial));
+							continue;
+						}
+
+						if (numfiredcannons < data.getMaxNumberOfCannons()) {
 							numfiredcannons++;
 							lastFired = System.currentTimeMillis();
-							withdrawTnt(cannons[i], plugin.getConfig().getInt("numTntToDropNapalm"));
-							for (int id : plugin.getConfig().getIntegerList("materialsNeededForNapalm")) {
-								withdrawItem(cannons[i], MaterialUtil.getMaterial(id), 1);
+							withdrawTnt(cannon, plugin.getConfig().getInt("numTntToDropNapalm"));
+							for (Material mat : plugin.getNapalmMaterials()) {
+								withdrawItem(cannon, mat, 1);
 							}
-
 							// Fire some napalms
 							new Napalm(plugin, cannons[i]);
 
@@ -246,25 +254,33 @@ public class Ship {
 				Block[] cannons = getCannons();
 				int numfiredcannons = 0;
 				for (int i = 0; i < cannons.length; i++) {
-					if (cannons[i] != null && cannonHasTnt(cannons[i], plugin.getConfig().getInt("numTntToFireTorpedo"))) {
-						BlockFace face = ((Directional) cannons[i].getState().getData()).getFacing();
-						boolean missingMaterial = false;
+					Block cannon = cannons[i];
+					if (cannon != null && cannonHasTnt(cannon, plugin.getConfig().getInt("numTntToFireTorpedo"))) {
+						BlockFace face = ((Directional) cannon.getState().getData()).getFacing();
 
-						for (String mat : plugin.getConfig().getStringList("materialsNeededForTorpedo")) {
-							if (!cannonHasItem(cannons[i], MaterialUtil.getMaterial(mat), 1)) {
-								missingMaterial = true;
+						Material missingMaterial = null;
+						for (Material mat : plugin.getTorpedoMaterials()) {
+							if (! cannonHasItem(cannon, mat, 1)) {
+								missingMaterial = mat;
+								break;
 							}
 						}
 
-						if (! cannons[i].getRelative(face.getModX(), 0, face.getModZ()).getType().equals(Material.AIR) || missingMaterial)
+						if (missingMaterial != null) {
+							sendMessage("&6Cannon &b{0} &6is missing &b{1}&6!", i, FormatUtil.getFriendlyName(missingMaterial));
 							continue;
+						}
+
+						if (! cannon.getRelative(face.getModX(), 0, face.getModZ()).getType().equals(Material.AIR)) {
+							continue;
+						}
 
 						if (numfiredcannons < data.getMaxNumberOfCannons()) {
 							numfiredcannons++;
 							lastFired = System.currentTimeMillis();
-							withdrawTnt(cannons[i], plugin.getConfig().getInt("numTntToFireTorpedo"));
-							for (String mat : plugin.getConfig().getStringList("materialsNeededForTorpedo")) {
-								withdrawItem(cannons[i], MaterialUtil.getMaterial(mat), 1);
+							withdrawTnt(cannon, plugin.getConfig().getInt("numTntToFireTorpedo"));
+							for (Material mat : plugin.getTorpedoMaterials()) {
+								withdrawItem(cannon, mat, 1);
 							}
 
 							// Fire some torpedoes
@@ -287,8 +303,7 @@ public class Ship {
 		}
 	}
 
-	// Returns the length of cannon material behind the dispenser or
-	// MAXCANNONLENGTH;
+	// Returns the length of cannon material behind the dispenser or maxCannonLength
 	public double getCannonLength(Block b, int x, int z) {
 		double ret = 1.0;
 		for (int i = 1; i <= data.getMaxCannonLength(); i++) {
@@ -307,8 +322,7 @@ public class Ship {
 		return cannonHasItem(b, Material.TNT, numtnt);
 	}
 
-	// Check if dispenser has any number of item. Only send dispenser block
-	// types here.
+	// Check if dispenser has any number of item. Only send dispenser block types here.
 	public boolean cannonHasItem(Block b, Material mat, int num) {
 		Dispenser dispenser = (Dispenser) b.getState();
 		if (dispenser.getInventory() != null) {
@@ -404,7 +418,6 @@ public class Ship {
 	}
 
 	public void pilot() {
-
 		// Register the ship
 		plugin.getShipHandler().putShip(player, this);
 
@@ -416,7 +429,7 @@ public class Ship {
 		plugin.getLogHandler().log("{0} has started flying {1} at: {2}, {3}, {4} in world {5}", player.getName(),
 				data.getShipType(), player.getLocation().getBlockX(), player.getLocation().getBlockY(),
 				player.getLocation().getBlockZ(), player.getWorld().getName());
-	
+
 	}
 
 	// This method doesn't actually move the ship, only prepares to before it
@@ -489,8 +502,8 @@ public class Ship {
 				for (int i = 0; i < blocks.length; i++) {
 					Vector v = getRotationVector(blocks[i].getLocation(), mainblock, dir);
 					Block block = mainblock.getRelative(v.getBlockX(), v.getBlockY(), v.getBlockZ());
-					if (block.getType().equals(Material.AIR) 
-							|| block.getType().equals(Material.SNOW) 
+					if (block.getType().equals(Material.AIR)
+							|| block.getType().equals(Material.SNOW)
 							|| blockBelongsToShip(block, blocks)
 							|| blockBelongsToShip(block, specialBlocks))
 						continue;
@@ -719,12 +732,12 @@ public class Ship {
 
 	public boolean isSpecial(MaterialData data) {
 		return data instanceof SimpleAttachableMaterialData
-				|| data instanceof org.bukkit.material.Sign 
+				|| data instanceof org.bukkit.material.Sign
 				|| data instanceof Bed
-				|| data instanceof PressurePlate 
-				|| data instanceof RedstoneWire 
-				|| data instanceof Rails 
-				|| data instanceof Diode 
+				|| data instanceof PressurePlate
+				|| data instanceof RedstoneWire
+				|| data instanceof Rails
+				|| data instanceof Diode
 				|| data instanceof Vine;
 	}
 
@@ -802,60 +815,60 @@ public class Ship {
 			if (to.getState() instanceof Sign) {
 				Sign fromSign = (Sign) from.getState();
 				Sign toSign = (Sign) to.getState();
-	
+
 				for (int l = 0; l < 4; l++) {
 					toSign.setLine(l, fromSign.getLine(l));
 				}
-	
+
 				toSign.update(true);
 			}
-	
+
 			if (to.getState() instanceof CommandBlock) {
 				CommandBlock fromCmd = (CommandBlock) from.getState();
 				CommandBlock toCmd = (CommandBlock) to.getState();
-	
+
 				toCmd.setCommand(fromCmd.getCommand());
 				toCmd.setName(fromCmd.getName());
-	
+
 				toCmd.update(true);
 			}
-	
+
 			if (to.getState() instanceof Jukebox) {
 				Jukebox fromBox = (Jukebox) from.getState();
 				Jukebox toBox = (Jukebox) to.getState();
-	
+
 				toBox.setPlaying(fromBox.getPlaying());
-	
+
 				toBox.update(true);
 			}
-	
+
 			if (to.getState() instanceof NoteBlock) {
 				NoteBlock fromBlock = (NoteBlock) from.getState();
 				NoteBlock toBlock = (NoteBlock) to.getState();
-	
+
 				toBlock.setNote(fromBlock.getNote());
-	
+
 				toBlock.update(true);
 			}
-	
+
 			if (to.getState() instanceof Skull) {
 				Skull fromSkull = (Skull) from.getState();
 				Skull toSkull = (Skull) to.getState();
-	
+
 				toSkull.setSkullType(fromSkull.getSkullType());
 				toSkull.setOwner(fromSkull.getOwner());
 				toSkull.setRotation(fromSkull.getRotation());
-	
+
 				toSkull.update(true);
 			}
-	
+
 			if (to.getState() instanceof Furnace) {
 				Furnace fromFurnace = (Furnace) from.getState();
 				Furnace toFurnace = (Furnace) to.getState();
-	
+
 				toFurnace.setBurnTime(fromFurnace.getBurnTime());
 				toFurnace.setCookTime(fromFurnace.getCookTime());
-	
+
 				toFurnace.update(true);
 			}
 		} catch (Throwable ex) {
@@ -918,7 +931,7 @@ public class Ship {
 			sendMessage("&cPlease stand on a valid block for this type of ship");
 		} else {
 			if (blocks.length > data.getMaxBlocks()) {
-				sendMessage("&cYour ship has &e{0}&c/&e{1} &cblocks. Please remove some.", 
+				sendMessage("&cYour ship has &e{0}&c/&e{1} &cblocks. Please remove some.",
 						blocks.length, data.getMaxBlocks());
 			} else if (numMainBlocks < data.getMinBlocks()) {
 				sendMessage("&cYour ship has &e{0}&c/&e{1} {2} &cblocks. Please add more.",
@@ -981,7 +994,7 @@ public class Ship {
 
 	// Checks if player is on any block on the ship and returns true if they are.
 	public boolean isPassenger(Player player) {
-		for (Block block : Util.toList(blocks)) {
+		for (Block block : ListUtil.toList(blocks)) {
 			if (player.getWorld().getUID() != block.getWorld().getUID()) {
 				return false;
 			}
@@ -1059,12 +1072,12 @@ public class Ship {
 					}
 					// Otherwise if the block isn't a block that the ship is
 					// allowed to touch then stop creating the ship.
-				} else if (! data.isValidMaterial(block) 
-						&& ! block.getType().equals(Material.AIR) 
+				} else if (! data.isValidMaterial(block)
+						&& ! block.getType().equals(Material.AIR)
 						&& ! block.getType().equals(Material.SNOW)
-						&& ! block.getType().equals(Material.BEDROCK) 
+						&& ! block.getType().equals(Material.BEDROCK)
 						&& ! block.getType().equals(Material.WATER)
-						&& ! block.getType().equals(Material.STATIONARY_WATER) 
+						&& ! block.getType().equals(Material.STATIONARY_WATER)
 						&& ! data.isIgnoreAttachments()) {
 					plugin.getShipHandler().unpilotShip(player);
 					sendMessage("&cThis ship needs to be floating!");

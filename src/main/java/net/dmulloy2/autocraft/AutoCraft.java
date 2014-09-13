@@ -18,6 +18,7 @@
 package net.dmulloy2.autocraft;
 
 import java.io.File;
+import java.util.List;
 
 import lombok.Getter;
 import net.dmulloy2.SwornPlugin;
@@ -46,7 +47,9 @@ import net.dmulloy2.handlers.PermissionHandler;
 import net.dmulloy2.handlers.ResourceHandler;
 import net.dmulloy2.types.Reloadable;
 import net.dmulloy2.util.FormatUtil;
+import net.dmulloy2.util.MaterialUtil;
 
+import org.bukkit.Material;
 import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
 import org.bukkit.plugin.PluginManager;
@@ -145,6 +148,26 @@ public class AutoCraft extends SwornPlugin implements Reloadable {
 				}
 			}
 		}
+	}
+
+	private List<Material> torpedoMaterials;
+	public List<Material> getTorpedoMaterials() {
+		if (torpedoMaterials == null) {
+			List<String> strings = getConfig().getStringList("materialsNeededForTorpedo");
+			torpedoMaterials = MaterialUtil.fromStrings(strings);
+		}
+
+		return torpedoMaterials;
+	}
+
+	private List<Material> napalmMaterials;
+	public List<Material> getNapalmMaterials() {
+		if (napalmMaterials == null) {
+			List<String> strings = getConfig().getStringList("materialsNeededForNapalm");
+			napalmMaterials = MaterialUtil.fromStrings(strings);
+		}
+
+		return napalmMaterials;
 	}
 
 	@Override
