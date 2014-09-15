@@ -18,7 +18,7 @@ public class CmdRotate extends AutoCraftCommand {
 		this.aliases.add("turn");
 		this.aliases.add("t");
 		this.description = "Turns your airship left or right.";
-		this.requiredArgs.add("left/right");
+		this.addRequiredArg("left/right");
 		this.mustBePlayer = true;
 		this.permission = Permission.CMD_ROTATE;
 	}

@@ -18,7 +18,7 @@ public class CmdAllowed extends AutoCraftCommand {
 		this.name = "allowed";
 		this.aliases.add("a");
 		this.description = getMessage("allowed_description");
-		this.requiredArgs.add("ship type");
+		this.addRequiredArg("ship type");
 		this.permission = Permission.CMD_ALLOWED;
 	}
 

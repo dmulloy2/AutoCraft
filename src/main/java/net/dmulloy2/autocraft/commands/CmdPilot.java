@@ -14,7 +14,7 @@ public class CmdPilot extends AutoCraftCommand {
 		super(plugin);
 		this.name = "pilot";
 		this.aliases.add("p");
-		this.requiredArgs.add("ship type");
+		this.addRequiredArg("ship type");
 		this.description = "Use to pilot ships";
 		this.permission = Permission.CMD_PILOT;
 
