@@ -798,7 +798,6 @@ public class Ship {
 		}
 	}
 
-	@SuppressWarnings("deprecation") // Util#setData(...)
 	public void setBlock(Block to, BlockData from) {
 		to.setType(from.getData().getItemType());
 		Util.setData(to, from.getData());
