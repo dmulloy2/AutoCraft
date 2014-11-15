@@ -50,6 +50,7 @@ import net.dmulloy2.util.FormatUtil;
 import net.dmulloy2.util.MaterialUtil;
 
 import org.bukkit.Material;
+import org.bukkit.entity.Player;
 import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
 import org.bukkit.plugin.PluginManager;
@@ -113,8 +114,9 @@ public class AutoCraft extends SwornPlugin implements Reloadable {
 		PluginManager pm = getServer().getPluginManager();
 		pm.registerEvents(new PlayerListener(this), this);
 
-		// Integration
-		factionsHandler = new FactionsHandler(this);
+		try {
+			factionsHandler = new FactionsHandler(this);
+		} catch (Throwable ex) { }
 
 		// Permissions
 		registerPermissions();
@@ -168,6 +170,10 @@ public class AutoCraft extends SwornPlugin implements Reloadable {
 		}
 
 		return napalmMaterials;
+	}
+
+	public boolean canPlayerUseWeapon(Player player) {
+		return factionsHandler != null && factionsHandler.canPlayerUseWeapon(player);
 	}
 
 	@Override
