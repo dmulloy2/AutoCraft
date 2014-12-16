@@ -90,8 +90,8 @@ public class Ship {
 			plugin.getLogHandler().log("{0} is attempting to drop a bomb.", player.getName());
 			// Can this airship drop bombs?
 			if (data.isDropsBomb()) {
-				if (! plugin.isSwornNationsEnabled() ||
-						plugin.getSwornNationsHandler().canUseWeapon(player)) {
+				if (plugin.isSwornNationsEnabled() &&
+						! plugin.getSwornNationsHandler().canUseWeapon(player)) {
 					return;
 				}
 
@@ -135,8 +135,8 @@ public class Ship {
 			plugin.getLogHandler().log("{0} is attempting to fire TNT.", player.getName());
 			// Can this airship drop bombs?
 			if (data.isFiresTnt()) {
-				if (! plugin.isSwornNationsEnabled() ||
-						plugin.getSwornNationsHandler().canUseWeapon(player)) {
+				if (plugin.isSwornNationsEnabled() &&
+						! plugin.getSwornNationsHandler().canUseWeapon(player)) {
 					return;
 				}
 
@@ -188,8 +188,8 @@ public class Ship {
 			plugin.getLogHandler().log("{0} is attempting to drop napalm.", player.getName());
 			// Can this airship drop napalm?
 			if (data.isDropsNapalm()) {
-				if (! plugin.isSwornNationsEnabled() ||
-						plugin.getSwornNationsHandler().canUseWeapon(player)) {
+				if (plugin.isSwornNationsEnabled() &&
+						! plugin.getSwornNationsHandler().canUseWeapon(player)) {
 					return;
 				}
 
@@ -248,8 +248,8 @@ public class Ship {
 			plugin.getLogHandler().log("{0} is attempting to fire a torpedo", player.getName());
 			// Can this airship fire torpedoes?
 			if (data.isFiresTorpedo()) {
-				if (! plugin.isSwornNationsEnabled() ||
-						plugin.getSwornNationsHandler().canUseWeapon(player)) {
+				if (plugin.isSwornNationsEnabled() &&
+						! plugin.getSwornNationsHandler().canUseWeapon(player)) {
 					return;
 				}
 
