@@ -37,7 +37,7 @@ import net.dmulloy2.autocraft.commands.CmdTorpedo;
 import net.dmulloy2.autocraft.commands.CmdVersion;
 import net.dmulloy2.autocraft.handlers.DataHandler;
 import net.dmulloy2.autocraft.handlers.ShipHandler;
-import net.dmulloy2.autocraft.integration.FactionsHandler;
+import net.dmulloy2.autocraft.integration.SwornNationsHandler;
 import net.dmulloy2.autocraft.listeners.PlayerListener;
 import net.dmulloy2.autocraft.types.ShipData;
 import net.dmulloy2.commands.CmdHelp;
@@ -60,8 +60,8 @@ import org.bukkit.plugin.PluginManager;
  */
 
 public class AutoCraft extends SwornPlugin implements Reloadable {
+	private @Getter SwornNationsHandler swornNationsHandler;
 	private @Getter ResourceHandler resourceHandler;
-	private @Getter FactionsHandler factionsHandler;
 	private @Getter DataHandler dataHandler;
 	private @Getter ShipHandler shipHandler;
 
@@ -114,9 +114,7 @@ public class AutoCraft extends SwornPlugin implements Reloadable {
 		PluginManager pm = getServer().getPluginManager();
 		pm.registerEvents(new PlayerListener(this), this);
 
-		try {
-			factionsHandler = new FactionsHandler(this);
-		} catch (Throwable ex) { }
+		swornNationsHandler = new SwornNationsHandler(this);
 
 		// Permissions
 		registerPermissions();
@@ -172,8 +170,11 @@ public class AutoCraft extends SwornPlugin implements Reloadable {
 		return napalmMaterials;
 	}
 
-	public boolean canPlayerUseWeapon(Player player) {
-		return factionsHandler != null && factionsHandler.canPlayerUseWeapon(player);
+	public boolean canUseWeapon(Player player) {
+		try {
+			return swornNationsHandler.isEnabled() && swornNationsHandler.canUseWeapon(player);
+		} catch (Throwable ex) { }
+		return false;
 	}
 
 	@Override
