@@ -10,6 +10,7 @@ import net.dmulloy2.integration.DependencyProvider;
 import net.dmulloy2.swornnations.SwornNations;
 import net.dmulloy2.util.Util;
 
+import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 
 import com.massivecraft.factions.Board;
@@ -59,6 +60,21 @@ public class SwornNationsHandler extends DependencyProvider<SwornNations> {
 			}
 		} catch (Throwable ex) {
 			handler.getLogHandler().debug(Level.WARNING, Util.getUsefulStack(ex, "canUseWeapon(" + player.getName() + ")"));
+		}
+
+		return true;
+	}
+
+	public final boolean isFactionOffline(Block block) {
+		if (! isEnabled()) {
+			return false;
+		}
+
+		try {
+			Faction faction = Board.getAbsoluteFactionAt(new FLocation(block));
+			return ! faction.isNone() && ! faction.hasPlayersOnline();
+		} catch (Throwable ex) {
+			handler.getLogHandler().debug(Level.WARNING, Util.getUsefulStack(ex, "hasPlayersOnline(" + block + ")"));
 		}
 
 		return true;

@@ -50,7 +50,6 @@ import net.dmulloy2.util.FormatUtil;
 import net.dmulloy2.util.MaterialUtil;
 
 import org.bukkit.Material;
-import org.bukkit.entity.Player;
 import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
 import org.bukkit.plugin.PluginManager;
@@ -114,12 +113,19 @@ public class AutoCraft extends SwornPlugin implements Reloadable {
 		PluginManager pm = getServer().getPluginManager();
 		pm.registerEvents(new PlayerListener(this), this);
 
-		swornNationsHandler = new SwornNationsHandler(this);
+		// Integration
+		setupIntegration();
 
 		// Permissions
 		registerPermissions();
 
 		logHandler.log(getMessage("log_enabled"), getDescription().getFullName(), System.currentTimeMillis() - start);
+	}
+
+	private final void setupIntegration() {
+		try {
+			swornNationsHandler = new SwornNationsHandler(this);
+		} catch (Throwable ex) { }
 	}
 
 	@Override
@@ -170,11 +176,8 @@ public class AutoCraft extends SwornPlugin implements Reloadable {
 		return napalmMaterials;
 	}
 
-	public boolean canUseWeapon(Player player) {
-		try {
-			return swornNationsHandler.isEnabled() && swornNationsHandler.canUseWeapon(player);
-		} catch (Throwable ex) { }
-		return false;
+	public final boolean isSwornNationsEnabled() {
+		return swornNationsHandler != null && swornNationsHandler.isEnabled();
 	}
 
 	@Override

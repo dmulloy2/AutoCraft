@@ -10,9 +10,6 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.entity.TNTPrimed;
 import org.bukkit.material.Wool;
 
-import com.massivecraft.factions.Board;
-import com.massivecraft.factions.FLocation;
-
 /**
  * @author dmulloy2
  */
@@ -71,9 +68,7 @@ public class Torpedo extends Projectile {
 				torpedo[0] = b;
 				torpedo[0].setType(Material.DIAMOND_BLOCK);
 			} else {
-				if (plugin.getSwornNationsHandler().isEnabled()
-						&& ! Board.getFactionAt(new FLocation(b.getLocation())).isNone()
-						&& ! Board.getFactionAt(new FLocation(b.getLocation())).hasPlayersOnline()) {
+				if (plugin.isSwornNationsEnabled() && plugin.getSwornNationsHandler().isFactionOffline(b)) {
 					torpedo[0].setType(Material.AIR);
 					torpedo[1].setType(Material.AIR);
 					this.exploded = true;

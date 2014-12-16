@@ -9,9 +9,6 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.TNTPrimed;
 import org.bukkit.material.Wool;
 
-import com.massivecraft.factions.Board;
-import com.massivecraft.factions.FLocation;
-
 /**
  * @author dmulloy2
  */
@@ -86,9 +83,7 @@ public class Napalm extends Projectile {
 
 				napalm.getState().update();
 			} else {
-				if (plugin.getSwornNationsHandler().isEnabled()
-						&& ! Board.getFactionAt(new FLocation(b.getLocation())).isNone()
-						&& ! Board.getFactionAt(new FLocation(b.getLocation())).hasPlayersOnline()) {
+				if (plugin.isSwornNationsEnabled() && plugin.getSwornNationsHandler().isFactionOffline(b)) {
 					this.exploded = true;
 					return;
 				}
