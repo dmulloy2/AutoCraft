@@ -21,7 +21,6 @@ import net.dmulloy2.util.Util;
 
 import org.apache.commons.lang.WordUtils;
 import org.bukkit.Material;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
 
@@ -81,8 +80,10 @@ public class DataHandler implements Reloadable {
 	public ShipData loadData(File file) {
 		try {
 			// Load the values
-			FileConfiguration fc = YamlConfiguration.loadConfiguration(file);
-			Map<String, Object> map = fc.getValues(true);
+			YamlConfiguration config = new YamlConfiguration();
+			config.load(file);
+
+			Map<String, Object> map = config.getValues(true);
 
 			// New versioning system
 			if (! map.containsKey("version")) {
