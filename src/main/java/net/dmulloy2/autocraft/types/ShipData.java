@@ -116,8 +116,13 @@ public class ShipData implements ConfigurationSerializable {
 				return true;
 		}
 
-		return block.getType() == MaterialUtil.getMaterial(mainType) 
+		return block.getType() == MaterialUtil.getMaterial(mainType)
 				|| block.getType() == MaterialUtil.getMaterial(cannonMaterial)
 				|| block.getType() == Material.DISPENSER;
+	}
+
+	@Override
+	public String toString() {
+		return shipType;
 	}
 }

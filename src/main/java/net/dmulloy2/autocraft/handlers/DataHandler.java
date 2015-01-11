@@ -172,9 +172,7 @@ public class DataHandler implements Reloadable {
 			File file = new File(folder, getFileName(shipData.getShipType()));
 			FileSerialization.save(shipData, file);
 		} catch (Throwable ex) {
-			if (shipData != null) {
-				plugin.getLogHandler().log(Level.SEVERE, Util.getUsefulStack(ex, "saving ship " + shipData.getShipType()));
-			}
+			plugin.getLogHandler().log(Level.SEVERE, Util.getUsefulStack(ex, "saving ship " + shipData));
 		}
 	}
 
