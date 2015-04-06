@@ -1,7 +1,7 @@
 package net.dmulloy2.autocraft.types;
 
 import lombok.Data;
-import net.dmulloy2.util.Util;
+import net.dmulloy2.autocraft.util.BlockStates;
 
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
@@ -34,6 +34,6 @@ public class BlockData {
 
 	@Override
 	public String toString() {
-		return "BlockData { state = " + Util.blockStateToString(state) + ", data = " + data + " }";
+		return "BlockData[state=" + BlockStates.toString(state) + ", data=" + data + "]";
 	}
 }
