@@ -22,7 +22,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-import net.dmulloy2.reflection.ReflectionUtil;
+import net.dmulloy2.reflection.Reflection;
 import net.dmulloy2.util.FormatUtil;
 
 import org.apache.commons.lang.Validate;
@@ -55,7 +55,7 @@ public final class BlockStates {
 	public static Map<String, Object> serialize(BlockState state) {
 		Map<String, Object> ret = new HashMap<>();
 
-		for (Method method : ReflectionUtil.getMethods(state.getClass())) {
+		for (Method method : Reflection.getMethods(state.getClass())) {
 			try {
 				String name = method.getName();
 				if (name.startsWith("get") && method.getParameterTypes().length == 0) {
@@ -80,7 +80,7 @@ public final class BlockStates {
 	 * @param values Data to apply
 	 */
 	public static void deserialize(BlockState state, Map<String, Object> values) {
-		for (Method method : ReflectionUtil.getMethods(state.getClass())) {
+		for (Method method : Reflection.getMethods(state.getClass())) {
 			try {
 				String name = method.getName();
 				if (name.startsWith("set") && method.getParameterTypes().length == 1) {
