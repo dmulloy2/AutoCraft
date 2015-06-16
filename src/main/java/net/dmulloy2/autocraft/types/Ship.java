@@ -16,6 +16,7 @@ import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.block.BlockState;
 import org.bukkit.block.CommandBlock;
 import org.bukkit.block.Dispenser;
 import org.bukkit.block.Furnace;
@@ -538,6 +539,12 @@ public class Ship {
 			// Store in blocks array
 			special[i] = new BlockData(b);
 
+			// Clear inventory (if applicable)
+			BlockState state = b.getState();
+			if (state instanceof InventoryHolder) {
+				((InventoryHolder) state).getInventory().clear();
+			}
+
 			// Reset
 			b.setType(Material.AIR);
 		}
@@ -549,9 +556,10 @@ public class Ship {
 			// Store in blocks aray
 			temp[i] = new BlockData(b);
 
-			// Clear inventory
-			if (blocks[i].getState() instanceof InventoryHolder) {
-				((InventoryHolder) blocks[i].getState()).getInventory().clear();
+			// Clear inventory (if applicable)
+			BlockState state = b.getState();
+			if (state instanceof InventoryHolder) {
+				((InventoryHolder) state).getInventory().clear();
 			}
 
 			// Reset
@@ -600,10 +608,7 @@ public class Ship {
 	public void doMove(int dx, int dy, int dz) {
 		List<Player> passengers = getPassengers();
 
-		boolean fastFly = data.getFastFlyAtSize() == 0 ? false : data.getFastFlyAtSize() < (blocks.length + specialBlocks.length);
-
-		plugin.getLogHandler().debug("Moving ship {0} (x = {1}, y = {2}, z = {3}, fastFly = {4})", this, dx, dy, dz, fastFly);
-
+		boolean fastFly = data.getFastFlyAtSize() != 0 && data.getFastFlyAtSize() < (blocks.length + specialBlocks.length);
 		if (fastFly) {
 			if (largeShipSpecialBlocks == null || largeShipBlocks == null) {
 				largeShipSpecialBlocks = new BlockData[specialBlocks.length];
@@ -612,6 +617,12 @@ public class Ship {
 				// First remove all special blocks from the world
 				for (int i = 0; i < specialBlocks.length; i++) {
 					Block b = specialBlocks[i];
+
+					// Clear inventory (if applicable)
+					BlockState state = b.getState();
+					if (state instanceof InventoryHolder) {
+						((InventoryHolder) state).getInventory().clear();
+					}
 
 					// Store it
 					largeShipSpecialBlocks[i] = new BlockData(b);
@@ -627,9 +638,10 @@ public class Ship {
 					// Store it
 					largeShipBlocks[i] = new BlockData(b);
 
-					// Store inventory (if applicable)
-					if (b.getState() instanceof InventoryHolder) {
-						((InventoryHolder) b.getState()).getInventory().clear();
+					// Clear inventory (if applicable)
+					BlockState state = b.getState();
+					if (state instanceof InventoryHolder) {
+						((InventoryHolder) state).getInventory().clear();
 					}
 
 					// Remove it
@@ -639,6 +651,11 @@ public class Ship {
 				for (int i = 0; i < blocks.length; i++) {
 					Block b = blocks[i];
 					if (b.getType() != Material.AIR) {
+						BlockState state = b.getState();
+						if (state instanceof InventoryHolder) {
+							((InventoryHolder) state).getInventory().clear();
+						}
+
 						b.setType(Material.AIR);
 					}
 				}
@@ -646,6 +663,11 @@ public class Ship {
 				for (int i = 0; i < specialBlocks.length; i++) {
 					Block b = specialBlocks[i];
 					if (b.getType() != Material.AIR) {
+						BlockState state = b.getState();
+						if (state instanceof InventoryHolder) {
+							((InventoryHolder) state).getInventory().clear();
+						}
+
 						b.setType(Material.AIR);
 					}
 				}
@@ -691,6 +713,12 @@ public class Ship {
 			for (int i = 0; i < specialBlocks.length; i++) {
 				Block b = specialBlocks[i];
 
+				// Clear inventory (if applicable)
+				BlockState state = b.getState();
+				if (state instanceof InventoryHolder) {
+					((InventoryHolder) state).getInventory().clear();
+				}
+
 				// Store in special array
 				special[i] = new BlockData(b);
 
@@ -706,8 +734,9 @@ public class Ship {
 				temp[i] = new BlockData(b);
 
 				// Clear inventory (if applicable)
-				if (b.getState() instanceof InventoryHolder) {
-					((InventoryHolder) b.getState()).getInventory().clear();
+				BlockState state = b.getState();
+				if (state instanceof InventoryHolder) {
+					((InventoryHolder) state).getInventory().clear();
 				}
 
 				// Remove it
@@ -879,48 +908,48 @@ public class Ship {
 		}
 	}
 
-//  This is the "clean code" that doesn't work
-//	public void setBlock(Block to, BlockData from) {
-//		to.setType(from.getData().getItemType());
-//		to.getState().setData(from.getData());
-//
-//		setBlockState(to, from);
-//	}
-//
-//	// When the ship is turned
-//	public void setBlock(Block to, BlockData from, TurnDirection dir) {
-//		// Set block type
-//		to.setType(from.getData().getItemType());
-//
-//		MaterialData data = from.getData();
-//
-//		// Directional Materials
-//		if (data instanceof Directional) {
-//			Directional directional = (Directional) data;
-//			directional.setFacingDirection(getRotatedBlockFace(dir, directional));
-//		}
-//
-//		// Special case for trees
-//		if (data instanceof Tree) {
-//			Tree tree = (Tree) data;
-//			BlockFace direction = tree.getDirection();
-//
-//			// Switch from North-South to East-West and vice versa
-//			if (direction == BlockFace.WEST) {
-//				tree.setDirection(BlockFace.NORTH);
-//			} else if (direction == BlockFace.NORTH) {
-//				tree.setDirection(BlockFace.WEST);
-//			} else {
-//				// Directionless or up-down
-//			}
-//		}
-//
-//		// Set the data
-//		to.getState().setData(data);
-//
-//		// Block state stuff
-//		setBlockState(to, from);
-//	}
+	/* This is the "clean code" that doesn't work
+	public void setBlock(Block to, BlockData from) {
+		to.setType(from.getData().getItemType());
+		to.getState().setData(from.getData());
+
+		setBlockState(to, from);
+	}
+
+	// When the ship is turned
+	public void setBlock(Block to, BlockData from, TurnDirection dir) {
+		// Set block type
+		to.setType(from.getData().getItemType());
+
+		MaterialData data = from.getData();
+
+		// Directional Materials
+		if (data instanceof Directional) {
+			Directional directional = (Directional) data;
+			directional.setFacingDirection(getRotatedBlockFace(dir, directional));
+		}
+
+		// Special case for trees
+		if (data instanceof Tree) {
+			Tree tree = (Tree) data;
+			BlockFace direction = tree.getDirection();
+
+			// Switch from North-South to East-West and vice versa
+			if (direction == BlockFace.WEST) {
+				tree.setDirection(BlockFace.NORTH);
+			} else if (direction == BlockFace.NORTH) {
+				tree.setDirection(BlockFace.WEST);
+			} else {
+				// Directionless or up-down
+			}
+		}
+
+		// Set the data
+		to.getState().setData(data);
+
+		// Block state stuff
+		setBlockState(to, from);
+	} */
 
 	// Update main block with which block the player is standing on.
 	public void updateMainBlock() {
@@ -1143,6 +1172,6 @@ public class Ship {
 
 	@Override
 	public String toString() {
-		return "Ship { pilot = " + player.getName() + ", type = " + data.getShipType() + " }";
+		return "Ship[pilot=" + player.getName() + ", type=" + data.getShipType() + "]";
 	}
 }
