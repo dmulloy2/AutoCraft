@@ -106,7 +106,7 @@ public class DataHandler implements Reloadable {
 						if (value instanceof Integer) {
 							Integer i = (Integer) value;
 							map.remove(key);
-							Material mat = MaterialUtil.getMaterial(i.intValue());
+							Material mat = MaterialUtil.getMaterial(i.toString());
 							if (mat != null) {
 								map.put(key, mat.toString());
 							} else {
@@ -122,7 +122,7 @@ public class DataHandler implements Reloadable {
 					List<Integer> allowedBlocks = (List<Integer>) map.get("allowedBlocks");
 					List<String> allowedTypes = new ArrayList<String>();
 					for (int id : allowedBlocks) {
-						Material mat = MaterialUtil.getMaterial(id);
+						Material mat = MaterialUtil.getMaterial(String.valueOf(id));
 						if (mat != null) {
 							allowedTypes.add(mat.toString());
 						} else {
