@@ -7,7 +7,6 @@ import net.dmulloy2.autocraft.AutoCraft;
 import net.dmulloy2.autocraft.weapons.Napalm;
 import net.dmulloy2.autocraft.weapons.Torpedo;
 import net.dmulloy2.util.FormatUtil;
-import net.dmulloy2.util.ListUtil;
 import net.dmulloy2.util.MaterialUtil;
 import net.dmulloy2.util.Util;
 
@@ -1026,8 +1025,8 @@ public class Ship {
 
 	// Checks if player is on any block on the ship and returns true if they are.
 	public boolean isPassenger(Player player) {
-		for (Block block : ListUtil.toList(blocks)) {
-			if (player.getWorld().getUID() != block.getWorld().getUID()) {
+		for (Block block : blocks) {
+			if (! player.getWorld().equals(block.getWorld())) {
 				return false;
 			}
 
@@ -1037,11 +1036,8 @@ public class Ship {
 
 			Block blockon = player.getWorld().getBlockAt(player.getLocation().add(0, -1, 0));
 			Block blockon2 = player.getWorld().getBlockAt(player.getLocation().add(0, -2, 0));
-			if (Util.checkLocation(block.getLocation(), blockon.getLocation())
-					|| Util.checkLocation(block.getLocation(), blockon2.getLocation())
-					|| Util.checkLocation(block.getLocation(), player.getLocation())) {
+			if (block.equals(blockon) || block.equals(blockon2) || Util.coordsEqual(player.getLocation(), block.getLocation()))
 				return true;
-			}
 		}
 
 		return false;
