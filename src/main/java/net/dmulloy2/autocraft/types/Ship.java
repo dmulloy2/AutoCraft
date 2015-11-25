@@ -13,10 +13,12 @@ import net.dmulloy2.util.Util;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
+import org.bukkit.block.Banner;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.CommandBlock;
+import org.bukkit.block.CreatureSpawner;
 import org.bukkit.block.Dispenser;
 import org.bukkit.block.Furnace;
 import org.bukkit.block.Jukebox;
@@ -773,15 +775,8 @@ public class Ship {
 				|| data instanceof Vine;
 	}
 
-	// ---- Block Setting ---- //
+	// Try #2 for clean, non-deprecated code.
 
-	// WARNING: I tried to use Bukkit's BlockState and MaterialData methods, but it was pretty much unsuccessful
-	// The "Magic Value" methods have worked historically, so we're going to use them until they are removed
-	// Hopefully by then I can work out issues with the "cleaner" methods
-	// "Crap code" confirmed to work
-
-	// Crap code - start
-	@SuppressWarnings("deprecation")
 	public void setBlock(Block to, BlockData from, TurnDirection dir) {
 		MaterialData data = from.getData();
 		if (data instanceof Directional) {
@@ -789,23 +784,8 @@ public class Ship {
 			directional.setFacingDirection(getRotatedBlockFace(dir, directional));
 		}
 
-		// Wood isn't a directional material in bukkit >_>
-		if (data.getItemTypeId() == 17) {
-			byte d = data.getData();
-
-			if ((d & 0x4) != 0) {
-				// Currently East-West - Change to North-South
-				data.setData((byte) ((d & 0x3) | 0x8));
-			} else if ((d & 0x8) != 0) {
-				// Currently North-South - Change to East-West
-				data.setData((byte) ((d & 0x3) | 0x4));
-			}
-			// else directionless, we don't need to do anything.
-		}
-
 		setBlock(to, from);
 	}
-	// Crap code - end
 
 	public BlockFace getRotatedBlockFace(TurnDirection dir, Directional data) {
 		BlockFace face;
@@ -831,124 +811,84 @@ public class Ship {
 	}
 
 	public void setBlock(Block to, BlockData from) {
-		to.setType(from.getData().getItemType());
-		Util.setData(to, from.getData());
-
-		to.getState().update(true);
+		BlockState state = to.getState();
+		MaterialData data = from.getData();
+		state.setType(data.getItemType());
+		state.setData(data);
+		state.update(true, false);
 
 		if (from.getInventory() != null) {
 			Inventory inv = ((InventoryHolder) to.getState()).getInventory();
 			inv.setContents(from.getInventory());
-			to.getState().update(true);
 		}
 
-		try {
-			if (to.getState() instanceof Sign) {
-				Sign fromSign = (Sign) from.getState();
-				Sign toSign = (Sign) to.getState();
+		if (to.getState() instanceof Sign) {
+			Sign fromSign = (Sign) from.getState();
+			Sign toSign = (Sign) to.getState();
 
-				for (int l = 0; l < 4; l++) {
-					toSign.setLine(l, fromSign.getLine(l));
-				}
-
-				toSign.update(true);
+			for (int l = 0; l < 4; l++) {
+				toSign.setLine(l, fromSign.getLine(l));
 			}
-
-			if (to.getState() instanceof CommandBlock) {
-				CommandBlock fromCmd = (CommandBlock) from.getState();
-				CommandBlock toCmd = (CommandBlock) to.getState();
-
-				toCmd.setCommand(fromCmd.getCommand());
-				toCmd.setName(fromCmd.getName());
-
-				toCmd.update(true);
-			}
-
-			if (to.getState() instanceof Jukebox) {
-				Jukebox fromBox = (Jukebox) from.getState();
-				Jukebox toBox = (Jukebox) to.getState();
-
-				toBox.setPlaying(fromBox.getPlaying());
-
-				toBox.update(true);
-			}
-
-			if (to.getState() instanceof NoteBlock) {
-				NoteBlock fromBlock = (NoteBlock) from.getState();
-				NoteBlock toBlock = (NoteBlock) to.getState();
-
-				toBlock.setNote(fromBlock.getNote());
-
-				toBlock.update(true);
-			}
-
-			if (to.getState() instanceof Skull) {
-				Skull fromSkull = (Skull) from.getState();
-				Skull toSkull = (Skull) to.getState();
-
-				toSkull.setSkullType(fromSkull.getSkullType());
-				toSkull.setOwner(fromSkull.getOwner());
-				toSkull.setRotation(fromSkull.getRotation());
-
-				toSkull.update(true);
-			}
-
-			if (to.getState() instanceof Furnace) {
-				Furnace fromFurnace = (Furnace) from.getState();
-				Furnace toFurnace = (Furnace) to.getState();
-
-				toFurnace.setBurnTime(fromFurnace.getBurnTime());
-				toFurnace.setCookTime(fromFurnace.getCookTime());
-
-				toFurnace.update(true);
-			}
-		} catch (Throwable ex) {
-			debug(Util.getUsefulStack(ex, "updating block state for ship " + this));
 		}
+
+		if (to.getState() instanceof CommandBlock) {
+			CommandBlock fromCmd = (CommandBlock) from.getState();
+			CommandBlock toCmd = (CommandBlock) to.getState();
+
+			toCmd.setCommand(fromCmd.getCommand());
+			toCmd.setName(fromCmd.getName());
+		}
+
+		if (to.getState() instanceof Jukebox) {
+			Jukebox fromBox = (Jukebox) from.getState();
+			Jukebox toBox = (Jukebox) to.getState();
+
+			toBox.setPlaying(fromBox.getPlaying());
+		}
+
+		if (to.getState() instanceof NoteBlock) {
+			NoteBlock fromBlock = (NoteBlock) from.getState();
+			NoteBlock toBlock = (NoteBlock) to.getState();
+
+			toBlock.setNote(fromBlock.getNote());
+		}
+
+		if (to.getState() instanceof Skull) {
+			Skull fromSkull = (Skull) from.getState();
+			Skull toSkull = (Skull) to.getState();
+
+			toSkull.setSkullType(fromSkull.getSkullType());
+			toSkull.setOwner(fromSkull.getOwner());
+			toSkull.setRotation(fromSkull.getRotation());
+		}
+
+		if (to.getState() instanceof Furnace) {
+			Furnace fromFurnace = (Furnace) from.getState();
+			Furnace toFurnace = (Furnace) to.getState();
+
+			toFurnace.setBurnTime(fromFurnace.getBurnTime());
+			toFurnace.setCookTime(fromFurnace.getCookTime());
+		}
+
+		if (to.getState() instanceof Banner) {
+			Banner fromBanner = (Banner) from.getState();
+			Banner toBanner = (Banner) to.getState();
+
+			toBanner.setBaseColor(fromBanner.getBaseColor());
+			toBanner.setPatterns(fromBanner.getPatterns());
+		}
+
+		if (to.getState() instanceof CreatureSpawner) {
+			CreatureSpawner fromSpawner = (CreatureSpawner) from.getState();
+			CreatureSpawner toSpawner = (CreatureSpawner) to.getState();
+
+			toSpawner.setSpawnedType(fromSpawner.getSpawnedType());
+			toSpawner.setDelay(fromSpawner.getDelay());
+		}
+
+		// TODO Update whenever new BlockStates are added to Bukkit
+		state.update(true, false);
 	}
-
-	/* This is the "clean code" that doesn't work
-	public void setBlock(Block to, BlockData from) {
-		to.setType(from.getData().getItemType());
-		to.getState().setData(from.getData());
-
-		setBlockState(to, from);
-	}
-
-	// When the ship is turned
-	public void setBlock(Block to, BlockData from, TurnDirection dir) {
-		// Set block type
-		to.setType(from.getData().getItemType());
-
-		MaterialData data = from.getData();
-
-		// Directional Materials
-		if (data instanceof Directional) {
-			Directional directional = (Directional) data;
-			directional.setFacingDirection(getRotatedBlockFace(dir, directional));
-		}
-
-		// Special case for trees
-		if (data instanceof Tree) {
-			Tree tree = (Tree) data;
-			BlockFace direction = tree.getDirection();
-
-			// Switch from North-South to East-West and vice versa
-			if (direction == BlockFace.WEST) {
-				tree.setDirection(BlockFace.NORTH);
-			} else if (direction == BlockFace.NORTH) {
-				tree.setDirection(BlockFace.WEST);
-			} else {
-				// Directionless or up-down
-			}
-		}
-
-		// Set the data
-		to.getState().setData(data);
-
-		// Block state stuff
-		setBlockState(to, from);
-	} */
 
 	// Update main block with which block the player is standing on.
 	public void updateMainBlock() {
@@ -1052,23 +992,22 @@ public class Ship {
 
 		if (blockList != null) {
 			List<Block> specialBlockList = new ArrayList<Block>();
-			for (Block b : blockList.toArray(new Block[0])) {
+			for (Block b : blockList.toArray(new Block[blockList.size()])) {
 				if (isSpecial(b.getState().getData())) {
 					specialBlockList.add(b);
 					blockList.remove(b);
 				}
 			}
 
-			blocks = blockList.toArray(new Block[0]);
-			specialBlocks = specialBlockList.toArray(new Block[0]);
+			blocks = blockList.toArray(new Block[blockList.size()]);
+			specialBlocks = specialBlockList.toArray(new Block[specialBlockList.size()]);
 			return true;
 		}
 
 		return false;
 	}
 
-	// Recursively call this method for every block relative to the starting
-	// block.
+	// Recursively call this method for every block relative to the starting block.
 	public List<Block> recurse(Block block, List<Block> blockList, boolean recursionCap) {
 		if (recursionCap && (System.currentTimeMillis() - recursionStartTime) >= 20 * 20) {
 			plugin.getShipHandler().unpilotShip(player);
@@ -1077,13 +1016,11 @@ public class Ship {
 			return null;
 		}
 
-		boolean original = blockList != null ? blockList.isEmpty() : false;
-
-		if (! stopped) {
+		if (blockList != null && ! stopped) {
 			if (blockList.size() <= data.getMaxBlocks()) {
 				// If this new block to be checked doesn't already belong to the
 				// ship and is a valid material, accept it.
-				if (! blockBelongsToShip(block, blockList.toArray(new Block[0])) && data.isValidMaterial(block)) {
+				if (! blockBelongsToShip(block, blockList.toArray(new Block[blockList.size()])) && data.isValidMaterial(block)) {
 					// If its material is same as main type than add to number
 					// of main block count.
 					if (block.getType() == MaterialUtil.getMaterial(data.getMainType()))
@@ -1125,7 +1062,7 @@ public class Ship {
 			}
 		}
 
-		if (original && blockList != null) {
+		if (blockList != null && blockList.isEmpty()) {
 			// Check each direction for if the ship is larger than specified
 			// ship dimensions.
 			for (Direction dir : Direction.values()) {

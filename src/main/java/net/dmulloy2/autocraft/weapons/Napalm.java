@@ -1,11 +1,11 @@
 package net.dmulloy2.autocraft.weapons;
 
 import net.dmulloy2.autocraft.AutoCraft;
-import net.dmulloy2.util.Util;
 
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockState;
 import org.bukkit.entity.TNTPrimed;
 import org.bukkit.material.Wool;
 
@@ -21,16 +21,10 @@ public class Napalm extends Projectile {
 
 		napalm = dispenser.getRelative(0, -1, 0);
 
-		// Set type
-		napalm.setType(Material.WOOL);
-
-		// Set color
-		Wool wool = new Wool();
-		wool.setColor(DyeColor.GREEN);
-		Util.setData(napalm, wool);
-
-		// Update
-		napalm.getState().update();
+		BlockState state = napalm.getState();
+		state.setType(Material.WOOL);
+		state.setData(new Wool(DyeColor.GREEN));
+		state.update(true);
 	}
 
 	public void explode() {
@@ -75,13 +69,10 @@ public class Napalm extends Projectile {
 				napalm.setType(Material.AIR);
 				napalm = b;
 
-				napalm.setType(Material.WOOL);
-
-				Wool wool = new Wool();
-				wool.setColor(DyeColor.GREEN);
-				Util.setData(napalm, wool);
-
-				napalm.getState().update();
+				BlockState state = napalm.getState();
+				state.setType(Material.WOOL);
+				state.setData(new Wool(DyeColor.GREEN));
+				state.update(true);
 			} else {
 				if (plugin.isSwornNationsEnabled() && plugin.getSwornNationsHandler().isFactionOffline(b)) {
 					this.exploded = true;

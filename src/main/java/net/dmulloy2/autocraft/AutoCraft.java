@@ -46,7 +46,6 @@ import net.dmulloy2.handlers.CommandHandler;
 import net.dmulloy2.handlers.LogHandler;
 import net.dmulloy2.handlers.PermissionHandler;
 import net.dmulloy2.handlers.ResourceHandler;
-import net.dmulloy2.types.Reloadable;
 import net.dmulloy2.util.FormatUtil;
 import net.dmulloy2.util.MaterialUtil;
 
@@ -59,7 +58,7 @@ import org.bukkit.plugin.PluginManager;
  * @author dmulloy2
  */
 
-public class AutoCraft extends SwornPlugin implements Reloadable {
+public class AutoCraft extends SwornPlugin {
 	private @Getter SwornNationsHandler swornNationsHandler;
 	private @Getter ResourceHandler resourceHandler;
 	private @Getter DataHandler dataHandler;
