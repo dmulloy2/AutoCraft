@@ -39,6 +39,7 @@ import org.bukkit.material.Rails;
 import org.bukkit.material.RedstoneWire;
 import org.bukkit.material.SimpleAttachableMaterialData;
 import org.bukkit.material.Stairs;
+import org.bukkit.material.Tree;
 import org.bukkit.material.Vine;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
@@ -775,13 +776,20 @@ public class Ship {
 				|| data instanceof Vine;
 	}
 
-	// Try #2 for clean, non-deprecated code.
-
 	public void setBlock(Block to, BlockData from, TurnDirection dir) {
 		MaterialData data = from.getData();
 		if (data instanceof Directional) {
 			Directional directional = (Directional) data;
 			directional.setFacingDirection(getRotatedBlockFace(dir, directional));
+		}
+
+		// Special case for logs
+		if (data instanceof Tree) {
+			Tree tree = (Tree) data;
+			BlockFace direction = tree.getDirection();
+			if (direction != BlockFace.UP && direction != BlockFace.DOWN && direction != BlockFace.SELF) {
+				tree.setDirection(getRotatedBlockFace(dir, direction));
+			}
 		}
 
 		setBlock(to, from);
@@ -796,6 +804,10 @@ public class Ship {
 			face = data.getFacing();
 		}
 
+		return getRotatedBlockFace(dir, face);
+	}
+
+	public BlockFace getRotatedBlockFace(TurnDirection dir, BlockFace face) {
 		switch (face) {
 			case EAST:
 				return dir == TurnDirection.RIGHT ? BlockFace.SOUTH : BlockFace.NORTH;
