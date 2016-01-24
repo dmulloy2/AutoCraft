@@ -1,4 +1,4 @@
-package net.dmulloy2.autocraft.types;
+package net.dmulloy2.autocraft.ship;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;

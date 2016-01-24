@@ -19,7 +19,6 @@
 package net.dmulloy2.autocraft;
 
 import java.io.File;
-import java.util.List;
 
 import lombok.Getter;
 import net.dmulloy2.SwornPlugin;
@@ -40,16 +39,14 @@ import net.dmulloy2.autocraft.handlers.DataHandler;
 import net.dmulloy2.autocraft.handlers.ShipHandler;
 import net.dmulloy2.autocraft.integration.SwornNationsHandler;
 import net.dmulloy2.autocraft.listeners.PlayerListener;
-import net.dmulloy2.autocraft.types.ShipData;
+import net.dmulloy2.autocraft.ship.ShipData;
 import net.dmulloy2.commands.CmdHelp;
 import net.dmulloy2.handlers.CommandHandler;
 import net.dmulloy2.handlers.LogHandler;
 import net.dmulloy2.handlers.PermissionHandler;
 import net.dmulloy2.handlers.ResourceHandler;
 import net.dmulloy2.util.FormatUtil;
-import net.dmulloy2.util.MaterialUtil;
 
-import org.bukkit.Material;
 import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
 import org.bukkit.plugin.PluginManager;
@@ -76,6 +73,7 @@ public class AutoCraft extends SwornPlugin {
 		// Configuration
 		saveDefaultConfig();
 		reloadConfig();
+		Config.load(this);
 
 		// Then messages
 		File messages = new File(getDataFolder(), "messages.properties");
@@ -156,7 +154,7 @@ public class AutoCraft extends SwornPlugin {
 		}
 	}
 
-	private List<Material> torpedoMaterials;
+	/*private List<Material> torpedoMaterials;
 	public List<Material> getTorpedoMaterials() {
 		if (torpedoMaterials == null) {
 			List<String> strings = getConfig().getStringList("materialsNeededForTorpedo");
@@ -174,7 +172,7 @@ public class AutoCraft extends SwornPlugin {
 		}
 
 		return napalmMaterials;
-	}
+	}*/
 
 	public final boolean isSwornNationsEnabled() {
 		return swornNationsHandler != null && swornNationsHandler.isEnabled();
@@ -183,6 +181,7 @@ public class AutoCraft extends SwornPlugin {
 	@Override
 	public void reload() {
 		reloadConfig();
+		Config.load(this);
 		dataHandler.reload();
 	}
 }

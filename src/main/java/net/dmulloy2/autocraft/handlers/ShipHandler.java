@@ -1,10 +1,13 @@
 package net.dmulloy2.autocraft.handlers;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
-import net.dmulloy2.autocraft.types.Ship;
+import net.dmulloy2.autocraft.Config;
+import net.dmulloy2.autocraft.ship.Ship;
 
 import org.bukkit.entity.Player;
 
@@ -14,9 +17,11 @@ import org.bukkit.entity.Player;
 
 public class ShipHandler {
 	private Map<String, Ship> ships;
+	private List<Ship> sinking;
 
 	public ShipHandler() {
-		ships = new HashMap<String, Ship>();
+		ships = new HashMap<>();
+		sinking = new ArrayList<>();
 	}
 
 	public void putShip(Player player, Ship ship) {
@@ -36,10 +41,18 @@ public class ShipHandler {
 	}
 
 	public void unpilotShip(Player player) {
-		ships.remove(player.getName());
+		Ship ship = ships.remove(player.getName());
+		if (ship != null && Config.sinkingEnabled) {
+			ship.startSinking();
+		}
 	}
 
 	public void clearMemory() {
 		ships.clear();
+		sinking.clear();
+	}
+
+	public List<Ship> getSinking() {
+		return sinking;
 	}
 }

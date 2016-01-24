@@ -1,9 +1,15 @@
-package net.dmulloy2.autocraft.types;
+package net.dmulloy2.autocraft.ship;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import net.dmulloy2.autocraft.AutoCraft;
+import net.dmulloy2.autocraft.Config;
+import net.dmulloy2.autocraft.types.BlockData;
+import net.dmulloy2.autocraft.types.Direction;
+import net.dmulloy2.autocraft.types.RelativePosition;
+import net.dmulloy2.autocraft.types.TurnDirection;
 import net.dmulloy2.autocraft.weapons.Napalm;
 import net.dmulloy2.autocraft.weapons.Torpedo;
 import net.dmulloy2.util.FormatUtil;
@@ -48,13 +54,13 @@ import org.bukkit.util.Vector;
  * @author dmulloy2
  */
 
-public class Ship {
-	private AutoCraft plugin;
+public class Ship extends BukkitRunnable {
+	private boolean isSinking = false;
 
 	private ShipData data;
 
 	// Changes to true if the ship has a problem creating.
-	private boolean stopped;
+	private boolean creationFailed = false;
 	private Player player;
 
 	// Used for checking if weapon cooldown is over.
@@ -76,6 +82,8 @@ public class Ship {
 	// Place holder for the block the player is standing on.
 	private Block mainblock;
 
+	private final AutoCraft plugin;
+
 	public Ship(Player player, ShipData data, AutoCraft plugin) {
 		this.player = player;
 		this.data = data;
@@ -86,10 +94,20 @@ public class Ship {
 		startShip();
 	}
 
+	@Override
+	public void run() {
+		if (! isSinking) {
+			cancel();
+			return;
+		}
+
+		move(0, -1, 0);
+	}
+
 	// Drop tnt bombs :D
 	public void drop() {
 		// Has player waited cooldown before trying to fire again?
-		if ((System.currentTimeMillis() - lastFired) > (plugin.getConfig().getInt("weaponCooldownTime") * 1000)) {
+		if ((System.currentTimeMillis() - lastFired) > (Config.weaponCooldownTime)) {
 			plugin.getLogHandler().log("{0} is attempting to drop a bomb.", player.getName());
 			// Can this airship drop bombs?
 			if (data.isDropsBomb()) {
@@ -104,11 +122,11 @@ public class Ship {
 				int numfiredcannons = 0;
 				for (int i = 0; i < cannons.length; i++) {
 					if (cannons[i] != null && cannons[i].getRelative(0, -1, 0).getType().equals(Material.AIR)
-							&& cannonHasTnt(cannons[i], plugin.getConfig().getInt("numTntToDropBomb"))) {
+							&& cannonHasTnt(cannons[i], Config.numTntToDropBomb)) {
 						if (numfiredcannons < data.getMaxNumberOfCannons()) {
 							numfiredcannons++;
 							lastFired = System.currentTimeMillis();
-							withdrawTnt(cannons[i], plugin.getConfig().getInt("numTntToDropBomb"));
+							withdrawTnt(cannons[i], Config.numTntToDropBomb);
 
 							// Spawn primed tnt firing downwards
 							TNTPrimed tnt = cannons[i].getWorld().spawn(cannons[i].getLocation().clone().add(0, -1, 0), TNTPrimed.class);
@@ -134,7 +152,7 @@ public class Ship {
 	// Fire tnt like a cannon :3
 	public void fire() {
 		// Has player waited cooldown before trying to fire again?
-		if ((System.currentTimeMillis() - lastFired) > (plugin.getConfig().getInt("weaponCooldownTime") * 1000)) {
+		if ((System.currentTimeMillis() - lastFired) > (Config.weaponCooldownTime)) {
 			plugin.getLogHandler().log("{0} is attempting to fire TNT.", player.getName());
 			// Can this airship drop bombs?
 			if (data.isFiresTnt()) {
@@ -148,7 +166,7 @@ public class Ship {
 				Block[] cannons = getCannons();
 				int numfiredcannons = 0;
 				for (int i = 0; i < cannons.length; i++) {
-					if (cannons[i] != null && cannonHasTnt(cannons[i], plugin.getConfig().getInt("numTntToFireNormal"))) {
+					if (cannons[i] != null && cannonHasTnt(cannons[i], Config.numTntToFireNormal)) {
 						double dist = 0.4;
 						BlockFace face = ((Directional) cannons[i].getState().getData()).getFacing();
 						int x = face.getModX();
@@ -159,7 +177,7 @@ public class Ship {
 							if (numfiredcannons < data.getMaxNumberOfCannons()) {
 								numfiredcannons++;
 								lastFired = System.currentTimeMillis();
-								withdrawTnt(cannons[i], plugin.getConfig().getInt("numTntToFireNormal"));
+								withdrawTnt(cannons[i], Config.numTntToFireNormal);
 
 								// Spawn primed tnt firing in the direction of
 								// the dispenser
@@ -187,7 +205,7 @@ public class Ship {
 	// Drop some napalms ;o
 	public void dropNapalm() {
 		// Has player waited cooldown before trying to fire again?
-		if ((System.currentTimeMillis() - lastFired) > (plugin.getConfig().getInt("weaponCooldownTime") * 1000)) {
+		if ((System.currentTimeMillis() - lastFired) > (Config.weaponCooldownTime)) {
 			plugin.getLogHandler().log("{0} is attempting to drop napalm.", player.getName());
 			// Can this airship drop napalm?
 			if (data.isDropsNapalm()) {
@@ -203,9 +221,9 @@ public class Ship {
 				for (int i = 0; i < cannons.length; i++) {
 					Block cannon = cannons[i];
 					if (cannon != null && cannon.getRelative(0, -1, 0).getType().equals(Material.AIR)
-							&& cannonHasTnt(cannon, plugin.getConfig().getInt("numTntToDropNapalm"))) {
+							&& cannonHasTnt(cannon, Config.numTntToDropNapalm)) {
 						Material missingMaterial = null;
-						for (Material mat : plugin.getNapalmMaterials()) {
+						for (Material mat : Config.materialsNeededForNapalm) {
 							if (! cannonHasItem(cannon, mat, 1)) {
 								missingMaterial = mat;
 								break;
@@ -220,8 +238,8 @@ public class Ship {
 						if (numfiredcannons < data.getMaxNumberOfCannons()) {
 							numfiredcannons++;
 							lastFired = System.currentTimeMillis();
-							withdrawTnt(cannon, plugin.getConfig().getInt("numTntToDropNapalm"));
-							for (Material mat : plugin.getNapalmMaterials()) {
+							withdrawTnt(cannon, Config.numTntToDropNapalm);
+							for (Material mat : Config.materialsNeededForNapalm) {
 								withdrawItem(cannon, mat, 1);
 							}
 							// Fire some napalms
@@ -247,7 +265,7 @@ public class Ship {
 	// Fire some torpedoes c:
 	public void fireTorpedo() {
 		// Has player waited cooldown before trying to fire again?
-		if ((System.currentTimeMillis() - lastFired) > (plugin.getConfig().getInt("weaponCooldownTime") * 1000)) {
+		if ((System.currentTimeMillis() - lastFired) > (Config.weaponCooldownTime)) {
 			plugin.getLogHandler().log("{0} is attempting to fire a torpedo", player.getName());
 			// Can this airship fire torpedoes?
 			if (data.isFiresTorpedo()) {
@@ -262,11 +280,11 @@ public class Ship {
 				int numfiredcannons = 0;
 				for (int i = 0; i < cannons.length; i++) {
 					Block cannon = cannons[i];
-					if (cannon != null && cannonHasTnt(cannon, plugin.getConfig().getInt("numTntToFireTorpedo"))) {
+					if (cannon != null && cannonHasTnt(cannon, Config.numTntToFireTorpedo)) {
 						BlockFace face = ((Directional) cannon.getState().getData()).getFacing();
 
 						Material missingMaterial = null;
-						for (Material mat : plugin.getTorpedoMaterials()) {
+						for (Material mat : Config.materialsNeededForTorpedo) {
 							if (! cannonHasItem(cannon, mat, 1)) {
 								missingMaterial = mat;
 								break;
@@ -285,8 +303,8 @@ public class Ship {
 						if (numfiredcannons < data.getMaxNumberOfCannons()) {
 							numfiredcannons++;
 							lastFired = System.currentTimeMillis();
-							withdrawTnt(cannon, plugin.getConfig().getInt("numTntToFireTorpedo"));
-							for (Material mat : plugin.getTorpedoMaterials()) {
+							withdrawTnt(cannon, Config.numTntToFireTorpedo);
+							for (Material mat : Config.materialsNeededForTorpedo) {
 								withdrawItem(cannon, mat, 1);
 							}
 
@@ -443,7 +461,7 @@ public class Ship {
 	// calls domove().
 	public void move(int dx, int dy, int dz) {
 		// If the airship has been stopped then remove it from the mapping.
-		if (stopped) {
+		if (creationFailed) {
 			plugin.getShipHandler().unpilotShip(player);
 		} else {
 			// Check that the ship hasn't already moved within the last second.
@@ -484,6 +502,7 @@ public class Ship {
 				// Can't move :/
 				if (obstruction) {
 					sendMessage("&eObstruction - &cCannot move any further in this direction.");
+					isSinking = false; // Stop the ship from sinking
 				} else {
 					// Lets move this thing :D
 					doMove(dx, dy, dz);
@@ -493,7 +512,7 @@ public class Ship {
 	}
 
 	public void rotate(TurnDirection dir) {
-		if (stopped) {
+		if (creationFailed) {
 			plugin.getShipHandler().unpilotShip(player);
 		} else {
 			// Check that the ship hasn't moved within the last second.
@@ -936,11 +955,31 @@ public class Ship {
 	public boolean isShipAlreadyPiloted() {
 		for (Ship othership : plugin.getShipHandler().getShips()) {
 			for (int i = 0; i < othership.blocks.length; i++) {
-				if (blockBelongsToShip(othership.blocks[i], blocks))
+				if (blockBelongsToShip(othership.blocks[i], blocks)) {
 					return true;
+				}
 			}
 		}
+
+		Iterator<Ship> iter = plugin.getShipHandler().getSinking().iterator();
+		while (iter.hasNext()) {
+			Ship sinking = iter.next();
+			for (int i = 0; i < sinking.blocks.length; i++) {
+				if (blockBelongsToShip(sinking.blocks[i], blocks)) {
+					sinking.cancel();
+					iter.remove();
+				}
+			}
+		}
+
 		return false;
+	}
+
+	// Starts the sinking process
+	public void startSinking() {
+		this.player = null;
+		this.isSinking = true;
+		runTaskTimer(plugin, 0, Config.sinkingInterval);
 	}
 
 	// Checks that the block being queried belongs to the block list for this
@@ -968,8 +1007,9 @@ public class Ship {
 		List<Player> ret = new ArrayList<>();
 
 		for (Player player : Util.getOnlinePlayers()) {
-			if (isPassenger(player))
+			if (isPassenger(player)) {
 				ret.add(player);
+			}
 		}
 
 		return ret;
@@ -1000,7 +1040,7 @@ public class Ship {
 	public boolean beginRecursion(Block block) {
 		recursionStartTime = System.currentTimeMillis();
 		List<Block> blockList = new ArrayList<Block>(data.getMaxBlocks());
-		blockList = recurse(block, blockList, plugin.getConfig().getBoolean("recursionCap", false));
+		blockList = recurse(block, blockList, Config.recursionCap);
 
 		if (blockList != null) {
 			List<Block> specialBlockList = new ArrayList<Block>();
@@ -1021,14 +1061,14 @@ public class Ship {
 
 	// Recursively call this method for every block relative to the starting block.
 	public List<Block> recurse(Block block, List<Block> blockList, boolean recursionCap) {
-		if (recursionCap && (System.currentTimeMillis() - recursionStartTime) >= 20 * 20) {
+		if (recursionCap && (System.currentTimeMillis() - recursionStartTime) >= Config.maxRecursionTime) {
 			plugin.getShipHandler().unpilotShip(player);
 			sendMessage("&cRecursion took too long! This ship may be too big!");
-			this.stopped = true;
+			this.creationFailed = true;
 			return null;
 		}
 
-		if (blockList != null && ! stopped) {
+		if (blockList != null && ! creationFailed) {
 			if (blockList.size() <= data.getMaxBlocks()) {
 				// If this new block to be checked doesn't already belong to the
 				// ship and is a valid material, accept it.
@@ -1062,14 +1102,14 @@ public class Ship {
 							FormatUtil.getFriendlyName(block.getType()));
 					sendMessage(str);
 					plugin.getLogHandler().debug("{0} had a problem flying an airship: {1}", player.getName(), str);
-					this.stopped = true;
+					this.creationFailed = true;
 					return null;
 				}
 			} else {
 				// Ship is too large as defined by built in limit
 				plugin.getShipHandler().unpilotShip(player);
 				sendMessage("&7This ship has {0} blocks! Max: {1}", blockList.size(), data.getMaxBlocks());
-				this.stopped = true;
+				this.creationFailed = true;
 				return null;
 			}
 		}
@@ -1090,7 +1130,7 @@ public class Ship {
 				if (max - min > data.getMaxShipDimensions()) {
 					plugin.getShipHandler().unpilotShip(player);
 					sendMessage("&cThis ship is either too long, too tall or too wide!");
-					this.stopped = true;
+					this.creationFailed = true;
 					return null;
 				}
 			}
@@ -1100,11 +1140,15 @@ public class Ship {
 	}
 
 	public void sendMessage(String msg, Object... args) {
-		player.sendMessage(plugin.getPrefix() + FormatUtil.format(msg, args));
+		if (player != null) {
+			player.sendMessage(plugin.getPrefix() + FormatUtil.format(msg, args));
+		}
 	}
 
 	public void playSound(Location location, Sound sound, float volume, float pitch) {
-		player.getWorld().playSound(location, sound, volume, pitch);
+		if (player != null) {
+			player.getWorld().playSound(location, sound, volume, pitch);
+		}
 	}
 
 	public ShipData getData() {
@@ -1117,6 +1161,10 @@ public class Ship {
 
 	@Override
 	public String toString() {
-		return "Ship[pilot=" + player.getName() + ", type=" + data.getShipType() + "]";
+		if (player != null) {
+			return "Ship[pilot=" + player.getName() + ", type=" + data.getShipType() + "]";
+		} else {
+			return "Ship[sinking=true, type=" + data.getShipType() + "]";
+		}
 	}
 }

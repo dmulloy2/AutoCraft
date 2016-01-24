@@ -1,6 +1,7 @@
 package net.dmulloy2.autocraft.weapons;
 
 import net.dmulloy2.autocraft.AutoCraft;
+import net.dmulloy2.autocraft.Config;
 
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
@@ -37,7 +38,7 @@ public class Napalm extends Projectile {
 	}
 
 	public void burn() {
-		int burnRadius = plugin.getConfig().getInt("napalmBurnRadius");
+		int burnRadius = Config.napalmBurnRadius;
 		for (int i = -burnRadius; i <= burnRadius; i++) {
 			for (int j = -burnRadius; j <= burnRadius; j++) {
 				for (int k = -burnRadius; k <= burnRadius; k++) {

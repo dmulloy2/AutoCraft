@@ -1,8 +1,8 @@
 package net.dmulloy2.autocraft.commands;
 
 import net.dmulloy2.autocraft.AutoCraft;
+import net.dmulloy2.autocraft.ship.Ship;
 import net.dmulloy2.autocraft.types.Permission;
-import net.dmulloy2.autocraft.types.Ship;
 
 import org.bukkit.Location;
 
