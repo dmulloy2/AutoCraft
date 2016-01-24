@@ -1,6 +1,7 @@
 package net.dmulloy2.autocraft.listeners;
 
 import net.dmulloy2.autocraft.AutoCraft;
+import net.dmulloy2.autocraft.ship.Ship;
 import net.dmulloy2.util.FormatUtil;
 
 import org.bukkit.Material;
@@ -45,21 +46,31 @@ public class PlayerListener implements Listener {
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onPlayerMove(PlayerMoveEvent event) {
 		Player player = event.getPlayer();
-		if (plugin.getShipHandler().isPilotingShip(player)) {
-			if (! plugin.getShipHandler().getShip(player).isPassenger(player)) {
+		Ship ship = plugin.getShipHandler().getShip(player);
+		if (ship != null) {
+			if (! ship.isPassenger(player)) {
 				plugin.getShipHandler().unpilotShip(player);
-				player.sendMessage(plugin.getPrefix() + 
+				player.sendMessage(plugin.getPrefix() +
 						FormatUtil.format("&7You have stepped off your ship, you have been unpiloted."));
-			}
+			/*} else if (ship.isAutoPilot() && ! Util.coordsEqual(event.getFrom(), event.getTo())) {
+				ship.stopAutoPilot();
+				player.sendMessage(plugin.getPrefix() +
+						FormatUtil.format("&7You moved, auto pilot has been disengaged."));
+			*/}
 		}
 	}
 
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void onPlayerInteract(PlayerInteractEvent event) {
 		Action action = event.getAction();
+		Player player = event.getPlayer();
 		if (action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK) {
-			Player player = event.getPlayer();
-			if (plugin.getShipHandler().isPilotingShip(player)) {
+			Ship ship = plugin.getShipHandler().getShip(player);
+			if (ship != null) {
+				if (ship.isAutoPilot()) {
+					ship.stopAutoPilot();
+				}
+
 				Vector dir = player.getLocation().getDirection();
 
 				if (event.hasBlock()) {
@@ -76,12 +87,21 @@ public class PlayerListener implements Listener {
 					}
 				}
 
-				plugin.getShipHandler().getShip(player).move(
-						(int) Math.round(dir.getX()), 
-						(int) Math.round(dir.getY()), 
+				ship.move(
+						(int) Math.round(dir.getX()),
+						(int) Math.round(dir.getY()),
 						(int) Math.round(dir.getZ()));
 
 				event.setCancelled(true);
+			}
+		} else if (action == Action.LEFT_CLICK_AIR || action == Action.LEFT_CLICK_BLOCK) {
+			Ship ship = plugin.getShipHandler().getShip(player);
+			if (ship != null) {
+				if (ship.isAutoPilot()) {
+					ship.stopAutoPilot();
+					player.sendMessage(plugin.getPrefix() +
+							FormatUtil.format("&7Auto pilot has been disengaged."));
+				}
 			}
 		}
 	}

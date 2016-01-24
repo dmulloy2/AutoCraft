@@ -37,7 +37,10 @@ recursion:
 # interval - in seconds
 sinking:
   enabled: true
-  interval: 10
+  interval: 5
+
+# Interval for auto pilot in seconds
+autoPilotInterval: 2
 
 # Debug
 debug: false

@@ -20,6 +20,7 @@ import org.bukkit.Material;
  */
 
 public class Config {
+	private static final int TICKS_PER_SECOND = 20;
 
 	public static void load(AutoCraft plugin) {
 		ConfigParser.parse(plugin, Config.class);
@@ -60,14 +61,18 @@ public class Config {
 
 	@Key("recursion.time")
 	@ValueOptions(ValueOption.SECOND_TO_MILLIS)
-	public static int maxRecursionTime = -1;
+	public static long maxRecursionTime = -1;
 
 	@Key("sinking.enabled")
 	public static boolean sinkingEnabled = true;
 
 	@Key("sinking.interval")
-	@ValueOptions(ValueOption.SECOND_TO_MILLIS)
-	public static long sinkingInterval = TimeUnit.SECONDS.toMillis(10);
+	@ValueOptions(ValueOption.SECOND_TO_TICKS)
+	public static long sinkingInterval = 5 * TICKS_PER_SECOND;
+
+	@Key("autoPilotInterval")
+	@ValueOptions(ValueOption.SECOND_TO_TICKS)
+	public static long autoPilotInterval = 2 * TICKS_PER_SECOND;
 
 	@Key("debug")
 	public static boolean debug = false;

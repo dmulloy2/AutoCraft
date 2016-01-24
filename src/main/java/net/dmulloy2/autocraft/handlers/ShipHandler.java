@@ -42,8 +42,14 @@ public class ShipHandler {
 
 	public void unpilotShip(Player player) {
 		Ship ship = ships.remove(player.getName());
-		if (ship != null && Config.sinkingEnabled) {
-			ship.startSinking();
+		if (ship != null) {
+			if (ship.isAutoPilot()) {
+				ship.stopAutoPilot();
+			}
+
+			if (! ship.creationFailed() && Config.sinkingEnabled) {
+				ship.startSinking();
+			}
 		}
 	}
 

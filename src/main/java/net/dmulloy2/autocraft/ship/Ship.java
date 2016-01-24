@@ -6,6 +6,8 @@ import java.util.List;
 
 import net.dmulloy2.autocraft.AutoCraft;
 import net.dmulloy2.autocraft.Config;
+import net.dmulloy2.autocraft.tasks.AutoPilotTask;
+import net.dmulloy2.autocraft.tasks.SinkingTask;
 import net.dmulloy2.autocraft.types.BlockData;
 import net.dmulloy2.autocraft.types.Direction;
 import net.dmulloy2.autocraft.types.RelativePosition;
@@ -54,8 +56,9 @@ import org.bukkit.util.Vector;
  * @author dmulloy2
  */
 
-public class Ship extends BukkitRunnable {
+public class Ship {
 	private boolean isSinking = false;
+	private boolean autoPilot = false;
 
 	private ShipData data;
 
@@ -94,14 +97,34 @@ public class Ship extends BukkitRunnable {
 		startShip();
 	}
 
-	@Override
-	public void run() {
-		if (! isSinking) {
-			cancel();
-			return;
-		}
+	// Starts the sinking process
+	public void startSinking() {
+		this.player = null;
+		this.isSinking = true;
+		new SinkingTask(this).runTaskTimer(plugin, 0, Config.sinkingInterval);
+	}
 
-		move(0, -1, 0);
+	public boolean isSinking() {
+		return isSinking;
+	}
+
+	public void startAutoPilot() {
+		if (! autoPilot) {
+			this.autoPilot = true;
+			new AutoPilotTask(this).runTaskTimer(plugin, 0, Config.autoPilotInterval);
+		}
+	}
+
+	public void stopAutoPilot() {
+		this.autoPilot = false;
+	}
+
+	public boolean isAutoPilot() {
+		return autoPilot;
+	}
+
+	public boolean creationFailed() {
+		return creationFailed;
 	}
 
 	// Drop tnt bombs :D
@@ -503,6 +526,8 @@ public class Ship extends BukkitRunnable {
 				if (obstruction) {
 					sendMessage("&eObstruction - &cCannot move any further in this direction.");
 					isSinking = false; // Stop the ship from sinking
+					autoPilot = false; // Disengage autopilot
+					// TODO Move backwards?
 				} else {
 					// Lets move this thing :D
 					doMove(dx, dy, dz);
@@ -966,20 +991,13 @@ public class Ship extends BukkitRunnable {
 			Ship sinking = iter.next();
 			for (int i = 0; i < sinking.blocks.length; i++) {
 				if (blockBelongsToShip(sinking.blocks[i], blocks)) {
-					sinking.cancel();
+					sinking.isSinking = false;
 					iter.remove();
 				}
 			}
 		}
 
 		return false;
-	}
-
-	// Starts the sinking process
-	public void startSinking() {
-		this.player = null;
-		this.isSinking = true;
-		runTaskTimer(plugin, 0, Config.sinkingInterval);
 	}
 
 	// Checks that the block being queried belongs to the block list for this
@@ -1166,5 +1184,9 @@ public class Ship extends BukkitRunnable {
 		} else {
 			return "Ship[sinking=true, type=" + data.getShipType() + "]";
 		}
+	}
+
+	public Player getPlayer() {
+		return player;
 	}
 }

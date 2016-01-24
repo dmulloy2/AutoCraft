@@ -23,6 +23,7 @@ import java.io.File;
 import lombok.Getter;
 import net.dmulloy2.SwornPlugin;
 import net.dmulloy2.autocraft.commands.CmdAllowed;
+import net.dmulloy2.autocraft.commands.CmdAutoPilot;
 import net.dmulloy2.autocraft.commands.CmdDismount;
 import net.dmulloy2.autocraft.commands.CmdDrop;
 import net.dmulloy2.autocraft.commands.CmdFire;
@@ -93,6 +94,7 @@ public class AutoCraft extends SwornPlugin {
 		// Register commands
 		commandHandler.setCommandPrefix("ac");
 		commandHandler.registerPrefixedCommand(new CmdAllowed(this));
+		commandHandler.registerPrefixedCommand(new CmdAutoPilot(this));
 		commandHandler.registerPrefixedCommand(new CmdDismount(this));
 		commandHandler.registerPrefixedCommand(new CmdDrop(this));
 		commandHandler.registerPrefixedCommand(new CmdFire(this));
