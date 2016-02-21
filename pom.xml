@@ -114,7 +114,7 @@
         <directory>${basedir}</directory>
         <includes>
           <include>License.txt</include>
-          <include>README.creole</include>
+          <include>README.md</include>
         </includes>
       </resource>
       <resource>
