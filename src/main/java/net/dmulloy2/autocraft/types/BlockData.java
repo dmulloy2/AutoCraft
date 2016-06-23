@@ -57,7 +57,7 @@ public class BlockData {
 			return "NoteBlock[note=" + note.getNote() + "]";
 		} else if (state instanceof Skull) {
 			Skull skull = (Skull) state;
-			return "Skull[type=" + FormatUtil.getFriendlyName(skull.getSkullType()) + ", owner=" + skull.getOwner() + "]";
+			return "Skull[type=" + FormatUtil.getFriendlyName(skull.getSkullType()) + ", owner=" + skull.getOwningPlayer() + "]";
 		} else if (state instanceof Furnace) {
 			Furnace furnace = (Furnace) state;
 			return "Furnace[burnTime=" + furnace.getBurnTime() + ", cookTime=" + furnace.getCookTime() + "]";

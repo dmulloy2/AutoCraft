@@ -914,7 +914,7 @@ public class Ship {
 			Skull toSkull = (Skull) to.getState();
 
 			toSkull.setSkullType(fromSkull.getSkullType());
-			toSkull.setOwner(fromSkull.getOwner());
+			toSkull.setOwningPlayer(fromSkull.getOwningPlayer());
 			toSkull.setRotation(fromSkull.getRotation());
 		}
 
@@ -973,7 +973,7 @@ public class Ship {
 
 	// Returns a string name for the main material of this ship.
 	public String getMainType() {
-		return FormatUtil.getFriendlyName(MaterialUtil.getMaterial(data.getMainType()));
+		return MaterialUtil.getName(data.getMainType());
 	}
 
 	// Checks if ship is already being piloted

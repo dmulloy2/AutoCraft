@@ -3,6 +3,7 @@ package net.dmulloy2.autocraft.commands;
 import net.dmulloy2.autocraft.AutoCraft;
 import net.dmulloy2.autocraft.ship.ShipData;
 import net.dmulloy2.autocraft.types.Permission;
+import net.dmulloy2.types.StringJoiner;
 import net.dmulloy2.util.MaterialUtil;
 
 import org.apache.commons.lang.WordUtils;
@@ -41,26 +42,24 @@ public class CmdAllowed extends AutoCraftCommand {
 
 		if (data.isFiresTnt() || data.isFiresTorpedo()) {
 			sendMessage(getMessage("allowed_max_cannon_length"), data.getMaxCannonLength());
-			sendMessage(getMessage("allowed_cannon_material"), MaterialUtil.getMaterialName(data.getCannonMaterial()));
+			sendMessage(getMessage("allowed_cannon_material"), MaterialUtil.getName(data.getCannonMaterial()));
 		}
 
 		sendMessage(getMessage("allowed_max_number_cannons"), data.getMaxNumberOfCannons());
 		sendMessage(getMessage("allowed_min_blocks"), data.getMinBlocks());
 		sendMessage(getMessage("allowed_max_blocks"), data.getMaxBlocks());
-		sendMessage(getMessage("allowed_main_block"), MaterialUtil.getMaterialName(data.getMainType()));
+		sendMessage(getMessage("allowed_main_block"), MaterialUtil.getName(data.getMainType()));
 		sendMessage(getMessage("allowed_blocks"), getAllowedList(data));
 		sendMessage(getMessage("allowed_ignore_attachments"), data.isIgnoreAttachments());
 	}
 
 	public String getAllowedList(ShipData data) {
-		StringBuilder ret = new StringBuilder();
+		StringJoiner joiner = new StringJoiner("&b, &e");
 
 		for (String allowed : data.getAllowedTypes()) {
-			ret.append("&e" + MaterialUtil.getMaterialName(allowed) + "&b, ");
+			joiner.append(MaterialUtil.getName(allowed));
 		}
 
-		ret.delete(ret.lastIndexOf("&b,"), ret.lastIndexOf(" "));
-
-		return ret.toString();
+		return joiner.toString();
 	}
 }
