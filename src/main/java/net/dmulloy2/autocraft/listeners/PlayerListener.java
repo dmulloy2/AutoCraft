@@ -5,6 +5,7 @@ import net.dmulloy2.autocraft.ship.Ship;
 import net.dmulloy2.util.FormatUtil;
 
 import org.bukkit.Material;
+import org.bukkit.block.data.Powerable;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -14,6 +15,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.material.Redstone;
 import org.bukkit.util.Vector;
 
 /**
@@ -76,13 +78,11 @@ public class PlayerListener implements Listener {
 				if (event.hasBlock()) {
 					Material clickedType = event.getClickedBlock().getType();
 					if (action == Action.RIGHT_CLICK_BLOCK
-							&& (clickedType == Material.DISPENSER
-							|| clickedType == Material.CHEST
-							|| clickedType == Material.FURNACE
-							|| clickedType == Material.LEVER
-							|| clickedType == Material.STONE_BUTTON
-							|| clickedType == Material.WOOD_BUTTON
-							|| clickedType == Material.WORKBENCH)) {
+					    && (event.getClickedBlock().getBlockData() instanceof Powerable
+					        || clickedType == Material.DISPENSER
+					        || clickedType == Material.CHEST
+					        || clickedType == Material.FURNACE
+					        || clickedType == Material.CRAFTING_TABLE)) {
 						return;
 					}
 				}

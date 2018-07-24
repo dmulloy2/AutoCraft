@@ -2,13 +2,10 @@ package net.dmulloy2.autocraft.weapons;
 
 import net.dmulloy2.autocraft.AutoCraft;
 
-import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
-import org.bukkit.block.BlockState;
 import org.bukkit.entity.TNTPrimed;
-import org.bukkit.material.Wool;
 
 /**
  * @author dmulloy2
@@ -29,11 +26,7 @@ public class Torpedo extends Projectile {
 
 		if (torpedo[0].getType().equals(Material.AIR) && torpedo[1].getType().equals(Material.AIR)) {
 			torpedo[0].setType(Material.DIAMOND_BLOCK);
-
-			BlockState state = torpedo[1].getState();
-			state.setType(Material.WOOL);
-			state.setData(new Wool(DyeColor.RED));
-			state.update(true);
+			torpedo[1].setType(Material.RED_WOOL);
 		} else {
 			this.exploded = true;
 			explode();
@@ -50,11 +43,8 @@ public class Torpedo extends Projectile {
 			}
 
 			Block b = torpedo[0].getRelative(dir.getModX(), (int) -yvelo, dir.getModZ());
-			if (b.getType().equals(Material.AIR) || b.getType().equals(Material.WATER) || b.getType().equals(Material.STATIONARY_WATER)) {
-				BlockState state = torpedo[0].getState();
-				state.setType(Material.WOOL);
-				state.setData(new Wool(DyeColor.RED));
-				state.update(true);
+			if (b.getType().equals(Material.AIR) || b.getType().equals(Material.WATER)) {
+				torpedo[0].setType(Material.RED_WOOL);
 
 				torpedo[1].setType(Material.AIR);
 				torpedo[1] = torpedo[0];
@@ -69,7 +59,7 @@ public class Torpedo extends Projectile {
 					return;
 				}
 
-				if (b.getType().equals(Material.OBSIDIAN) || b.getType().equals(Material.ENCHANTMENT_TABLE)) {
+				if (b.getType().equals(Material.OBSIDIAN) || b.getType().equals(Material.ENCHANTING_TABLE)) {
 					b.setType(Material.AIR);
 				}
 

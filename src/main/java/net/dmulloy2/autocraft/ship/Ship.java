@@ -1111,8 +1111,7 @@ public class Ship {
 						&& ! block.getType().equals(Material.AIR)
 						&& ! block.getType().equals(Material.SNOW)
 						&& ! block.getType().equals(Material.BEDROCK)
-						&& ! block.getType().equals(Material.WATER)
-						&& ! block.getType().equals(Material.STATIONARY_WATER)
+						&& ! block.isLiquid()
 						&& ! data.isIgnoreAttachments()) {
 					plugin.getShipHandler().unpilotShip(player);
 					sendMessage("&cThis ship needs to be floating!");
