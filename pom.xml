@@ -14,18 +14,18 @@
   <repositories>
     <repository>
       <id>dmulloy2-repo</id>
-      <url>http://repo.dmulloy2.net/content/groups/public/</url>
+      <url>https://repo.dmulloy2.net/content/groups/public/</url>
     </repository>
   </repositories>
 
   <distributionManagement>
     <repository>
       <id>dmulloy2-repo</id>
-      <url>http://repo.dmulloy2.net/content/repositories/releases/</url>
+      <url>https://repo.dmulloy2.net/content/repositories/releases/</url>
     </repository>
     <snapshotRepository>
       <id>dmulloy2-repo</id>
-      <url>http://repo.dmulloy2.net/content/repositories/snapshots/</url>
+      <url>https://repo.dmulloy2.net/content/repositories/snapshots/</url>
     </snapshotRepository>
   </distributionManagement>
 
@@ -50,8 +50,8 @@
         <artifactId>maven-compiler-plugin</artifactId>
         <version>3.2</version>
         <configuration>
-          <source>1.7</source>
-          <target>1.7</target>
+          <source>1.8</source>
+          <target>1.8</target>
         </configuration>
       </plugin>
       <plugin>
