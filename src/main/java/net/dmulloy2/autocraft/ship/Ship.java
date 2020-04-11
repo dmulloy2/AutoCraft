@@ -8,7 +8,7 @@ import net.dmulloy2.autocraft.AutoCraft;
 import net.dmulloy2.autocraft.Config;
 import net.dmulloy2.autocraft.tasks.AutoPilotTask;
 import net.dmulloy2.autocraft.tasks.SinkingTask;
-import net.dmulloy2.autocraft.types.BlockData;
+import net.dmulloy2.autocraft.types.BlockWrapper;
 import net.dmulloy2.autocraft.types.Direction;
 import net.dmulloy2.autocraft.types.RelativePosition;
 import net.dmulloy2.autocraft.types.TurnDirection;
@@ -21,34 +21,14 @@ import net.dmulloy2.util.Util;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
-import org.bukkit.block.Banner;
-import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
-import org.bukkit.block.BlockState;
-import org.bukkit.block.CommandBlock;
-import org.bukkit.block.CreatureSpawner;
-import org.bukkit.block.Dispenser;
-import org.bukkit.block.Furnace;
-import org.bukkit.block.Jukebox;
-import org.bukkit.block.NoteBlock;
-import org.bukkit.block.Sign;
-import org.bukkit.block.Skull;
+import org.bukkit.block.*;
+import org.bukkit.block.data.*;
+import org.bukkit.block.data.type.NoteBlock;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.TNTPrimed;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.material.Bed;
-import org.bukkit.material.Diode;
-import org.bukkit.material.Directional;
-import org.bukkit.material.MaterialData;
-import org.bukkit.material.PressurePlate;
-import org.bukkit.material.Rails;
-import org.bukkit.material.RedstoneWire;
-import org.bukkit.material.SimpleAttachableMaterialData;
-import org.bukkit.material.Stairs;
-import org.bukkit.material.Tree;
-import org.bukkit.material.Vine;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
@@ -79,8 +59,8 @@ public class Ship {
 	private Block[] blocks;
 	private Block[] specialBlocks;
 
-	private BlockData[] largeShipBlocks;
-	private BlockData[] largeShipSpecialBlocks;
+	private BlockWrapper[] largeShipBlocks;
+	private BlockWrapper[] largeShipSpecialBlocks;
 
 	// Place holder for the block the player is standing on.
 	private Block mainblock;
@@ -143,23 +123,25 @@ public class Ship {
 
 				Block[] cannons = getCannons();
 				int numfiredcannons = 0;
-				for (int i = 0; i < cannons.length; i++) {
-					if (cannons[i] != null && cannons[i].getRelative(0, -1, 0).getType().equals(Material.AIR)
-							&& cannonHasTnt(cannons[i], Config.numTntToDropBomb)) {
+				for (Block cannon : cannons) {
+					if (cannon != null && cannon.getRelative(0, -1, 0).getType().equals(Material.AIR) && cannonHasTnt(
+							cannon, Config.numTntToDropBomb)) {
 						if (numfiredcannons < data.getMaxNumberOfCannons()) {
 							numfiredcannons++;
 							lastFired = System.currentTimeMillis();
-							withdrawTnt(cannons[i], Config.numTntToDropBomb);
+							withdrawTnt(cannon, Config.numTntToDropBomb);
 
 							// Spawn primed tnt firing downwards
-							TNTPrimed tnt = cannons[i].getWorld().spawn(cannons[i].getLocation().clone().add(0, -1, 0), TNTPrimed.class);
+							TNTPrimed tnt = cannon.getWorld()
+									.spawn(cannon.getLocation().clone().add(0, -1, 0), TNTPrimed.class);
 							tnt.setVelocity(new Vector(0, -0.5, 0));
 
 							// TODO: Sound effects for firing
 						} else {
 							// More cannons on ship than allowed. Not all fired
 							// - can break out of loop now.
-							sendMessage("&6Some cannons did not fire. Max cannon limit is: &b{0}", data.getMaxNumberOfCannons());
+							sendMessage("&6Some cannons did not fire. Max cannon limit is: &b{0}",
+									data.getMaxNumberOfCannons());
 							break;
 						}
 					}
@@ -188,30 +170,32 @@ public class Ship {
 
 				Block[] cannons = getCannons();
 				int numfiredcannons = 0;
-				for (int i = 0; i < cannons.length; i++) {
-					if (cannons[i] != null && cannonHasTnt(cannons[i], Config.numTntToFireNormal)) {
+				for (Block cannon : cannons) {
+					if (cannon != null && cannonHasTnt(cannon, Config.numTntToFireNormal)) {
 						double dist = 0.4;
-						BlockFace face = ((Directional) cannons[i].getState().getData()).getFacing();
+						BlockFace face = ((Directional) cannon.getState().getData()).getFacing();
 						int x = face.getModX();
 						int z = face.getModZ();
-						dist *= getCannonLength(cannons[i], -x, -z);
+						dist *= getCannonLength(cannon, -x, -z);
 
-						if (cannons[i].getRelative(x, 0, z).getType().equals(Material.AIR)) {
+						if (cannon.getRelative(x, 0, z).getType().equals(Material.AIR)) {
 							if (numfiredcannons < data.getMaxNumberOfCannons()) {
 								numfiredcannons++;
 								lastFired = System.currentTimeMillis();
-								withdrawTnt(cannons[i], Config.numTntToFireNormal);
+								withdrawTnt(cannon, Config.numTntToFireNormal);
 
 								// Spawn primed tnt firing in the direction of
 								// the dispenser
-								TNTPrimed tnt = cannons[i].getWorld().spawn(cannons[i].getLocation().clone().add(x, 0, z), TNTPrimed.class);
+								TNTPrimed tnt = cannon.getWorld()
+										.spawn(cannon.getLocation().clone().add(x, 0, z), TNTPrimed.class);
 								tnt.setVelocity(new Vector(x * dist, 0.5, z * dist));
 
 								// TODO: Sound effects for firing
 							} else {
 								// More cannons on ship than allowed. Not all
 								// fired - can break out of loop now.
-								sendMessage("&6Some cannons did not fire. Max cannon limit is &b{0}", data.getMaxNumberOfCannons());
+								sendMessage("&6Some cannons did not fire. Max cannon limit is &b{0}",
+										data.getMaxNumberOfCannons());
 								break;
 							}
 						}
@@ -373,19 +357,17 @@ public class Ship {
 	// Check if dispenser has any number of item. Only send dispenser block types here.
 	public boolean cannonHasItem(Block b, Material mat, int num) {
 		Dispenser dispenser = (Dispenser) b.getState();
-		if (dispenser.getInventory() != null) {
-			for (ItemStack item : dispenser.getInventory().getContents()) {
-				if (item != null && item.getType() == mat) {
-					if (item.getAmount() >= num) {
-						num = 0;
-					} else {
-						num = num - item.getAmount();
-					}
+		for (ItemStack item : dispenser.getInventory().getContents()) {
+			if (item != null && item.getType() == mat) {
+				if (item.getAmount() >= num) {
+					num = 0;
+				} else {
+					num = num - item.getAmount();
 				}
+			}
 
-				if (num <= 0) {
-					return true;
-				}
+			if (num <= 0) {
+				return true;
 			}
 		}
 
@@ -400,37 +382,36 @@ public class Ship {
 	// item first and only send Dispenser blocks here.
 	public void withdrawItem(Block b, Material mat, int num) {
 		Dispenser dispenser = (Dispenser) b.getState();
-		if (dispenser.getInventory() != null) {
-			for (int i = 0; i < dispenser.getInventory().getSize(); i++) {
-				ItemStack item = dispenser.getInventory().getItem(i);
-				if (item != null && item.getType() == mat) {
-					if (item.getAmount() >= num) {
-						if (item.getAmount() - num > 0) {
-							item.setAmount(item.getAmount() - num);
-						} else {
-							dispenser.getInventory().setItem(i, null);
-						}
 
-						num = 0;
+		for (int i = 0; i < dispenser.getInventory().getSize(); i++) {
+			ItemStack item = dispenser.getInventory().getItem(i);
+			if (item != null && item.getType() == mat) {
+				if (item.getAmount() >= num) {
+					if (item.getAmount() - num > 0) {
+						item.setAmount(item.getAmount() - num);
 					} else {
-						num = num - item.getAmount();
-						item.setAmount(0);
+						dispenser.getInventory().setItem(i, null);
 					}
-				}
 
-				if (num <= 0) {
-					return;
+					num = 0;
+				} else {
+					num = num - item.getAmount();
+					item.setAmount(0);
 				}
+			}
+
+			if (num <= 0) {
+				return;
 			}
 		}
 	}
 
 	// Returns all dispensers on the ship.
 	public Block[] getCannons() {
-		List<Block> cannons = new ArrayList<Block>();
-		for (int i = 0; i < blocks.length; i++) {
-			if (blocks[i].getType().equals(Material.DISPENSER))
-				cannons.add(blocks[i]);
+		List<Block> cannons = new ArrayList<>();
+		for (Block block : blocks) {
+			if (block.getType().equals(Material.DISPENSER))
+				cannons.add(block);
 		}
 
 		return cannons.toArray(new Block[0]);
@@ -511,13 +492,13 @@ public class Ship {
 				Block[] specialBlocks = this.specialBlocks.clone();
 
 				// Check each block's new position for obstructions
-				for (int i = 0; i < blocks.length; i++) {
-					Block block = blocks[i].getRelative(dx, dy, dz);
+				for (Block value : blocks) {
+					Block block = value.getRelative(dx, dy, dz);
 					if (block.getLocation().getBlockY() + dy > data.getMaxAltitude()
 							|| block.getLocation().getBlockY() + dy < data.getMinAltitude())
 						obstruction = true;
-					if (block.getType().equals(Material.AIR) || block.getType().equals(Material.SNOW) || blockBelongsToShip(block, blocks)
-							|| blockBelongsToShip(block, specialBlocks))
+					if (block.getType().equals(Material.AIR) || block.getType().equals(Material.SNOW)
+							|| blockBelongsToShip(block, blocks) || blockBelongsToShip(block, specialBlocks))
 						continue;
 					obstruction = true;
 				}
@@ -550,13 +531,11 @@ public class Ship {
 
 				updateMainBlock();
 				// Check each block's new position for obstructions
-				for (int i = 0; i < blocks.length; i++) {
-					Vector v = getRotationVector(blocks[i].getLocation(), mainblock, dir);
+				for (Block value : blocks) {
+					Vector v = getRotationVector(value.getLocation(), mainblock, dir);
 					Block block = mainblock.getRelative(v.getBlockX(), v.getBlockY(), v.getBlockZ());
-					if (block.getType().equals(Material.AIR)
-							|| block.getType().equals(Material.SNOW)
-							|| blockBelongsToShip(block, blocks)
-							|| blockBelongsToShip(block, specialBlocks))
+					if (block.getType().equals(Material.AIR) || block.getType().equals(Material.SNOW)
+							|| blockBelongsToShip(block, blocks) || blockBelongsToShip(block, specialBlocks))
 						continue;
 					obstruction = true;
 				}
@@ -574,64 +553,54 @@ public class Ship {
 	// Rotate the ship and all passengers in the specified direction
 	public void doRotate(TurnDirection dir) {
 		List<Player> passengers = getPassengers();
-		BlockData[] temp = new BlockData[blocks.length];
-		BlockData[] special = new BlockData[blocks.length];
+		BlockWrapper[] temp = new BlockWrapper[blocks.length];
+		BlockWrapper[] special = new BlockWrapper[blocks.length];
 
 		plugin.getLogHandler().debug("Rotating ship {0}, dir = {1}", this, dir);
 
-		for (int i = 0; i < specialBlocks.length; i++) {
-			Block b = specialBlocks[i];
-
-			// Store in blocks array
-			special[i] = new BlockData(b);
-
-			// Clear inventory (if applicable)
-			BlockState state = b.getState();
-			if (state instanceof InventoryHolder) {
-				((InventoryHolder) state).getInventory().clear();
-			}
-
-			// Reset
-			b.setType(Material.AIR);
-		}
+		resetBlocks(special);
 
 		// First remove all blocks from the scene
-		for (int i = 0; i < blocks.length; i++) {
-			Block b = blocks[i];
-
-			// Store in blocks aray
-			temp[i] = new BlockData(b);
-
-			// Clear inventory (if applicable)
-			BlockState state = b.getState();
-			if (state instanceof InventoryHolder) {
-				((InventoryHolder) state).getInventory().clear();
-			}
-
-			// Reset
-			b.setType(Material.AIR);
-		}
+		resetBlocks(temp);
 
 		updateMainBlock();
 
 		// Make new blocks in their new respective positions
-		for (int i = 0; i < blocks.length; i++) {
-			// blocks[i].getLocation().distance(mainblock.getLocation());
-			Vector v = getRotationVector(blocks[i].getLocation(), mainblock, dir);
-			blocks[i] = mainblock.getRelative(v.getBlockX(), v.getBlockY(), v.getBlockZ());
-			setBlock(blocks[i], temp[i], dir);
-		}
+		rotateBlocks(dir, temp, blocks);
 
-		for (int i = 0; i < specialBlocks.length; i++) {
-			Vector v = getRotationVector(specialBlocks[i].getLocation(), mainblock, dir);
-			specialBlocks[i] = mainblock.getRelative(v.getBlockX(), v.getBlockY(), v.getBlockZ());
-			setBlock(specialBlocks[i], special[i], dir);
-		}
+		rotateBlocks(dir, special, specialBlocks);
 
 		for (Player p : passengers) {
 			Location l = p.getLocation().clone().add(getRotationVector(p.getLocation(), mainblock, dir).toLocation(p.getWorld()));
 			l.setYaw(l.getYaw() + ((dir == TurnDirection.LEFT) ? -90 : 90));
 			p.teleport(l);
+		}
+	}
+
+	private void rotateBlocks(TurnDirection dir, BlockWrapper[] data, Block[] blocks) {
+		for (int i = 0; i < blocks.length; i++) {
+			// blocks[i].getLocation().distance(mainblock.getLocation());
+			Vector v = getRotationVector(blocks[i].getLocation(), mainblock, dir);
+			blocks[i] = mainblock.getRelative(v.getBlockX(), v.getBlockY(), v.getBlockZ());
+			setBlock(blocks[i], data[i], dir);
+		}
+	}
+
+	private void resetBlocks(BlockWrapper[] data) {
+		for (int i = 0; i < specialBlocks.length; i++) {
+			Block b = specialBlocks[i];
+
+			// Store in blocks array
+			data[i] = new BlockWrapper(b);
+
+			// Clear inventory (if applicable)
+			BlockState state = b.getState();
+			if (state instanceof InventoryHolder) {
+				((InventoryHolder) state).getInventory().clear();
+			}
+
+			// Reset
+			b.setType(Material.AIR);
 		}
 	}
 
@@ -657,8 +626,8 @@ public class Ship {
 		boolean fastFly = data.getFastFlyAtSize() != 0 && data.getFastFlyAtSize() < (blocks.length + specialBlocks.length);
 		if (fastFly) {
 			if (largeShipSpecialBlocks == null || largeShipBlocks == null) {
-				largeShipSpecialBlocks = new BlockData[specialBlocks.length];
-				largeShipBlocks = new BlockData[blocks.length];
+				largeShipSpecialBlocks = new BlockWrapper[specialBlocks.length];
+				largeShipBlocks = new BlockWrapper[blocks.length];
 
 				// First remove all special blocks from the world
 				for (int i = 0; i < specialBlocks.length; i++) {
@@ -671,52 +640,18 @@ public class Ship {
 					}
 
 					// Store it
-					largeShipSpecialBlocks[i] = new BlockData(b);
+					largeShipSpecialBlocks[i] = new BlockWrapper(b);
 
 					// Remove it
 					b.setType(Material.AIR);
 				}
 
 				// Then remove the rest of the blocks from the scene
-				for (int i = 0; i < blocks.length; i++) {
-					Block b = blocks[i];
-
-					// Store it
-					largeShipBlocks[i] = new BlockData(b);
-
-					// Clear inventory (if applicable)
-					BlockState state = b.getState();
-					if (state instanceof InventoryHolder) {
-						((InventoryHolder) state).getInventory().clear();
-					}
-
-					// Remove it
-					b.setType(Material.AIR);
-				}
+				resetBlocks(largeShipBlocks);
 			} else {
-				for (int i = 0; i < blocks.length; i++) {
-					Block b = blocks[i];
-					if (b.getType() != Material.AIR) {
-						BlockState state = b.getState();
-						if (state instanceof InventoryHolder) {
-							((InventoryHolder) state).getInventory().clear();
-						}
+				resetBlocks(blocks);
 
-						b.setType(Material.AIR);
-					}
-				}
-
-				for (int i = 0; i < specialBlocks.length; i++) {
-					Block b = specialBlocks[i];
-					if (b.getType() != Material.AIR) {
-						BlockState state = b.getState();
-						if (state instanceof InventoryHolder) {
-							((InventoryHolder) state).getInventory().clear();
-						}
-
-						b.setType(Material.AIR);
-					}
-				}
+				resetBlocks(specialBlocks);
 			}
 
 			// Update block locations.
@@ -752,8 +687,8 @@ public class Ship {
 
 			}.runTaskLater(plugin, 40L);
 		} else {
-			BlockData[] temp = new BlockData[blocks.length];
-			BlockData[] special = new BlockData[specialBlocks.length];
+			BlockWrapper[] temp = new BlockWrapper[blocks.length];
+			BlockWrapper[] special = new BlockWrapper[specialBlocks.length];
 
 			// First remove all special blocks from the world
 			for (int i = 0; i < specialBlocks.length; i++) {
@@ -766,28 +701,14 @@ public class Ship {
 				}
 
 				// Store in special array
-				special[i] = new BlockData(b);
+				special[i] = new BlockWrapper(b);
 
 				// Remove it
 				b.setType(Material.AIR);
 			}
 
 			// Then remove the rest of the blocks from the scene
-			for (int i = 0; i < blocks.length; i++) {
-				Block b = blocks[i];
-
-				// Store it
-				temp[i] = new BlockData(b);
-
-				// Clear inventory (if applicable)
-				BlockState state = b.getState();
-				if (state instanceof InventoryHolder) {
-					((InventoryHolder) state).getInventory().clear();
-				}
-
-				// Remove it
-				b.setType(Material.AIR);
-			}
+			resetBlocks(temp);
 
 
 			// Make new blocks in their new respective positions
@@ -809,45 +730,39 @@ public class Ship {
 		}
 	}
 
-	public boolean isSpecial(MaterialData data) {
-		return data instanceof SimpleAttachableMaterialData
-				|| data instanceof org.bukkit.material.Sign
-				|| data instanceof Bed
-				|| data instanceof PressurePlate
-				|| data instanceof RedstoneWire
-				|| data instanceof Rails
-				|| data instanceof Diode
-				|| data instanceof Vine;
+	private void resetBlocks(Block[] blocks) {
+		for (Block b : blocks) {
+			if (b.getType() != Material.AIR) {
+				BlockState state = b.getState();
+				if (state instanceof InventoryHolder) {
+					((InventoryHolder) state).getInventory().clear();
+				}
+
+				b.setType(Material.AIR);
+			}
+		}
 	}
 
-	public void setBlock(Block to, BlockData from, TurnDirection dir) {
-		MaterialData data = from.getData();
+	public boolean isSpecial(org.bukkit.block.data.BlockData data) {
+		// TODO should this just cover all cases in BlockData?
+		return data instanceof AnaloguePowerable
+				|| data instanceof Attachable
+				|| data instanceof Powerable
+				|| data instanceof Rail;
+	}
+
+	public void setBlock(Block to, BlockWrapper from, TurnDirection dir) {
+		BlockData data = from.getData();
 		if (data instanceof Directional) {
 			Directional directional = (Directional) data;
-			directional.setFacingDirection(getRotatedBlockFace(dir, directional));
-		}
-
-		// Special case for logs
-		if (data instanceof Tree) {
-			Tree tree = (Tree) data;
-			BlockFace direction = tree.getDirection();
-			if (direction != BlockFace.UP && direction != BlockFace.DOWN && direction != BlockFace.SELF) {
-				tree.setDirection(getRotatedBlockFace(dir, direction));
-			}
+			directional.setFacing(getRotatedBlockFace(dir, directional));
 		}
 
 		setBlock(to, from);
 	}
 
 	public BlockFace getRotatedBlockFace(TurnDirection dir, Directional data) {
-		BlockFace face;
-
-		if (data instanceof Stairs) {
-			face = ((Stairs) data).getAscendingDirection();
-		} else {
-			face = data.getFacing();
-		}
-
+		BlockFace face = data.getFacing();
 		return getRotatedBlockFace(dir, face);
 	}
 
@@ -866,11 +781,11 @@ public class Ship {
 		}
 	}
 
-	public void setBlock(Block to, BlockData from) {
+	public void setBlock(Block to, BlockWrapper from) {
 		BlockState state = to.getState();
-		MaterialData data = from.getData();
-		state.setType(data.getItemType());
-		state.setData(data);
+		BlockData data = from.getData();
+		state.setType(data.getMaterial());
+		state.setBlockData(data);
 		state.update(true, false);
 
 		if (from.getInventory() != null) {
@@ -902,9 +817,9 @@ public class Ship {
 			toBox.setPlaying(fromBox.getPlaying());
 		}
 
-		if (to.getState() instanceof NoteBlock) {
-			NoteBlock fromBlock = (NoteBlock) from.getState();
-			NoteBlock toBlock = (NoteBlock) to.getState();
+		if (to.getState().getBlockData() instanceof NoteBlock) {
+			NoteBlock fromBlock = (NoteBlock) from.getState().getBlockData();
+			NoteBlock toBlock = (NoteBlock) to.getState().getBlockData();
 
 			toBlock.setNote(fromBlock.getNote());
 		}
@@ -1057,20 +972,20 @@ public class Ship {
 
 	public boolean beginRecursion(Block block) {
 		recursionStartTime = System.currentTimeMillis();
-		List<Block> blockList = new ArrayList<Block>(data.getMaxBlocks());
+		List<Block> blockList = new ArrayList<>(data.getMaxBlocks());
 		blockList = recurse(block, blockList, Config.recursionCap);
 
 		if (blockList != null) {
-			List<Block> specialBlockList = new ArrayList<Block>();
-			for (Block b : blockList.toArray(new Block[blockList.size()])) {
-				if (isSpecial(b.getState().getData())) {
+			List<Block> specialBlockList = new ArrayList<>();
+			for (Block b : blockList.toArray(new Block[0])) {
+				if (isSpecial(b.getBlockData())) {
 					specialBlockList.add(b);
 					blockList.remove(b);
 				}
 			}
 
-			blocks = blockList.toArray(new Block[blockList.size()]);
-			specialBlocks = specialBlockList.toArray(new Block[specialBlockList.size()]);
+			blocks = blockList.toArray(new Block[0]);
+			specialBlocks = specialBlockList.toArray(new Block[0]);
 			return true;
 		}
 
@@ -1090,7 +1005,7 @@ public class Ship {
 			if (blockList.size() <= data.getMaxBlocks()) {
 				// If this new block to be checked doesn't already belong to the
 				// ship and is a valid material, accept it.
-				if (! blockBelongsToShip(block, blockList.toArray(new Block[blockList.size()])) && data.isValidMaterial(block)) {
+				if (! blockBelongsToShip(block, blockList.toArray(new Block[0])) && data.isValidMaterial(block)) {
 					// If its material is same as main type than add to number
 					// of main block count.
 					if (block.getType() == MaterialUtil.getMaterial(data.getMainType()))

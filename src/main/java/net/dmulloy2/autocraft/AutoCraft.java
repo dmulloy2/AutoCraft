@@ -122,7 +122,7 @@ public class AutoCraft extends SwornPlugin {
 		logHandler.log(getMessage("log_enabled"), getDescription().getFullName(), System.currentTimeMillis() - start);
 	}
 
-	private final void setupIntegration() {
+	private void setupIntegration() {
 		try {
 			swornNationsHandler = new SwornNationsHandler(this);
 		} catch (Throwable ex) { }

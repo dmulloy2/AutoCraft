@@ -44,7 +44,7 @@ public class DataHandler implements Reloadable {
 			folder.mkdir();
 		}
 
-		this.data = new HashMap<String, ShipData>();
+		this.data = new HashMap<>();
 		this.load();
 	}
 
@@ -98,8 +98,8 @@ public class DataHandler implements Reloadable {
 			int version = (int) map.get("version");
 			if (version < 3) {
 				// Convert mainType and cannonMaterial
-				List<String> toConvert = Arrays.asList(new String[] { "mainType", "cannonMaterial" });
-				for (Entry<String, Object> entry : new HashMap<String, Object>(map).entrySet()) { // Damn you, CME's
+				List<String> toConvert = Arrays.asList("mainType", "cannonMaterial");
+				for (Entry<String, Object> entry : new HashMap<>(map).entrySet()) { // Damn you, CME's
 					String key = entry.getKey();
 					if (toConvert.contains(key)) {
 						Object value = entry.getValue();
@@ -120,7 +120,7 @@ public class DataHandler implements Reloadable {
 				if (version < 2) {
 					@SuppressWarnings("unchecked")
 					List<Integer> allowedBlocks = (List<Integer>) map.get("allowedBlocks");
-					List<String> allowedTypes = new ArrayList<String>();
+					List<String> allowedTypes = new ArrayList<>();
 					for (int id : allowedBlocks) {
 						Material mat = MaterialUtil.getMaterial(String.valueOf(id));
 						if (mat != null) {
@@ -157,7 +157,7 @@ public class DataHandler implements Reloadable {
 		}
 	}
 
-	private final void generateStockShips() {
+	private void generateStockShips() {
 		plugin.getLogHandler().log("Generating stock ships!");
 
 		String[] stocks = new String[] { "airship", "base", "battle", "dreadnought", "pirate", "stealth", "titan", "turret" };
@@ -167,7 +167,7 @@ public class DataHandler implements Reloadable {
 		}
 	}
 
-	private final void saveData(ShipData shipData) {
+	private void saveData(ShipData shipData) {
 		try {
 			File file = new File(folder, getFileName(shipData.getShipType()));
 			FileSerialization.save(shipData, file);
@@ -176,12 +176,12 @@ public class DataHandler implements Reloadable {
 		}
 	}
 
-	private final String trimFileExtension(File file) {
+	private String trimFileExtension(File file) {
 		int index = file.getName().lastIndexOf(extension);
 		return index > 0 ? file.getName().substring(0, index) : file.getName();
 	}
 
-	private final String getFileName(String key) {
+	private String getFileName(String key) {
 		return key + extension;
 	}
 

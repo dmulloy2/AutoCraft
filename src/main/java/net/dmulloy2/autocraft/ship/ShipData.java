@@ -48,7 +48,7 @@ public class ShipData implements ConfigurationSerializable {
 	private boolean needsPermission;
 	private boolean ignoreAttachments;
 
-	private List<String> allowedTypes = new ArrayList<String>();
+	private List<String> allowedTypes = new ArrayList<>();
 
 	public ShipData() {
 
@@ -75,7 +75,7 @@ public class ShipData implements ConfigurationSerializable {
 
 	@Override
 	public Map<String, Object> serialize() {
-		Map<String, Object> data = new HashMap<String, Object>();
+		Map<String, Object> data = new HashMap<>();
 
 		for (Field field : getClass().getDeclaredFields()) {
 			if (Modifier.isTransient(field.getModifiers()))
