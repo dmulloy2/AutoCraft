@@ -3,17 +3,12 @@
  */
 package net.dmulloy2.autocraft;
 
-import static net.dmulloy2.util.ListUtil.toList;
-
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import net.dmulloy2.config.ConfigParser;
-import net.dmulloy2.config.Key;
-import net.dmulloy2.config.ValueOptions;
-import net.dmulloy2.config.ValueOptions.ValueOption;
+import org.bukkit.inventory.ItemType;
 
-import org.bukkit.Material;
+import net.dmulloy2.swornapi.config.*;
 
 /**
  * @author dmulloy2
@@ -27,7 +22,7 @@ public class Config {
 	}
 
 	@Key("weaponCooldownTime")
-	@ValueOptions(ValueOption.SECOND_TO_MILLIS)
+	@TransformValue(Transform.SECOND_TO_MILLIS)
 	public static long weaponCooldownTime = TimeUnit.SECONDS.toMillis(6);
 
 	@Key("numTntToFireNormal")
@@ -43,12 +38,12 @@ public class Config {
 	public static int numTntToDropNapalm = 4;
 
 	@Key("materialsNeededForTorpedo")
-	@ValueOptions(ValueOption.PARSE_MATERIALS)
-	public static List<Material> materialsNeededForTorpedo = toList(Material.DIAMOND, Material.FLINT_AND_STEEL);
+	@TransformRegistry(KnownRegistry.ITEM)
+	public static List<ItemType> materialsNeededForTorpedo = List.of(ItemType.DIAMOND, ItemType.FLINT_AND_STEEL);
 
 	@Key("materialsNeededForNapalm")
-	@ValueOptions(ValueOption.PARSE_MATERIALS)
-	public static List<Material> materialsNeededForNapalm = toList(Material.SLIME_BALL, Material.FLINT_AND_STEEL);
+	@TransformRegistry(KnownRegistry.ITEM)
+	public static List<ItemType> materialsNeededForNapalm = List.of(ItemType.SLIME_BALL, ItemType.FLINT_AND_STEEL);
 
 	@Key("napalmBurnRadius")
 	public static int napalmBurnRadius = 6;
@@ -60,18 +55,18 @@ public class Config {
 	public static boolean recursionCap = false;
 
 	@Key("recursion.time")
-	@ValueOptions(ValueOption.SECOND_TO_MILLIS)
+	@TransformValue(Transform.SECOND_TO_MILLIS)
 	public static long maxRecursionTime = -1;
 
 	@Key("sinking.enabled")
 	public static boolean sinkingEnabled = true;
 
 	@Key("sinking.interval")
-	@ValueOptions(ValueOption.SECOND_TO_TICKS)
+	@TransformValue(Transform.SECOND_TO_TICKS)
 	public static long sinkingInterval = 5 * TICKS_PER_SECOND;
 
 	@Key("autoPilotInterval")
-	@ValueOptions(ValueOption.SECOND_TO_TICKS)
+	@TransformValue(Transform.SECOND_TO_TICKS)
 	public static long autoPilotInterval = 2 * TICKS_PER_SECOND;
 
 	@Key("debug")

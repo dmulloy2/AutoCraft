@@ -21,7 +21,7 @@ package net.dmulloy2.autocraft;
 import java.io.File;
 
 import lombok.Getter;
-import net.dmulloy2.SwornPlugin;
+import net.dmulloy2.swornapi.SwornPlugin;
 import net.dmulloy2.autocraft.commands.CmdAllowed;
 import net.dmulloy2.autocraft.commands.CmdAutoPilot;
 import net.dmulloy2.autocraft.commands.CmdDismount;
@@ -38,15 +38,14 @@ import net.dmulloy2.autocraft.commands.CmdTorpedo;
 import net.dmulloy2.autocraft.commands.CmdVersion;
 import net.dmulloy2.autocraft.handlers.DataHandler;
 import net.dmulloy2.autocraft.handlers.ShipHandler;
-import net.dmulloy2.autocraft.integration.SwornNationsHandler;
 import net.dmulloy2.autocraft.listeners.PlayerListener;
 import net.dmulloy2.autocraft.ship.ShipData;
-import net.dmulloy2.commands.CmdHelp;
-import net.dmulloy2.handlers.CommandHandler;
-import net.dmulloy2.handlers.LogHandler;
-import net.dmulloy2.handlers.PermissionHandler;
-import net.dmulloy2.handlers.ResourceHandler;
-import net.dmulloy2.util.FormatUtil;
+import net.dmulloy2.swornapi.commands.CmdHelp;
+import net.dmulloy2.swornapi.handlers.CommandHandler;
+import net.dmulloy2.swornapi.handlers.LogHandler;
+import net.dmulloy2.swornapi.handlers.PermissionHandler;
+import net.dmulloy2.swornapi.handlers.ResourceHandler;
+import net.dmulloy2.swornapi.util.FormatUtil;
 
 import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
@@ -57,7 +56,6 @@ import org.bukkit.plugin.PluginManager;
  */
 
 public class AutoCraft extends SwornPlugin {
-	private @Getter SwornNationsHandler swornNationsHandler;
 	private @Getter ResourceHandler resourceHandler;
 	private @Getter DataHandler dataHandler;
 	private @Getter ShipHandler shipHandler;
@@ -113,19 +111,10 @@ public class AutoCraft extends SwornPlugin {
 		PluginManager pm = getServer().getPluginManager();
 		pm.registerEvents(new PlayerListener(this), this);
 
-		// Integration
-		setupIntegration();
-
 		// Permissions
 		registerPermissions();
 
 		logHandler.log(getMessage("log_enabled"), getDescription().getFullName(), System.currentTimeMillis() - start);
-	}
-
-	private void setupIntegration() {
-		try {
-			swornNationsHandler = new SwornNationsHandler(this);
-		} catch (Throwable ex) { }
 	}
 
 	@Override
@@ -175,10 +164,6 @@ public class AutoCraft extends SwornPlugin {
 
 		return napalmMaterials;
 	}*/
-
-	public final boolean isSwornNationsEnabled() {
-		return swornNationsHandler != null && swornNationsHandler.isEnabled();
-	}
 
 	@Override
 	public void reload() {

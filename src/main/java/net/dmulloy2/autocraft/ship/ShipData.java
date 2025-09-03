@@ -10,7 +10,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import lombok.Data;
-import net.dmulloy2.util.MaterialUtil;
+import net.dmulloy2.swornapi.util.MaterialUtil;
 
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -112,12 +112,12 @@ public class ShipData implements ConfigurationSerializable {
 
 	public boolean isValidMaterial(Block block) {
 		for (String allowed : allowedTypes) {
-			if (block.getType() == MaterialUtil.getMaterial(allowed))
+			if (block.getType() == Material.matchMaterial(allowed))
 				return true;
 		}
 
-		return block.getType() == MaterialUtil.getMaterial(mainType)
-				|| block.getType() == MaterialUtil.getMaterial(cannonMaterial)
+		return block.getType() == Material.matchMaterial(mainType)
+				|| block.getType() == Material.matchMaterial(cannonMaterial)
 				|| block.getType() == Material.DISPENSER;
 	}
 

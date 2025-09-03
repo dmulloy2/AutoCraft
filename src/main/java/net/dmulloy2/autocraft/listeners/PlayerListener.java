@@ -2,7 +2,7 @@ package net.dmulloy2.autocraft.listeners;
 
 import net.dmulloy2.autocraft.AutoCraft;
 import net.dmulloy2.autocraft.ship.Ship;
-import net.dmulloy2.util.FormatUtil;
+import net.dmulloy2.swornapi.util.FormatUtil;
 
 import org.bukkit.Material;
 import org.bukkit.block.data.Powerable;

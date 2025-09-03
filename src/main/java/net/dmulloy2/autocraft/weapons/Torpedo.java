@@ -1,6 +1,7 @@
 package net.dmulloy2.autocraft.weapons;
 
 import net.dmulloy2.autocraft.AutoCraft;
+import net.dmulloy2.autocraft.events.AutoCraftBlockDamageEvent;
 
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -28,49 +29,51 @@ public class Torpedo extends Projectile {
 			torpedo[0].setType(Material.DIAMOND_BLOCK);
 			torpedo[1].setType(Material.RED_WOOL);
 		} else {
-			this.exploded = true;
-			explode();
+			markExploded();
 		}
 	}
 
 	@Override
 	public void move() {
-		if (! isExploded()) {
-			gravity += gravity / 15.0 + 0.00125;
-			yvelo += gravity;
-			if (yvelo > 20.0D) {
-				yvelo = 20.0D;
-			}
+		if (isExploded()) {
+			return;
+		}
 
-			Block b = torpedo[0].getRelative(dir.getModX(), (int) -yvelo, dir.getModZ());
-			if (b.getType().equals(Material.AIR) || b.getType().equals(Material.WATER)) {
-				torpedo[0].setType(Material.RED_WOOL);
+		gravity += gravity / 15.0 + 0.00125;
+		yvelo += gravity;
+		if (yvelo > 20.0D) {
+			yvelo = 20.0D;
+		}
 
+		Block b = torpedo[0].getRelative(dir.getModX(), (int) -yvelo, dir.getModZ());
+		if (b.getType().equals(Material.AIR) || b.getType().equals(Material.WATER)) {
+			torpedo[0].setType(Material.RED_WOOL);
+
+			torpedo[1].setType(Material.AIR);
+			torpedo[1] = torpedo[0];
+
+			torpedo[0] = b;
+			torpedo[0].setType(Material.DIAMOND_BLOCK);
+		} else {
+			AutoCraftBlockDamageEvent blockDamageEvent = new AutoCraftBlockDamageEvent(b);
+			plugin.getServer().getPluginManager().callEvent(blockDamageEvent);
+			if (blockDamageEvent.isCancelled()) {
+				torpedo[0].setType(Material.AIR);
 				torpedo[1].setType(Material.AIR);
-				torpedo[1] = torpedo[0];
-
-				torpedo[0] = b;
-				torpedo[0].setType(Material.DIAMOND_BLOCK);
-			} else {
-				if (plugin.isSwornNationsEnabled() && plugin.getSwornNationsHandler().isFactionOffline(b)) {
-					torpedo[0].setType(Material.AIR);
-					torpedo[1].setType(Material.AIR);
-					this.exploded = true;
-					return;
-				}
-
-				if (b.getType().equals(Material.OBSIDIAN) || b.getType().equals(Material.ENCHANTING_TABLE)) {
-					b.setType(Material.AIR);
-				}
-
-				explode();
-				this.exploded = true;
+				markExploded();
+				return;
 			}
+
+			if (b.getType().equals(Material.OBSIDIAN) || b.getType().equals(Material.ENCHANTING_TABLE)) {
+				b.setType(Material.AIR);
+			}
+
+			explode();
 		}
 	}
 
 	public void explode() {
-		this.exploded = true;
+		markExploded();
 		torpedo[0].setType(Material.AIR);
 		torpedo[1].setType(Material.AIR);
 		TNTPrimed tnt = torpedo[0].getWorld().spawn(torpedo[0].getLocation(), TNTPrimed.class);

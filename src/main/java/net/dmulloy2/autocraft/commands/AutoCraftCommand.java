@@ -1,7 +1,7 @@
 package net.dmulloy2.autocraft.commands;
 
 import net.dmulloy2.autocraft.AutoCraft;
-import net.dmulloy2.commands.Command;
+import net.dmulloy2.swornapi.commands.Command;
 
 /**
  * @author dmulloy2

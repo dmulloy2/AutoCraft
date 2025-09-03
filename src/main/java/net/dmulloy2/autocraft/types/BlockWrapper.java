@@ -20,7 +20,7 @@ public class BlockWrapper {
 
 	public BlockWrapper(Block block) {
 		this.data = block.getBlockData();
-		this.state = block.getState();
+		this.state = block.getState(true);
 
 		if (this.state instanceof InventoryHolder) {
 			this.inventory = ((InventoryHolder) this.state).getInventory().getContents();

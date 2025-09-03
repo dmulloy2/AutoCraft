@@ -2,24 +2,18 @@ package net.dmulloy2.autocraft.handlers;
 
 import java.io.File;
 import java.io.FileFilter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.logging.Level;
 
 import net.dmulloy2.autocraft.AutoCraft;
 import net.dmulloy2.autocraft.ship.ShipData;
-import net.dmulloy2.io.FileSerialization;
-import net.dmulloy2.types.Reloadable;
-import net.dmulloy2.util.MaterialUtil;
-import net.dmulloy2.util.Util;
+import net.dmulloy2.swornapi.io.FileSerialization;
+import net.dmulloy2.swornapi.types.Reloadable;
+import net.dmulloy2.swornapi.util.FormatUtil;
+import net.dmulloy2.swornapi.util.MaterialUtil;
+import net.dmulloy2.swornapi.util.Util;
 
-import org.apache.commons.lang.WordUtils;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
@@ -74,7 +68,7 @@ public class DataHandler implements Reloadable {
 			}
 		}
 
-		plugin.getLogHandler().log("{0} loaded! [{1}ms]", WordUtils.capitalize(folderName), System.currentTimeMillis() - start);
+		plugin.getLogHandler().log("{0} loaded! [{1}ms]", FormatUtil.capitalize(folderName), System.currentTimeMillis() - start);
 	}
 
 	public ShipData loadData(File file) {
@@ -99,14 +93,15 @@ public class DataHandler implements Reloadable {
 			if (version < 3) {
 				// Convert mainType and cannonMaterial
 				List<String> toConvert = Arrays.asList("mainType", "cannonMaterial");
-				for (Entry<String, Object> entry : new HashMap<>(map).entrySet()) { // Damn you, CME's
+
+				for (Iterator<Entry<String, Object>> iter = map.entrySet().iterator(); iter.hasNext(); ) {
+					Entry<String, Object> entry = iter.next();
 					String key = entry.getKey();
 					if (toConvert.contains(key)) {
 						Object value = entry.getValue();
-						if (value instanceof Integer) {
-							Integer i = (Integer) value;
-							map.remove(key);
-							Material mat = MaterialUtil.getMaterial(i.toString());
+						if (value instanceof Integer i) {
+							iter.remove();
+							Material mat = MaterialUtil.convertFromLegacy(i.toString());
 							if (mat != null) {
 								map.put(key, mat.toString());
 							} else {
@@ -122,7 +117,7 @@ public class DataHandler implements Reloadable {
 					List<Integer> allowedBlocks = (List<Integer>) map.get("allowedBlocks");
 					List<String> allowedTypes = new ArrayList<>();
 					for (int id : allowedBlocks) {
-						Material mat = MaterialUtil.getMaterial(String.valueOf(id));
+						Material mat = MaterialUtil.convertFromLegacy(String.valueOf(id));
 						if (mat != null) {
 							allowedTypes.add(mat.toString());
 						} else {

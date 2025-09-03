@@ -1,12 +1,12 @@
 package net.dmulloy2.autocraft.commands;
 
+import java.util.StringJoiner;
+
 import net.dmulloy2.autocraft.AutoCraft;
 import net.dmulloy2.autocraft.ship.ShipData;
 import net.dmulloy2.autocraft.types.Permission;
-import net.dmulloy2.types.StringJoiner;
-import net.dmulloy2.util.MaterialUtil;
-
-import org.apache.commons.lang.WordUtils;
+import net.dmulloy2.swornapi.util.MaterialUtil;
+import net.dmulloy2.swornapi.util.FormatUtil;
 
 /**
  * @author dmulloy2
@@ -34,7 +34,7 @@ public class CmdAllowed extends AutoCraftCommand {
 
 		ShipData data = plugin.getDataHandler().getData(shipName);
 
-		sendMessage(getMessage("allowed_header"), WordUtils.capitalize(data.getShipType()));
+		sendMessage(getMessage("allowed_header"), FormatUtil.capitalize(data.getShipType()));
 		sendMessage(getMessage("allowed_tnt"), data.isFiresTnt());
 		sendMessage(getMessage("allowed_torpedo"), data.isFiresTorpedo());
 		sendMessage(getMessage("allowed_bombs"), data.isDropsBomb());
@@ -57,7 +57,7 @@ public class CmdAllowed extends AutoCraftCommand {
 		StringJoiner joiner = new StringJoiner("&b, &e");
 
 		for (String allowed : data.getAllowedTypes()) {
-			joiner.append(MaterialUtil.getName(allowed));
+			joiner.add(MaterialUtil.getName(allowed));
 		}
 
 		return joiner.toString();
